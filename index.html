@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Zelechat</title>
-<link rel="icon" type="image/png" href="flyerslogo.png">
+<link rel="icon" type="image/png" href="flyerslogo.png?v=2">
+<link rel="apple-touch-icon" href="flyerslogo.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -109,10 +110,12 @@ body{
   line-height:1;
 }
 
+/* 3. Updated Tagline */
 .login-tagline{
   text-align:center;font-size:0.82rem;
   color:var(--text-muted);letter-spacing:0.08em;
   text-transform:uppercase;margin-bottom:24px;
+  font-weight: 600;
 }
 
 /* Avatar picker */
@@ -336,7 +339,7 @@ body{
   background:var(--bg2);
   border:1px solid var(--border-soft);
   border-radius:16px;
-  padding:10px 38px 10px 13px; /* Extra right padding so trigger doesn't overlap text */
+  padding:10px 38px 10px 13px; 
   font-size:0.97rem;
   line-height:1.55;
   word-break:break-word;max-width:100%;
@@ -372,7 +375,7 @@ body{
 .edited-tag{font-size:0.68rem;opacity:0.42;margin-left:5px;font-style:italic;}
 
 /* =====================================================
-   REACTIONS UI (Change #3)
+   REACTIONS UI
 ===================================================== */
 .reactions-row {
   display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;
@@ -401,20 +404,20 @@ body{
 .msg-wrap.mine .emoji-btn:hover { background: rgba(0,0,0,0.1); }
 
 /* =====================================================
-   MESSAGE ACTIONS — improved visibility (Change #1)
+   MESSAGE ACTIONS — improved visibility & position
 ===================================================== */
 
-/* Persistent "more" trigger dot on each bubble */
 .bubble-trigger{
   position:absolute;
   top:6px;
   right:6px;
-  width:32px;height:32px; /* Much larger hit area */
+  width:32px;height:32px; 
   border-radius:50%;
   background:transparent;
   border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  opacity:0.5; /* Always partially visible now */
+  opacity: 0.85; /* 2. Always easily visible */
+  color: var(--orange); /* 2. Orange dot color */
   transition:opacity 0.15s, background 0.15s;
   z-index:5;
   padding:0;
@@ -428,11 +431,11 @@ body{
 .msg-wrap.mine .bubble-trigger:hover{background:rgba(0,0,0,0.15);}
 .bubble-trigger svg{pointer-events:none;}
 
-/* Action menu */
+/* Action menu base */
 .bubble-actions{
   display:none;
   position:absolute;
-  top:-50px;right:0;
+  top:-50px;
   background:var(--bg1);
   border:1px solid var(--border);
   border-radius:12px;
@@ -444,6 +447,14 @@ body{
   flex-direction: column;
 }
 
+/* 2. Position fixes so it doesn't get cut off! */
+.msg-wrap.mine .bubble-actions {
+  right: 0; left: auto;
+}
+.msg-wrap.theirs .bubble-actions {
+  left: 0; right: auto; /* Expands to the right instead of off-screen left */
+}
+
 /* Invisible bridge so the mouse doesn't fall off when moving to the menu */
 .bubble-actions::after {
   content: '';
@@ -451,7 +462,6 @@ body{
   bottom: -20px; left: 0; right: 0; height: 20px;
 }
 
-/* Show actions when trigger is hovered, focused, or active */
 .bubble-trigger:hover + .bubble-actions,
 .bubble-trigger.active + .bubble-actions,
 .bubble-actions:hover{display:flex;}
@@ -576,7 +586,7 @@ body{
       </svg>
       <div class="login-logo-text">Zelechat</div>
     </div>
-    <div class="login-tagline">Private · Encrypted · BARKOV</div>
+    <div class="login-tagline">Legion of Doom</div>
 
     <div class="avatar-picker">
       <div class="avatar-ring" onclick="rerollAvatar()" title="Click to randomize">
@@ -730,9 +740,33 @@ const db = firebase.database();
 // ─────────────────────────────────────────────────────────────
 //  CONSTANTS
 // ─────────────────────────────────────────────────────────────
-const ROOM_PW  = "Zelepukin";
-const ENC_KEY  = "ZC_enc_" + ROOM_PW + "_2024";
+
+// P1 NOTE — Client-side password reality:
+// Because this is a purely static HTML file with no server, the password
+// and its derived key are necessarily present in the JavaScript that every
+// browser downloads. A determined person who downloads the file can read them.
+// What the password check still provides:
+//   • Casual visitors who land on the page are blocked.
+//   • The AES encryption protects messages *in the Firebase database* from
+//     anyone who gains read access there without the file.
+// To truly hide the password you would need a backend (e.g. a serverless
+// function that validates credentials before issuing a Firebase custom token).
+//
+// To improve resistance to offline key extraction we derive the AES key via
+// PBKDF2 (100k iterations, SHA-256) rather than plain string concatenation.
+// This does NOT prevent someone who has the source file from finding the key —
+// it just makes brute-forcing a different password harder.
+
+const ROOM_PW = "Zelepukin";
 const MAX_POKEMON = 151;
+
+// Derive a strong AES key from the room password using PBKDF2
+const _pbkdfSalt = CryptoJS.enc.Utf8.parse('ZeleChat_v4_salt_2024');
+const ENC_KEY = CryptoJS.PBKDF2(ROOM_PW, _pbkdfSalt, {
+  keySize: 256 / 32,
+  iterations: 100000,
+  hasher: CryptoJS.algo.SHA256
+});
 
 const POKEMON = [
   "Bulbasaur","Ivysaur","Venusaur","Charmander","Charmeleon","Charizard",
@@ -817,12 +851,21 @@ function doLogin(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  ENCRYPTION
+//  ENCRYPTION  (AES-256 with PBKDF2-derived key)
 // ─────────────────────────────────────────────────────────────
-function enc(text){ return CryptoJS.AES.encrypt(text, ENC_KEY).toString(); }
+function enc(text){
+  // CryptoJS.AES.encrypt accepts a WordArray key directly
+  return CryptoJS.AES.encrypt(text, ENC_KEY, {
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7
+  }).toString();
+}
 function dec(ct){
   try{
-    const b = CryptoJS.AES.decrypt(ct, ENC_KEY);
+    const b = CryptoJS.AES.decrypt(ct, ENC_KEY, {
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
     return b.toString(CryptoJS.enc.Utf8) || '[message]';
   }catch(e){ return '[message]'; }
 }
@@ -859,26 +902,43 @@ function enterChat(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  DAILY RESET — 3 AM EST (UTC-5, fixed offset)
+//  DAILY RESET — 3 AM America/New_York (DST-aware)
 // ─────────────────────────────────────────────────────────────
-function est3amToday(){
-  const nowUTC    = new Date();
-  const nowEST    = new Date(nowUTC.getTime() - 5*60*60*1000);
-  const est3AM    = new Date(nowEST);
-  est3AM.setHours(3, 0, 0, 0);
-  return est3AM.getTime() + 5*60*60*1000; 
+
+// FIX P2: Use toLocaleString with explicit IANA timezone so we correctly
+// follow Eastern Standard Time (UTC-5) AND Eastern Daylight Time (UTC-4).
+// The old approach pinned UTC-5 year-round, drifting by 1 h during DST.
+function get3amNYThreshold(){
+  const now = new Date();
+  // Parse "what time is it right now in New York" — this respects DST
+  const nyNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  // Build a Date representing 3:00:00 AM today in NY wall-clock time
+  const ny3am = new Date(nyNow);
+  ny3am.setHours(3, 0, 0, 0);
+  // Recover UTC ms: the wall-clock offset = now(UTC) - nyNow(UTC-based parse)
+  const offsetMs = now.getTime() - nyNow.getTime();
+  return ny3am.getTime() + offsetMs;
 }
 
+// FIX P1: Use a Firebase transaction so only ONE client can ever trigger
+// the wipe even if multiple browsers load past 3 AM simultaneously.
+// A malicious/misconfigured clock can still write a bogus lastReset value,
+// but it cannot wipe messages more than once per day because the transaction
+// aborts when lastReset is already >= today's threshold.
 function checkReset(){
   const metaRef   = db.ref('zc/meta/lastReset');
-  const threshold = est3amToday();
+  const threshold = get3amNYThreshold();
   const now       = Date.now();
 
-  metaRef.once('value', snap => {
-    const last = snap.val() || 0;
-    if(now > threshold && last < threshold){
+  if(now <= threshold) return; // Hasn't reached 3 AM today yet
+
+  metaRef.transaction(lastReset => {
+    // Only claim the reset if nobody else already has for this cycle
+    if((lastReset || 0) >= threshold) return; // Abort — already done
+    return now;                               // Claim it atomically
+  }, (error, committed) => {
+    if(!error && committed){
       db.ref('zc/messages').remove();
-      metaRef.set(now);
     }
   });
 }
@@ -918,7 +978,7 @@ function listenMessages(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  REACTIONS HELPER (Change #3)
+//  REACTIONS HELPER
 // ─────────────────────────────────────────────────────────────
 function addReaction(msgId, emoji){
   const ref = db.ref(`zc/messages/${msgId}/reactions/${me.uid}`);
@@ -945,6 +1005,25 @@ function buildReactionsHtml(msgId, reactions){
   return html;
 }
 
+// 4. Function to show more emojis when [+] is clicked
+window.expandEmojis = function(btn, msgId) {
+  const row = btn.parentElement;
+  row.innerHTML = `
+    <span class="emoji-btn" onclick="addReaction('${msgId}','👍')">👍</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','❤️')">❤️</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😂')">😂</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😮')">😮</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','🏒')">🏒</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','🔥')">🔥</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','💀')">💀</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','💯')">💯</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','🍻')">🍻</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','👀')">👀</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😡')">😡</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😭')">😭</span>
+  `;
+};
+
 // ─────────────────────────────────────────────────────────────
 //  RENDER A MESSAGE
 // ─────────────────────────────────────────────────────────────
@@ -967,14 +1046,22 @@ function appendMsg(id, msg){
 
   let body;
   if(msg.isImg){
-    body = `<img class="chat-img" src="${msg.text}" alt="image" onclick="window.open('${msg.text}','_blank')">`;
+    // FIX P1: Validate URL before inserting into DOM to prevent XSS.
+    // Only data:image/ and https:// are legitimate values we write.
+    const safeSrc = safeImgUrl(msg.text);
+    if(safeSrc){
+      // Store URL in a data-attribute; onclick handler reads it safely
+      body = `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`;
+    } else {
+      body = `<span style="opacity:0.5;font-size:0.82rem;">[invalid image]</span>`;
+    }
   } else {
     body = xss(text).replace(/\n/g, '<br>');
   }
 
   const edited = msg.edited ? '<span class="edited-tag">(edited)</span>' : '';
 
-  const threeDotsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  const threeDotsIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
     <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
   </svg>`;
   const replyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -991,13 +1078,13 @@ function appendMsg(id, msg){
     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   </svg>`;
 
-  // 3. Reactions added to menu
   let actionsInner = `
-    <div style="display:flex; gap:6px; padding:4px; border-bottom:1px solid var(--border-soft); margin-bottom:4px; justify-content:center;">
+    <div style="display:flex; gap:6px; padding:4px; border-bottom:1px solid var(--border-soft); margin-bottom:4px; justify-content:center; flex-wrap:wrap; max-width:180px;">
       <span class="emoji-btn" onclick="addReaction('${id}','👍')">👍</span>
       <span class="emoji-btn" onclick="addReaction('${id}','❤️')">❤️</span>
       <span class="emoji-btn" onclick="addReaction('${id}','😂')">😂</span>
       <span class="emoji-btn" onclick="addReaction('${id}','😮')">😮</span>
+      <span class="emoji-btn" onclick="expandEmojis(this, '${id}')" title="More emojis">➕</span>
     </div>
     <button class="bact" onclick="startReply('${id}')">${replyIcon} Reply</button>`;
   
@@ -1040,7 +1127,12 @@ function patchMsg(id, msg){
   const bt = bub.querySelector('.btext');
   if(bt){
     if(msg.isImg){
-      bt.innerHTML = `<img class="chat-img" src="${msg.text}" alt="image" onclick="window.open('${msg.text}','_blank')">`;
+      const safeSrc = safeImgUrl(msg.text);
+      if(safeSrc){
+        bt.innerHTML = `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`;
+      } else {
+        bt.innerHTML = `<span style="opacity:0.5;font-size:0.82rem;">[invalid image]</span>`;
+      }
     } else {
       bt.innerHTML = xss(dec(msg.text)).replace(/\n/g, '<br>');
     }
@@ -1067,9 +1159,16 @@ function sendMsg(){
 
   if(editCtx){
     if(!text) return;
-    db.ref('zc/messages/' + editCtx.id).update({ text: enc(text), edited: true });
+    const editId = editCtx.id;
     cancelEdit();
     ta.value = ''; autoResize();
+    // FIX P2: Use a transaction so we never recreate a message that was
+    // deleted between the time the user opened the editor and pressed Save.
+    // If the record is null (deleted), the transaction aborts silently.
+    db.ref('zc/messages/' + editId).transaction(current => {
+      if(current === null) return; // Abort — message was deleted
+      return Object.assign({}, current, { text: enc(text), edited: true });
+    });
     return;
   }
 
@@ -1101,7 +1200,7 @@ function sendMsg(){
 function handleImg(e){
   const file = e.target.files[0];
   if(!file) return;
-  compressAndSend(file);
+  processAndSend(file);
   e.target.value = '';
 }
 
@@ -1111,42 +1210,59 @@ function handlePaste(e){
   for(const item of items){
     if(item.type.startsWith('image/')){
       e.preventDefault();
-      compressAndSend(item.getAsFile());
+      processAndSend(item.getAsFile());
       return;
     }
   }
 }
 
-function compressAndSend(file){
+// FIX P2: GIF files are skipped past the canvas step so animation is preserved.
+// Only static images (jpeg/png/webp/etc.) go through canvas compression.
+function processAndSend(file){
   const reader = new FileReader();
   reader.onload = ev => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const maxW   = 600;
-      const scale  = img.width > maxW ? maxW / img.width : 1;
-      canvas.width  = img.width  * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      const dataURL = canvas.toDataURL('image/jpeg', 0.75);
-
-      const rply = replyCtx ? { name: replyCtx.name, text: null, isImg: true } : null;
-
-      db.ref('zc/messages').push({
-        uid:   me.uid,
-        name:  me.name,
-        avId:  me.avId,
-        text:  dataURL,
-        ts:    Date.now(),
-        isImg: true,
-        edited:false,
-        rply
-      });
-      cancelReply();
-    };
-    img.src = ev.target.result;
+    if(file.type === 'image/gif'){
+      // Send GIF data URL directly — no canvas re-encode (would destroy animation)
+      dispatchImageMsg(ev.target.result);
+    } else {
+      // Compress static images to max 600 px wide, JPEG 75 %
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxW   = 600;
+        const scale  = img.width > maxW ? maxW / img.width : 1;
+        canvas.width  = img.width  * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        dispatchImageMsg(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.src = ev.target.result;
+    }
   };
   reader.readAsDataURL(file);
+}
+
+// FIX P2: Reply metadata now correctly preserves the quoted text when
+// replying to a text message with an image (was incorrectly marking text
+// replies as isImg:true and dropping the quoted text).
+function dispatchImageMsg(dataURL){
+  const rply = replyCtx ? {
+    name:  replyCtx.name,
+    text:  replyCtx.isImg ? null : replyCtx.encText, // keep quoted text if replying to text
+    isImg: replyCtx.isImg || false
+  } : null;
+
+  db.ref('zc/messages').push({
+    uid:   me.uid,
+    name:  me.name,
+    avId:  me.avId,
+    text:  dataURL,
+    ts:    Date.now(),
+    isImg: true,
+    edited:false,
+    rply
+  });
+  cancelReply();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1218,6 +1334,27 @@ function listenUsers(){
 
 function toggleUsers(){
   document.getElementById('users-dd').classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SECURITY HELPERS
+// ─────────────────────────────────────────────────────────────
+
+// FIX P1: Only allow data:image/ blobs (what we generate) and https:// URLs.
+// Blocks javascript: / data:text/ / vbscript: etc. that could run code.
+function safeImgUrl(src){
+  if(typeof src !== 'string') return null;
+  if(src.startsWith('data:image/')) return src;
+  if(src.startsWith('https://'))    return src;
+  return null;
+}
+
+// Safe image opener — reads from the data-attribute set by appendMsg/patchMsg
+// so there is no chance of an injected URL reaching window.open.
+function openImg(el){
+  const src = el.getAttribute('data-imgsrc');
+  const safe = safeImgUrl(src);
+  if(safe) window.open(safe, '_blank', 'noopener,noreferrer');
 }
 
 // ─────────────────────────────────────────────────────────────
