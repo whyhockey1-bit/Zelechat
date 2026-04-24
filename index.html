@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Zelechat</title>
-<link rel="icon" type="image/png" href="flyerslogo.png">
+<link rel="icon" type="image/png" href="flyerslogo.png?v=2">
+<link rel="apple-touch-icon" href="flyerslogo.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -109,10 +110,12 @@ body{
   line-height:1;
 }
 
+/* 3. Updated Tagline */
 .login-tagline{
   text-align:center;font-size:0.82rem;
   color:var(--text-muted);letter-spacing:0.08em;
   text-transform:uppercase;margin-bottom:24px;
+  font-weight: 600;
 }
 
 /* Avatar picker */
@@ -336,7 +339,7 @@ body{
   background:var(--bg2);
   border:1px solid var(--border-soft);
   border-radius:16px;
-  padding:10px 38px 10px 13px; /* Extra right padding so trigger doesn't overlap text */
+  padding:10px 38px 10px 13px; 
   font-size:0.97rem;
   line-height:1.55;
   word-break:break-word;max-width:100%;
@@ -372,7 +375,7 @@ body{
 .edited-tag{font-size:0.68rem;opacity:0.42;margin-left:5px;font-style:italic;}
 
 /* =====================================================
-   REACTIONS UI (Change #3)
+   REACTIONS UI
 ===================================================== */
 .reactions-row {
   display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;
@@ -401,20 +404,20 @@ body{
 .msg-wrap.mine .emoji-btn:hover { background: rgba(0,0,0,0.1); }
 
 /* =====================================================
-   MESSAGE ACTIONS — improved visibility (Change #1)
+   MESSAGE ACTIONS — improved visibility & position
 ===================================================== */
 
-/* Persistent "more" trigger dot on each bubble */
 .bubble-trigger{
   position:absolute;
   top:6px;
   right:6px;
-  width:32px;height:32px; /* Much larger hit area */
+  width:32px;height:32px; 
   border-radius:50%;
   background:transparent;
   border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  opacity:0.5; /* Always partially visible now */
+  opacity: 0.85; /* 2. Always easily visible */
+  color: var(--orange); /* 2. Orange dot color */
   transition:opacity 0.15s, background 0.15s;
   z-index:5;
   padding:0;
@@ -428,11 +431,11 @@ body{
 .msg-wrap.mine .bubble-trigger:hover{background:rgba(0,0,0,0.15);}
 .bubble-trigger svg{pointer-events:none;}
 
-/* Action menu */
+/* Action menu base */
 .bubble-actions{
   display:none;
   position:absolute;
-  top:-50px;right:0;
+  top:-50px;
   background:var(--bg1);
   border:1px solid var(--border);
   border-radius:12px;
@@ -444,6 +447,14 @@ body{
   flex-direction: column;
 }
 
+/* 2. Position fixes so it doesn't get cut off! */
+.msg-wrap.mine .bubble-actions {
+  right: 0; left: auto;
+}
+.msg-wrap.theirs .bubble-actions {
+  left: 0; right: auto; /* Expands to the right instead of off-screen left */
+}
+
 /* Invisible bridge so the mouse doesn't fall off when moving to the menu */
 .bubble-actions::after {
   content: '';
@@ -451,7 +462,6 @@ body{
   bottom: -20px; left: 0; right: 0; height: 20px;
 }
 
-/* Show actions when trigger is hovered, focused, or active */
 .bubble-trigger:hover + .bubble-actions,
 .bubble-trigger.active + .bubble-actions,
 .bubble-actions:hover{display:flex;}
@@ -576,7 +586,7 @@ body{
       </svg>
       <div class="login-logo-text">Zelechat</div>
     </div>
-    <div class="login-tagline">Private · Encrypted · BARKOV</div>
+    <div class="login-tagline">Legion of Doom</div>
 
     <div class="avatar-picker">
       <div class="avatar-ring" onclick="rerollAvatar()" title="Click to randomize">
@@ -918,7 +928,7 @@ function listenMessages(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  REACTIONS HELPER (Change #3)
+//  REACTIONS HELPER
 // ─────────────────────────────────────────────────────────────
 function addReaction(msgId, emoji){
   const ref = db.ref(`zc/messages/${msgId}/reactions/${me.uid}`);
@@ -944,6 +954,25 @@ function buildReactionsHtml(msgId, reactions){
   html += '</div>';
   return html;
 }
+
+// 4. Function to show more emojis when [+] is clicked
+window.expandEmojis = function(btn, msgId) {
+  const row = btn.parentElement;
+  row.innerHTML = `
+    <span class="emoji-btn" onclick="addReaction('${msgId}','👍')">👍</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','❤️')">❤️</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😂')">😂</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😮')">😮</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','🏒')">🏒</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','🔥')">🔥</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','💀')">💀</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','💯')">💯</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','🍻')">🍻</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','👀')">👀</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😡')">😡</span>
+    <span class="emoji-btn" onclick="addReaction('${msgId}','😭')">😭</span>
+  `;
+};
 
 // ─────────────────────────────────────────────────────────────
 //  RENDER A MESSAGE
@@ -974,7 +1003,7 @@ function appendMsg(id, msg){
 
   const edited = msg.edited ? '<span class="edited-tag">(edited)</span>' : '';
 
-  const threeDotsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  const threeDotsIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
     <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
   </svg>`;
   const replyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -991,13 +1020,13 @@ function appendMsg(id, msg){
     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   </svg>`;
 
-  // 3. Reactions added to menu
   let actionsInner = `
-    <div style="display:flex; gap:6px; padding:4px; border-bottom:1px solid var(--border-soft); margin-bottom:4px; justify-content:center;">
+    <div style="display:flex; gap:6px; padding:4px; border-bottom:1px solid var(--border-soft); margin-bottom:4px; justify-content:center; flex-wrap:wrap; max-width:180px;">
       <span class="emoji-btn" onclick="addReaction('${id}','👍')">👍</span>
       <span class="emoji-btn" onclick="addReaction('${id}','❤️')">❤️</span>
       <span class="emoji-btn" onclick="addReaction('${id}','😂')">😂</span>
       <span class="emoji-btn" onclick="addReaction('${id}','😮')">😮</span>
+      <span class="emoji-btn" onclick="expandEmojis(this, '${id}')" title="More emojis">➕</span>
     </div>
     <button class="bact" onclick="startReply('${id}')">${replyIcon} Reply</button>`;
   
@@ -1067,188 +1096,4 @@ function sendMsg(){
 
   if(editCtx){
     if(!text) return;
-    db.ref('zc/messages/' + editCtx.id).update({ text: enc(text), edited: true });
-    cancelEdit();
-    ta.value = ''; autoResize();
-    return;
-  }
-
-  if(!text) return;
-
-  const rply = replyCtx ? {
-    name:  replyCtx.name,
-    text:  replyCtx.isImg ? null : replyCtx.encText,
-    isImg: replyCtx.isImg || false
-  } : null;
-
-  db.ref('zc/messages').push({
-    uid:   me.uid,
-    name:  me.name,
-    avId:  me.avId,
-    text:  enc(text),
-    ts:    Date.now(),
-    isImg: false,
-    edited:false,
-    rply
-  });
-
-  ta.value = ''; autoResize(); cancelReply();
-}
-
-// ─────────────────────────────────────────────────────────────
-//  IMAGE / GIF
-// ─────────────────────────────────────────────────────────────
-function handleImg(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  compressAndSend(file);
-  e.target.value = '';
-}
-
-function handlePaste(e){
-  const items = e.clipboardData?.items;
-  if(!items) return;
-  for(const item of items){
-    if(item.type.startsWith('image/')){
-      e.preventDefault();
-      compressAndSend(item.getAsFile());
-      return;
-    }
-  }
-}
-
-function compressAndSend(file){
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const maxW   = 600;
-      const scale  = img.width > maxW ? maxW / img.width : 1;
-      canvas.width  = img.width  * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      const dataURL = canvas.toDataURL('image/jpeg', 0.75);
-
-      const rply = replyCtx ? { name: replyCtx.name, text: null, isImg: true } : null;
-
-      db.ref('zc/messages').push({
-        uid:   me.uid,
-        name:  me.name,
-        avId:  me.avId,
-        text:  dataURL,
-        ts:    Date.now(),
-        isImg: true,
-        edited:false,
-        rply
-      });
-      cancelReply();
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-// ─────────────────────────────────────────────────────────────
-//  REPLY / EDIT / DELETE
-// ─────────────────────────────────────────────────────────────
-function startReply(id){
-  const msg = msgCache[id];
-  if(!msg) return;
-  replyCtx = { id, name: msg.name, isImg: msg.isImg, encText: msg.text };
-  document.getElementById('reply-bar').classList.add('show');
-  document.getElementById('rb-who').textContent  = msg.name;
-  document.getElementById('rb-prev').textContent = msg.isImg ? '📷 Image' : dec(msg.text).slice(0, 70);
-  document.getElementById('msg-input').focus();
-}
-
-function cancelReply(){
-  replyCtx = null;
-  document.getElementById('reply-bar').classList.remove('show');
-}
-
-function startEdit(id){
-  const msg = msgCache[id];
-  if(!msg || msg.isImg) return;
-  if(msg.uid !== me.uid) return;
-  editCtx = { id };
-  const ta = document.getElementById('msg-input');
-  ta.value = dec(msg.text);
-  ta.focus(); autoResize();
-  document.getElementById('edit-bar').classList.add('show');
-  cancelReply();
-}
-
-function cancelEdit(){
-  editCtx = null;
-  document.getElementById('edit-bar').classList.remove('show');
-  document.getElementById('msg-input').value = '';
-  autoResize();
-}
-
-function delMsg(id){
-  const msg = msgCache[id];
-  if(!msg || msg.uid !== me.uid) return;
-  if(confirm('Delete this message for everyone?'))
-    db.ref('zc/messages/' + id).remove();
-}
-
-// ─────────────────────────────────────────────────────────────
-//  ONLINE USERS
-// ─────────────────────────────────────────────────────────────
-function listenUsers(){
-  db.ref('zc/users').on('value', snap => {
-    const users = snap.val() || {};
-    const list  = Object.entries(users);
-
-    document.getElementById('online-cnt').textContent = list.length;
-
-    const ul = document.getElementById('users-list');
-    ul.innerHTML = '';
-
-    list.forEach(([uid, u]) => {
-      const row      = document.createElement('div');
-      const isMe     = uid === me.uid;
-      row.className  = 'user-row' + (isMe ? ' me-row' : '');
-      row.innerHTML  = `<img src="${spriteUrl(u.avId)}" alt=""><span class="uname">${xss(u.name)}</span>`;
-      ul.appendChild(row);
-    });
-  });
-}
-
-function toggleUsers(){
-  document.getElementById('users-dd').classList.toggle('open');
-}
-
-// ─────────────────────────────────────────────────────────────
-//  UTILS
-// ─────────────────────────────────────────────────────────────
-function xss(s){
-  if(!s) return '';
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
-}
-
-function scrollBottom(){
-  const a = document.getElementById('msgs');
-  requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; });
-}
-
-function autoResize(){
-  const ta = document.getElementById('msg-input');
-  ta.style.height = 'auto';
-  ta.style.height = Math.min(ta.scrollHeight, 110) + 'px';
-}
-
-// ─────────────────────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────────────────────
-rerollAvatar();
-document.getElementById('inp-pw').addEventListener('keydown',   e => { if(e.key==='Enter') doLogin(); });
-document.getElementById('inp-name').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-</script>
-
-</body>
-</html>
+    db.ref
