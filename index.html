@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Zelechat</title>
+<link rel="icon" type="image/png" href="flyerslogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -307,7 +308,6 @@ body{
 .msg-wrap.theirs{align-self:flex-start;}
 
 .msg-av{
-  /* 10% larger than v1's 34px = ~37px */
   width:38px;height:38px;border-radius:50%;
   background:var(--bg2);flex-shrink:0;
   align-self:flex-end;overflow:hidden;
@@ -336,7 +336,7 @@ body{
   background:var(--bg2);
   border:1px solid var(--border-soft);
   border-radius:16px;
-  padding:10px 13px;
+  padding:10px 38px 10px 13px; /* Extra right padding so trigger doesn't overlap text */
   font-size:0.97rem;
   line-height:1.55;
   word-break:break-word;max-width:100%;
@@ -372,20 +372,49 @@ body{
 .edited-tag{font-size:0.68rem;opacity:0.42;margin-left:5px;font-style:italic;}
 
 /* =====================================================
-   MESSAGE ACTIONS — improved hit area
+   REACTIONS UI (Change #3)
+===================================================== */
+.reactions-row {
+  display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;
+}
+.react-badge {
+  background: var(--bg1);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 2px 7px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+  transition: all 0.2s;
+}
+.msg-wrap.mine .react-badge { background: rgba(0,0,0,0.1); border-color: rgba(0,0,0,0.2); }
+.react-badge:hover { border-color: var(--orange); }
+.react-badge.reacted { background: var(--orange-glow); border-color: var(--orange); }
+.rcount { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text-soft); }
+.msg-wrap.mine .rcount { color: rgba(0,0,0,0.7); }
+
+.emoji-btn {
+  cursor: pointer; font-size: 1.15rem; transition: transform 0.1s;
+  padding: 3px 5px; border-radius: 6px;
+}
+.emoji-btn:hover { transform: scale(1.2); background: rgba(255,255,255,0.1); }
+.msg-wrap.mine .emoji-btn:hover { background: rgba(0,0,0,0.1); }
+
+/* =====================================================
+   MESSAGE ACTIONS — improved visibility (Change #1)
 ===================================================== */
 
 /* Persistent "more" trigger dot on each bubble */
 .bubble-trigger{
   position:absolute;
   top:6px;
-  right:8px;
-  width:24px;height:24px;
+  right:6px;
+  width:32px;height:32px; /* Much larger hit area */
   border-radius:50%;
   background:transparent;
   border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  opacity:0;
+  opacity:0.5; /* Always partially visible now */
   transition:opacity 0.15s, background 0.15s;
   z-index:5;
   padding:0;
@@ -403,33 +432,40 @@ body{
 .bubble-actions{
   display:none;
   position:absolute;
-  top:-38px;right:0;
+  top:-50px;right:0;
   background:var(--bg1);
   border:1px solid var(--border);
-  border-radius:10px;
-  padding:4px 5px;
-  gap:2px;z-index:30;
+  border-radius:12px;
+  padding:8px;
+  gap:4px;z-index:30;
   white-space:nowrap;
-  box-shadow:0 4px 16px rgba(0,0,0,0.5);
+  box-shadow:0 6px 24px rgba(0,0,0,0.6);
   animation:fadeSlide 0.1s ease;
+  flex-direction: column;
+}
+
+/* Invisible bridge so the mouse doesn't fall off when moving to the menu */
+.bubble-actions::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: 0; right: 0; height: 20px;
 }
 
 /* Show actions when trigger is hovered, focused, or active */
 .bubble-trigger:hover + .bubble-actions,
 .bubble-trigger.active + .bubble-actions,
 .bubble-actions:hover{display:flex;}
-
-/* Also show when mouse enters the action area directly */
 .bubble-trigger:focus + .bubble-actions{display:flex;}
 
 .bact{
   background:none;border:none;cursor:pointer;
   color:var(--grey);
-  padding:5px 9px;border-radius:7px;
-  font-size:0.78rem;font-family:'DM Sans',sans-serif;
+  padding:6px 10px;border-radius:7px;
+  font-size:0.8rem;font-family:'DM Sans',sans-serif;
   transition:color 0.15s,background 0.15s;
-  display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;gap:6px;
   font-weight:500;
+  width: 100%;
 }
 .bact:hover{color:var(--orange);background:var(--orange-glow);}
 .bact.del:hover{color:var(--red);background:rgba(255,85,85,0.12);}
@@ -527,14 +563,10 @@ body{
 </head>
 <body>
 
-<!-- =========================================
-     LOGIN SCREEN
-========================================= -->
 <div id="login-screen">
   <div class="login-card">
 
     <div class="login-logo-row">
-      <!-- WHY shield logo, recolored orange -->
       <svg class="login-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat logo">
         <path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/>
         <path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/>
@@ -544,16 +576,14 @@ body{
       </svg>
       <div class="login-logo-text">Zelechat</div>
     </div>
-    <div class="login-tagline">Private · Encrypted · Cozy</div>
+    <div class="login-tagline">Private · Encrypted · BARKOV</div>
 
-    <!-- Avatar picker -->
     <div class="avatar-picker">
       <div class="avatar-ring" onclick="rerollAvatar()" title="Click to randomize">
         <img id="av-img" src="" alt="avatar">
       </div>
       <div class="pokemon-label" id="av-name">Loading…</div>
       <button class="btn-reroll" onclick="rerollAvatar()">
-        <!-- Refresh / shuffle icon -->
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/>
           <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
@@ -562,25 +592,21 @@ body{
       </button>
     </div>
 
-    <!-- Username -->
     <div class="field">
       <label>Your Username</label>
       <input type="text" id="inp-name" placeholder="Pick a name…" maxlength="20" autocomplete="off">
       <div class="err-msg" id="err-name">Please enter a username (2–20 characters).</div>
     </div>
 
-    <!-- Password -->
     <div class="field">
       <label>Room Password</label>
       <div class="pw-wrap">
         <input type="password" id="inp-pw" placeholder="Enter password…" autocomplete="off">
         <button class="eye-btn" onclick="togglePw()" id="eye-btn" title="Show / Hide password">
-          <!-- Eye icon (show) -->
           <svg id="icon-eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
           </svg>
-          <!-- Eye-off icon (hide) — hidden by default -->
           <svg id="icon-eye-hide" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
             <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
             <line x1="1" y1="1" x2="23" y2="23"/>
@@ -594,15 +620,10 @@ body{
   </div>
 </div>
 
-<!-- =========================================
-     CHAT SCREEN
-========================================= -->
 <div id="chat-screen">
 
-  <!-- Header -->
   <div class="chat-header">
     <div class="header-left">
-      <!-- WHY shield logo, orange -->
       <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat">
         <path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/>
         <path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/>
@@ -615,7 +636,6 @@ body{
     <div class="users-panel">
       <button class="users-btn" onclick="toggleUsers()" id="users-btn">
         <span class="online-dot"></span>
-        <!-- People icon -->
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
@@ -631,15 +651,12 @@ body{
     </div>
   </div>
 
-  <!-- Reset notice -->
   <div class="reset-notice">
-    🕒 Chat history clears automatically every night at 3:00 AM EST
+    Chat history clears automatically every night at 3:00 AM EST
   </div>
 
-  <!-- Messages -->
   <div class="messages-area" id="msgs"></div>
 
-  <!-- Reply bar -->
   <div class="context-bar" id="reply-bar">
     <span class="cbar-icon">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -655,7 +672,6 @@ body{
     </button>
   </div>
 
-  <!-- Edit bar -->
   <div class="context-bar" id="edit-bar">
     <span class="cbar-icon">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -672,12 +688,10 @@ body{
     </button>
   </div>
 
-  <!-- Input -->
   <div class="input-zone">
     <div class="input-pill">
       <textarea id="msg-input" placeholder="Message Zelechat…" rows="1"></textarea>
       <button class="attach-btn" onclick="document.getElementById('img-file').click()" title="Send image or GIF">
-        <!-- Flat image icon -->
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -696,14 +710,10 @@ body{
 
 </div>
 
-<!-- =========================================
-     JAVASCRIPT
-========================================= -->
 <script>
 // ─────────────────────────────────────────────────────────────
-//  FIREBASE CONFIG  ← Replace these 7 values with your own!
+//  FIREBASE CONFIG
 // ─────────────────────────────────────────────────────────────
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCEs0x7p6R7e77lw76ZOUV6QXoaH9In_xU",
   authDomain: "zelechat-6b6f3.firebaseapp.com",
@@ -773,7 +783,7 @@ function rerollAvatar(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  PASSWORD TOGGLE (flat SVG icons)
+//  PASSWORD TOGGLE
 // ─────────────────────────────────────────────────────────────
 function togglePw(){
   pwVisible = !pwVisible;
@@ -824,12 +834,10 @@ function enterChat(){
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('chat-screen').style.display  = 'flex';
 
-  // Register presence — this puts the user in the list and count
   const pRef = db.ref('zc/users/' + me.uid);
   pRef.set({ name: me.name, avId: me.avId, ts: Date.now() });
   pRef.onDisconnect().remove();
 
-  // Keep-alive heartbeat so user stays in the list
   setInterval(() => pRef.update({ ts: Date.now() }), 25000);
 
   checkReset();
@@ -844,7 +852,6 @@ function enterChat(){
   ta.addEventListener('input', autoResize);
   ta.addEventListener('paste', handlePaste);
 
-  // Close user dropdown when clicking elsewhere
   document.addEventListener('click', e => {
     if(!document.querySelector('.users-panel').contains(e.target))
       document.getElementById('users-dd').classList.remove('open');
@@ -855,12 +862,11 @@ function enterChat(){
 //  DAILY RESET — 3 AM EST (UTC-5, fixed offset)
 // ─────────────────────────────────────────────────────────────
 function est3amToday(){
-  // Get today's 3 AM in EST as a UTC timestamp
   const nowUTC    = new Date();
   const nowEST    = new Date(nowUTC.getTime() - 5*60*60*1000);
   const est3AM    = new Date(nowEST);
   est3AM.setHours(3, 0, 0, 0);
-  return est3AM.getTime() + 5*60*60*1000; // back to UTC ms
+  return est3AM.getTime() + 5*60*60*1000; 
 }
 
 function checkReset(){
@@ -912,6 +918,34 @@ function listenMessages(){
 }
 
 // ─────────────────────────────────────────────────────────────
+//  REACTIONS HELPER (Change #3)
+// ─────────────────────────────────────────────────────────────
+function addReaction(msgId, emoji){
+  const ref = db.ref(`zc/messages/${msgId}/reactions/${me.uid}`);
+  ref.once('value', snap => {
+    if(snap.val() === emoji) ref.remove(); // Toggle off if clicked again
+    else ref.set(emoji);
+  });
+}
+
+function buildReactionsHtml(msgId, reactions){
+  if(!reactions) return '';
+  const counts = {};
+  const userReacted = {};
+  for(const [uid, emoji] of Object.entries(reactions)){
+    counts[emoji] = (counts[emoji] || 0) + 1;
+    if(uid === me.uid) userReacted[emoji] = true;
+  }
+  let html = '<div class="reactions-row">';
+  for(const [emoji, count] of Object.entries(counts)){
+    const cls = userReacted[emoji] ? 'react-badge reacted' : 'react-badge';
+    html += `<div class="${cls}" onclick="addReaction('${msgId}', '${emoji}')">${emoji} <span class="rcount">${count}</span></div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+// ─────────────────────────────────────────────────────────────
 //  RENDER A MESSAGE
 // ─────────────────────────────────────────────────────────────
 function appendMsg(id, msg){
@@ -922,7 +956,6 @@ function appendMsg(id, msg){
   const d       = new Date(msg.ts);
   const timeStr = d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
 
-  // Reply quote
   let rqHtml = '';
   if(msg.rply){
     const preview = msg.rply.isImg ? '📷 Image' : dec(msg.rply.text || '').slice(0, 60);
@@ -932,7 +965,6 @@ function appendMsg(id, msg){
     </div>`;
   }
 
-  // Content
   let body;
   if(msg.isImg){
     body = `<img class="chat-img" src="${msg.text}" alt="image" onclick="window.open('${msg.text}','_blank')">`;
@@ -942,31 +974,36 @@ function appendMsg(id, msg){
 
   const edited = msg.edited ? '<span class="edited-tag">(edited)</span>' : '';
 
-  // Actions — only show Edit/Delete for own messages
-  // The three-dot trigger button triggers the menu
-  const threeDotsIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+  const threeDotsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
   </svg>`;
-
-  const replyIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  const replyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>
   </svg>`;
-  const editIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  const editIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
   </svg>`;
-  const trashIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  const trashIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <polyline points="3 6 5 6 21 6"/>
     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
     <path d="M10 11v6"/><path d="M14 11v6"/>
     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   </svg>`;
 
-  let actionsInner = `<button class="bact" onclick="startReply('${id}')">${replyIcon} Reply</button>`;
+  // 3. Reactions added to menu
+  let actionsInner = `
+    <div style="display:flex; gap:6px; padding:4px; border-bottom:1px solid var(--border-soft); margin-bottom:4px; justify-content:center;">
+      <span class="emoji-btn" onclick="addReaction('${id}','👍')">👍</span>
+      <span class="emoji-btn" onclick="addReaction('${id}','❤️')">❤️</span>
+      <span class="emoji-btn" onclick="addReaction('${id}','😂')">😂</span>
+      <span class="emoji-btn" onclick="addReaction('${id}','😮')">😮</span>
+    </div>
+    <button class="bact" onclick="startReply('${id}')">${replyIcon} Reply</button>`;
+  
   if(mine && !msg.isImg){
     actionsInner += `<button class="bact" onclick="startEdit('${id}')">${editIcon} Edit</button>`;
   }
-  // Only own messages can be deleted
   if(mine){
     actionsInner += `<button class="bact del" onclick="delMsg('${id}')">${trashIcon} Delete</button>`;
   }
@@ -990,6 +1027,7 @@ function appendMsg(id, msg){
         <div class="bubble-actions">${actionsInner}</div>
         ${rqHtml}
         <span class="btext">${body}</span>${edited}
+        <div class="rx-container">${buildReactionsHtml(id, msg.reactions)}</div>
       </div>
     </div>`;
 
@@ -1011,7 +1049,12 @@ function patchMsg(id, msg){
   if(msg.edited && !et){
     const s = document.createElement('span');
     s.className = 'edited-tag'; s.textContent = '(edited)';
-    bub.appendChild(s);
+    const rx = bub.querySelector('.rx-container');
+    bub.insertBefore(s, rx);
+  }
+  const rxContainer = bub.querySelector('.rx-container');
+  if(rxContainer){
+    rxContainer.innerHTML = buildReactionsHtml(id, msg.reactions);
   }
 }
 
@@ -1127,7 +1170,6 @@ function cancelReply(){
 function startEdit(id){
   const msg = msgCache[id];
   if(!msg || msg.isImg) return;
-  // Security: only allow editing own messages
   if(msg.uid !== me.uid) return;
   editCtx = { id };
   const ta = document.getElementById('msg-input');
@@ -1146,14 +1188,13 @@ function cancelEdit(){
 
 function delMsg(id){
   const msg = msgCache[id];
-  // Security: only allow deleting own messages
   if(!msg || msg.uid !== me.uid) return;
   if(confirm('Delete this message for everyone?'))
     db.ref('zc/messages/' + id).remove();
 }
 
 // ─────────────────────────────────────────────────────────────
-//  ONLINE USERS (includes the current user)
+//  ONLINE USERS
 // ─────────────────────────────────────────────────────────────
 function listenUsers(){
   db.ref('zc/users').on('value', snap => {
