@@ -383,68 +383,14 @@ body{
   border-radius:4px;padding:1px 5px;
   margin-left:5px;vertical-align:middle;opacity:0.85;
 }
+/* Bot bubble uses a purple-tinted background */
 .msg-wrap.bot-wrap .msg-bubble{
   background:var(--bg3);
   border-color:rgba(155,120,200,0.3);
 }
-
-/* ── Emoji picker ── */
-.emoji-panel{
-  display:none;
-  position:absolute;
-  bottom:calc(100% + 8px);left:0;right:0;
-  background:var(--bg1);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:10px;
-  z-index:60;
-  box-shadow:var(--shadow);
-  animation:fadeSlide 0.15s ease;
-  max-height:220px;overflow-y:auto;
-}
-.emoji-panel.open{display:block;}
-.emoji-cat-label{
-  font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;
-  color:var(--text-muted);margin:6px 0 4px;
-}
-.emoji-cat-label:first-child{margin-top:0;}
-.emoji-grid{
-  display:flex;flex-wrap:wrap;gap:2px;
-}
-.ep-btn{
-  background:none;border:none;cursor:pointer;
-  font-size:1.25rem;line-height:1;padding:5px;
-  border-radius:7px;transition:background 0.1s;
-}
-.ep-btn:hover{background:var(--bg3);}
-
-/* ── Typing indicator ── */
-.typing-area{
-  display:none;
-  align-items:center;gap:6px;
-  padding:4px 16px 2px;
-  flex-shrink:0;min-height:26px;
-}
-.typing-area.show{display:flex;}
-.typing-av{
-  width:22px;height:22px;border-radius:50%;
-  image-rendering:pixelated;
-  border:1px solid var(--border-soft);
-  flex-shrink:0;
-}
-.typing-dots{
-  font-size:0.78rem;color:var(--text-muted);
-  letter-spacing:0.05em;font-family:'DM Mono',monospace;
-  animation:typePulse 1.4s infinite;
-}
-@keyframes typePulse{
-  0%,100%{opacity:0.3;} 50%{opacity:1;}
-}
-
-/* at-hint now lives here */
+/* Help tip shown in input placeholder when user types @ */
 .at-hint{
-  position:absolute;
-  bottom:calc(100% + 6px);left:12px;
+  position:absolute;bottom:calc(100% + 6px);left:12px;
   background:var(--bg1);border:1px solid var(--border);
   border-radius:10px;padding:7px 12px;
   font-size:0.78rem;color:var(--text-soft);
@@ -649,6 +595,140 @@ body{
   .msg-wrap{max-width:92%;}
   .login-card{padding:24px 18px 20px;}
 }
+
+/* =====================================================
+   EMOJI PICKER
+===================================================== */
+.emoji-panel{
+  position:absolute;
+  bottom:calc(100% + 8px);right:0;left:0;
+  background:var(--bg1);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:10px 10px 6px;
+  z-index:200;
+  box-shadow:var(--shadow);
+  animation:fadeSlide 0.15s ease;
+  max-height:220px;overflow-y:auto;
+}
+.emoji-panel-cats{
+  display:flex;gap:6px;margin-bottom:7px;
+  border-bottom:1px solid var(--border-soft);
+  padding-bottom:7px;overflow-x:auto;
+}
+.emoji-cat-btn{
+  background:none;border:none;cursor:pointer;
+  font-size:1.05rem;padding:3px 6px;border-radius:7px;
+  transition:background 0.15s;flex-shrink:0;
+}
+.emoji-cat-btn:hover,.emoji-cat-btn.active{background:var(--orange-glow);}
+.emoji-grid{
+  display:flex;flex-wrap:wrap;gap:1px;
+}
+.ep-emoji{
+  cursor:pointer;font-size:1.35rem;
+  padding:4px 5px;border-radius:6px;
+  transition:background 0.1s, transform 0.1s;
+  line-height:1;
+}
+.ep-emoji:hover{background:var(--orange-glow);transform:scale(1.2);}
+
+/* =====================================================
+   GIF SEARCH PANEL
+===================================================== */
+.gif-panel{
+  position:absolute;
+  bottom:calc(100% + 8px);right:0;left:0;
+  background:var(--bg1);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:10px;
+  z-index:200;
+  box-shadow:var(--shadow);
+  animation:fadeSlide 0.15s ease;
+  display:flex;flex-direction:column;gap:8px;
+  max-height:280px;
+}
+.gif-search-row{
+  display:flex;gap:7px;align-items:center;
+}
+.gif-search-row input{
+  flex:1;background:var(--bg2);border:1px solid var(--border-soft);
+  border-radius:9px;color:var(--text);
+  padding:8px 11px;font-size:0.9rem;
+  font-family:'DM Sans',sans-serif;outline:none;
+}
+.gif-search-row input:focus{border-color:var(--orange);}
+.gif-search-row input::placeholder{color:var(--text-muted);}
+.gif-search-row button{
+  background:var(--orange);border:none;border-radius:8px;
+  color:#000;font-weight:700;font-size:0.85rem;
+  padding:8px 13px;cursor:pointer;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;
+}
+.gif-close{
+  background:none;border:none;color:var(--text-muted);
+  cursor:pointer;padding:5px;font-size:1rem;flex-shrink:0;
+  transition:color 0.15s;
+}
+.gif-close:hover{color:var(--orange);}
+.gif-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:6px;overflow-y:auto;flex:1;
+}
+.gif-grid img{
+  width:100%;aspect-ratio:1/1;object-fit:cover;
+  border-radius:8px;cursor:pointer;transition:opacity 0.2s,transform 0.15s;
+  border:1px solid var(--border-soft);
+}
+.gif-grid img:hover{opacity:0.85;transform:scale(1.03);}
+.gif-loading{
+  color:var(--text-muted);font-size:0.82rem;text-align:center;padding:16px 0;
+}
+/* GIF label badge */
+.gif-label{
+  background:none;border:none;cursor:pointer;
+  color:var(--text-muted);font-family:'DM Mono',monospace;
+  font-size:0.72rem;font-weight:700;letter-spacing:0.08em;
+  padding:2px 4px;border-radius:4px;
+  border:1px solid var(--grey-dim);
+  transition:color 0.2s,border-color 0.2s;line-height:1.3;
+  flex-shrink:0;
+}
+.gif-label:hover{color:var(--orange);border-color:var(--orange);}
+
+/* =====================================================
+   TYPING INDICATOR
+===================================================== */
+.typing-bar{
+  min-height:24px;
+  padding:3px 16px 2px;
+  display:flex;align-items:center;
+  flex-shrink:0;
+}
+.typing-inner{
+  display:flex;align-items:center;gap:5px;
+}
+.typing-av{
+  width:22px;height:22px;border-radius:50%;
+  image-rendering:pixelated;
+  border:1px solid var(--border-soft);
+  background:var(--bg2);
+}
+.typing-dots{
+  display:flex;align-items:center;gap:3px;margin-left:3px;
+}
+.typing-dots span{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--text-muted);
+  animation:typingBounce 1.2s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2){animation-delay:0.2s;}
+.typing-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes typingBounce{
+  0%,80%,100%{transform:translateY(0);opacity:0.5;}
+  40%{transform:translateY(-5px);opacity:1;}
+}
 </style>
 </head>
 <body>
@@ -778,11 +858,46 @@ body{
     </button>
   </div>
 
+  <!-- Typing indicator -->
+  <div class="typing-bar" id="typing-bar"></div>
+
   <div class="input-zone" style="position:relative;">
+    <!-- @ command hint -->
     <div id="at-hint" class="at-hint" style="display:none;">@NHL · @NHL standings · @NHL [team] · @HockeyDB [player name]</div>
+
+    <!-- Emoji panel -->
+    <div id="emoji-panel" class="emoji-panel" style="display:none;">
+      <div class="emoji-panel-cats" id="emoji-cats"></div>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+
+    <!-- GIF search panel -->
+    <div id="gif-panel" class="gif-panel" style="display:none;">
+      <div class="gif-search-row">
+        <input type="text" id="gif-input" placeholder="Search GIFs…" onkeydown="if(event.key==='Enter') searchGifs()">
+        <button onclick="searchGifs()">Search</button>
+        <button class="gif-close" onclick="closeGifPanel()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="gif-grid" id="gif-grid"><div class="gif-loading">Search for a GIF above ↑</div></div>
+    </div>
+
     <div class="input-pill">
       <textarea id="msg-input" placeholder="Message Zelechat…" rows="1"></textarea>
-      <button class="attach-btn" onclick="document.getElementById('img-file').click()" title="Send image or GIF">
+      <!-- Emoji -->
+      <button class="attach-btn" onclick="toggleEmojiPanel()" id="emoji-btn" title="Emoji">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+          <line x1="9" y1="9" x2="9.01" y2="9"/>
+          <line x1="15" y1="9" x2="15.01" y2="9"/>
+        </svg>
+      </button>
+      <!-- GIF -->
+      <button class="gif-label" onclick="toggleGifPanel()" title="Search GIFs">GIF</button>
+      <!-- Image upload -->
+      <button class="attach-btn" onclick="document.getElementById('img-file').click()" title="Send image">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -934,16 +1049,25 @@ function enterChat(){
   checkReset();
   listenMessages();
   listenUsers();
+  listenTyping();
 
   const ta = document.getElementById('msg-input');
   ta.addEventListener('keydown', e => {
-    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
-    if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); }
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); return; }
+    if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); return; }
+    setTyping();
   });
   ta.addEventListener('input', () => {
     autoResize();
-    const hint = document.getElementById('at-hint');
-    hint.style.display = ta.value.startsWith('@') ? 'block' : 'none';
+    const v = ta.value;
+    document.getElementById('at-hint').style.display = v.startsWith('@') ? 'block' : 'none';
+    if(v) setTyping();
+  });
+  ta.addEventListener('blur', () => {
+    // Small delay so panel clicks don't immediately hide
+    setTimeout(() => {
+      document.getElementById('at-hint').style.display = 'none';
+    }, 150);
   });
   ta.addEventListener('paste', handlePaste);
 
@@ -1210,7 +1334,11 @@ async function sendMsg(){
   // Bot command? Handle and skip the normal message send
   if(text.startsWith('@')){
     const handled = await handleBotCommand(text);
-    if(handled){ ta.value = ''; autoResize(); cancelReply(); return; }
+    if(handled){
+      ta.value = ''; autoResize();
+      document.getElementById('at-hint').style.display = 'none';
+      clearTypingStatus(); cancelReply(); return;
+    }
   }
 
   const rply = replyCtx ? {
@@ -1231,6 +1359,8 @@ async function sendMsg(){
   });
 
   ta.value = ''; autoResize(); cancelReply();
+  clearTypingStatus();
+  document.getElementById('at-hint').style.display = 'none';
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1384,74 +1514,86 @@ function openImg(el){
 //             @NHL [ABBREV]     → that team's next/current game
 //             @HockeyDB [name]  → search a player's career stats
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  BOT SYSTEM
+//  @NHL              → today's scores
+//  @NHL standings    → East + West top 8
+//  @NHL [team]       → that team's next 5 games
+//  @HockeyDB [name]  → player career stats
+// ─────────────────────────────────────────────────────────────
 const BOT_AV_NHL      = 6;   // Charizard
 const BOT_AV_HOCKEYDB = 59;  // Arcanine
 
-// Map full team names / common aliases → official NHL 3-letter abbreviations
 const TEAM_ABBREVS = {
-  'anaheim':    'ANA','ducks':       'ANA',
-  'boston':     'BOS','bruins':      'BOS',
-  'buffalo':    'BUF','sabres':      'BUF',
-  'calgary':    'CGY','flames':      'CGY',
-  'carolina':   'CAR','hurricanes':  'CAR','canes':'CAR',
-  'chicago':    'CHI','blackhawks':  'CHI','hawks':'CHI',
-  'colorado':   'COL','avalanche':   'COL','avs':  'COL',
-  'columbus':   'CBJ','blue jackets':'CBJ',
-  'dallas':     'DAL','stars':       'DAL',
-  'detroit':    'DET','red wings':   'DET','wings':'DET',
-  'edmonton':   'EDM','oilers':      'EDM',
-  'florida':    'FLA','panthers':    'FLA',
-  'los angeles':'LAK','kings':       'LAK','la kings':'LAK',
-  'minnesota':  'MIN','wild':        'MIN',
-  'montreal':   'MTL','canadiens':   'MTL','habs':'MTL',
-  'nashville':  'NSH','predators':   'NSH','preds':'NSH',
-  'new jersey': 'NJD','devils':      'NJD',
+  'anaheim':'ANA','ducks':'ANA',
+  'boston':'BOS','bruins':'BOS',
+  'buffalo':'BUF','sabres':'BUF',
+  'calgary':'CGY','flames':'CGY',
+  'carolina':'CAR','hurricanes':'CAR','canes':'CAR',
+  'chicago':'CHI','blackhawks':'CHI','hawks':'CHI',
+  'colorado':'COL','avalanche':'COL','avs':'COL',
+  'columbus':'CBJ','blue jackets':'CBJ',
+  'dallas':'DAL','stars':'DAL',
+  'detroit':'DET','red wings':'DET','wings':'DET',
+  'edmonton':'EDM','oilers':'EDM',
+  'florida':'FLA','panthers':'FLA',
+  'los angeles':'LAK','kings':'LAK','la kings':'LAK',
+  'minnesota':'MIN','wild':'MIN',
+  'montreal':'MTL','canadiens':'MTL','habs':'MTL',
+  'nashville':'NSH','predators':'NSH','preds':'NSH',
+  'new jersey':'NJD','devils':'NJD',
   'new york islanders':'NYI','islanders':'NYI','isles':'NYI',
-  'new york rangers':'NYR','rangers': 'NYR',
-  'ottawa':     'OTT','senators':    'OTT','sens':'OTT',
-  'philadelphia':'PHI','flyers':     'PHI',
-  'pittsburgh': 'PIT','penguins':    'PIT','pens':'PIT',
-  'san jose':   'SJS','sharks':      'SJS',
-  'seattle':    'SEA','kraken':      'SEA',
-  'st. louis':  'STL','blues':       'STL',
-  'tampa bay':  'TBL','lightning':   'TBL','bolts':'TBL',
-  'toronto':    'TOR','maple leafs': 'TOR','leafs':'TOR',
-  'utah':       'UTA','utah hockey club':'UTA',
-  'vancouver':  'VAN','canucks':     'VAN',
-  'vegas':      'VGK','golden knights':'VGK','vgk':'VGK',
-  'washington': 'WSH','capitals':    'WSH','caps':'WSH',
-  'winnipeg':   'WPG','jets':        'WPG'
+  'new york rangers':'NYR','rangers':'NYR',
+  'ottawa':'OTT','senators':'OTT','sens':'OTT',
+  'philadelphia':'PHI','flyers':'PHI',
+  'pittsburgh':'PIT','penguins':'PIT','pens':'PIT',
+  'san jose':'SJS','sharks':'SJS',
+  'seattle':'SEA','kraken':'SEA',
+  'st. louis':'STL','st louis':'STL','blues':'STL',
+  'tampa bay':'TBL','lightning':'TBL','bolts':'TBL',
+  'toronto':'TOR','maple leafs':'TOR','leafs':'TOR',
+  'utah':'UTA','utah hockey club':'UTA',
+  'vancouver':'VAN','canucks':'VAN',
+  'vegas':'VGK','golden knights':'VGK','vgk':'VGK',
+  'washington':'WSH','capitals':'WSH','caps':'WSH',
+  'winnipeg':'WPG','jets':'WPG'
 };
 
 function resolveTeam(q){
   q = q.toLowerCase().trim();
   if(TEAM_ABBREVS[q]) return TEAM_ABBREVS[q];
-  // Try 3-letter abbrev directly (upper)
   const up = q.toUpperCase();
-  const all = Object.values(TEAM_ABBREVS);
-  if(all.includes(up)) return up;
-  // Partial match
+  if(Object.values(TEAM_ABBREVS).includes(up)) return up;
   for(const [k,v] of Object.entries(TEAM_ABBREVS)){
-    if(k.includes(q)) return v;
+    if(k.includes(q) || q.includes(k)) return v;
   }
   return null;
 }
 
 function postBot(botName, text, avId){
   db.ref('zc/messages').push({
-    uid: 'bot_' + botName.replace(/\s/g,'_').toLowerCase(),
-    name: botName,
-    avId,
-    text:   enc(text),
-    ts:     Date.now(),
-    isImg:  false,
-    edited: false,
-    rply:   null,
-    isBot:  true
+    uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
+    name:botName, avId,
+    text:enc(text), ts:Date.now(),
+    isImg:false, edited:false, rply:null, isBot:true
   });
 }
 
-// Called from sendMsg() — returns true if the message was a bot command
+// Fetch wrapper — tries direct, then corsproxy.io fallback
+async function nhlFetch(path){
+  const direct = 'https://api-web.nhle.com' + path;
+  const proxy  = 'https://corsproxy.io/?' + encodeURIComponent(direct);
+  let r;
+  try {
+    r = await fetch(direct, { signal: AbortSignal.timeout(7000) });
+    if(r.ok) return await r.json();
+  } catch(e){}
+  // Fallback via CORS proxy
+  r = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  return await r.json();
+}
+
 async function handleBotCommand(rawText){
   const lower = rawText.toLowerCase().trim();
   if(lower.startsWith('@nhl'))      { await cmdNHL(rawText.slice(4).trim());      return true; }
@@ -1464,127 +1606,171 @@ async function cmdNHL(args){
   const sub = args.toLowerCase().trim();
 
   if(!sub || sub === 'scores' || sub === 'score'){
-    postBot('NHL Bot', '⏳ Fetching today\'s scores…', BOT_AV_NHL);
+    postBot('NHL Bot','⏳ Fetching today\'s scores…', BOT_AV_NHL);
     try{
-      const r = await fetch('https://api-web.nhle.com/v1/score/now');
-      if(!r.ok) throw new Error('API ' + r.status);
-      const d = await r.json();
-      if(!d.games || d.games.length === 0){
-        postBot('NHL Bot', '🏒 No NHL games scheduled today.', BOT_AV_NHL);
-        return;
-      }
-      const dateLabel = d.gameWeek?.[0]?.date || 'Today';
-      let out = `🏒 NHL Scores — ${dateLabel}\n${'─'.repeat(28)}\n`;
-      for(const g of d.games){
-        const away  = g.awayTeam, home = g.homeTeam;
-        const st    = g.gameState;
-        const score = (st === 'FUT' || st === 'PRE')
-          ? formatGameTime(g.startTimeUTC)
-          : `${away.score ?? 0}  –  ${home.score ?? 0}`;
-        const tag   = st === 'LIVE' || st === 'CRIT' ? ' 🔴 LIVE'
-                    : st === 'FINAL' || st === 'OFF'  ? ' ✓ Final'
-                    : '';
-        out += `${away.abbrev} vs ${home.abbrev}  ${score}${tag}\n`;
+      const d = await nhlFetch('/v1/score/now');
+      const games = d.games || [];
+      if(!games.length){ postBot('NHL Bot','🏒 No NHL games scheduled today.', BOT_AV_NHL); return; }
+      const dateLabel = d.currentDate || (games[0]?.gameDate) || 'Today';
+      let out = `🏒 NHL Scores — ${dateLabel}\n${'─'.repeat(26)}\n`;
+      for(const g of games){
+        const away = g.awayTeam, home = g.homeTeam;
+        const st   = g.gameState || g.gameScheduleState || '';
+        const isFut = st === 'FUT' || st === 'PRE' || st === 'SCHEDULED';
+        const isFin = st === 'OFF' || st === 'FINAL';
+        const isLive = st === 'LIVE' || st === 'CRIT' || st === 'IN_PROGRESS';
+        const awayAbbr = away.abbrev || away.triCode || '???';
+        const homeAbbr = home.abbrev || home.triCode || '???';
+        const scoreStr = isFut
+          ? formatGameTime(g.startTimeUTC || g.gameDate)
+          : `${away.score ?? 0} – ${home.score ?? 0}`;
+        const tag = isLive ? ' 🔴 LIVE' : isFin ? ' ✓ Final' : '';
+        out += `${awayAbbr} @ ${homeAbbr}  ${scoreStr}${tag}\n`;
       }
       postBot('NHL Bot', out.trim(), BOT_AV_NHL);
     }catch(e){
-      postBot('NHL Bot', '❌ Could not reach NHL API. Try again in a moment.', BOT_AV_NHL);
+      postBot('NHL Bot','❌ Could not reach the NHL API right now. Try again in a moment.\n('+e.message+')', BOT_AV_NHL);
     }
     return;
   }
 
-  if(sub === 'standings' || sub === 'stand'){
-    postBot('NHL Bot', '⏳ Fetching standings…', BOT_AV_NHL);
+  if(sub === 'standings' || sub === 'stand' || sub === 'standing'){
+    postBot('NHL Bot','⏳ Fetching standings…', BOT_AV_NHL);
     try{
-      const r = await fetch('https://api-web.nhle.com/v1/standings/now');
-      if(!r.ok) throw new Error(r.status);
-      const d = await r.json();
+      const d = await nhlFetch('/v1/standings/now');
       const teams = d.standings || [];
-      const east  = teams.filter(t => t.conferenceAbbrev === 'E').sort((a,b) => a.conferenceSequence - b.conferenceSequence).slice(0,8);
-      const west  = teams.filter(t => t.conferenceAbbrev === 'W').sort((a,b) => a.conferenceSequence - b.conferenceSequence).slice(0,8);
-      const fmt   = arr => arr.map((t,i) => `${i+1}. ${t.teamAbbrev?.default ?? t.teamName?.default}  ${t.points}pts  (${t.wins}-${t.losses}-${t.otLosses})`).join('\n');
-      postBot('NHL Bot',
-        `🏒 NHL Standings — Top 8 per Conference\n${'─'.repeat(32)}\n🔵 EASTERN\n${fmt(east)}\n\n🔴 WESTERN\n${fmt(west)}`,
-        BOT_AV_NHL);
+      if(!teams.length){ postBot('NHL Bot','❌ No standings data returned.', BOT_AV_NHL); return; }
+      const east = teams.filter(t=>t.conferenceAbbrev==='E').sort((a,b)=>a.conferenceSequence-b.conferenceSequence).slice(0,8);
+      const west = teams.filter(t=>t.conferenceAbbrev==='W').sort((a,b)=>a.conferenceSequence-b.conferenceSequence).slice(0,8);
+      const fmt = arr => arr.map((t,i)=>{
+        const abbr = t.teamAbbrev?.default || t.teamAbbrev || '???';
+        const pts  = t.points ?? '?';
+        const w=t.wins??'?', l=t.losses??'?', ot=t.otLosses??'?';
+        return `${i+1}. ${abbr}  ${pts}pts  (${w}-${l}-${ot})`;
+      }).join('\n');
+      postBot('NHL Bot', `🏒 NHL Standings\n${'─'.repeat(28)}\n🔵 EASTERN\n${fmt(east)}\n\n🔴 WESTERN\n${fmt(west)}`, BOT_AV_NHL);
     }catch(e){
-      postBot('NHL Bot', '❌ Could not fetch standings.', BOT_AV_NHL);
+      postBot('NHL Bot','❌ Could not fetch standings. ('+e.message+')', BOT_AV_NHL);
     }
     return;
   }
 
-  // Team lookup
   const abbrev = resolveTeam(sub);
   if(abbrev){
-    postBot('NHL Bot', `⏳ Looking up ${abbrev}…`, BOT_AV_NHL);
+    postBot('NHL Bot',`⏳ Looking up ${abbrev} schedule…`, BOT_AV_NHL);
     try{
-      const r = await fetch(`https://api-web.nhle.com/v1/club-schedule-season/${abbrev}/now`);
-      if(!r.ok) throw new Error(r.status);
-      const d = await r.json();
-      const games = (d.games || []).slice(0, 5);
-      if(!games.length){ postBot('NHL Bot', `No upcoming games found for ${abbrev}.`, BOT_AV_NHL); return; }
-      let out = `🏒 ${abbrev} — Next Games\n${'─'.repeat(26)}\n`;
-      for(const g of games){
-        const opp   = g.homeTeam.abbrev === abbrev ? g.awayTeam.abbrev : g.homeTeam.abbrev;
-        const where = g.homeTeam.abbrev === abbrev ? 'vs' : '@';
-        const dt    = new Date(g.startTimeUTC);
+      const d = await nhlFetch(`/v1/club-schedule-season/${abbrev}/now`);
+      const all = d.games || [];
+      // Show last 2 results + next 3 upcoming
+      const now = Date.now();
+      const past = all.filter(g=> new Date(g.startTimeUTC||g.gameDate).getTime() < now).slice(-2);
+      const upcoming = all.filter(g=> new Date(g.startTimeUTC||g.gameDate).getTime() >= now).slice(0,3);
+      const shown = [...past, ...upcoming];
+      if(!shown.length){ postBot('NHL Bot',`No games found for ${abbrev}.`, BOT_AV_NHL); return; }
+      let out = `🏒 ${abbrev} Schedule\n${'─'.repeat(24)}\n`;
+      for(const g of shown){
+        const opp   = (g.homeTeam.abbrev||g.homeTeam.triCode) === abbrev
+          ? (g.awayTeam.abbrev||g.awayTeam.triCode)
+          : (g.homeTeam.abbrev||g.homeTeam.triCode);
+        const where = (g.homeTeam.abbrev||g.homeTeam.triCode) === abbrev ? 'vs' : '@';
+        const dt    = new Date(g.startTimeUTC||g.gameDate);
         const label = dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-        out += `${label}  ${abbrev} ${where} ${opp}\n`;
+        const st    = g.gameState||'';
+        const isFin = st==='OFF'||st==='FINAL';
+        const score = isFin
+          ? ` — ${g.awayTeam.score??0}-${g.homeTeam.score??0}`
+          : '';
+        out += `${label}  ${abbrev} ${where} ${opp}${score}\n`;
       }
       postBot('NHL Bot', out.trim(), BOT_AV_NHL);
     }catch(e){
-      postBot('NHL Bot', `❌ Could not find schedule for ${abbrev}.`, BOT_AV_NHL);
+      postBot('NHL Bot',`❌ Could not find schedule for ${abbrev}. (${e.message})`, BOT_AV_NHL);
     }
     return;
   }
 
-  postBot('NHL Bot',
-    '🏒 NHL Bot commands:\n  @NHL            → Today\'s scores\n  @NHL standings  → Conference standings\n  @NHL Flyers     → Team\'s next games\n  @NHL PHI        → (3-letter abbrev also works)',
-    BOT_AV_NHL);
+  postBot('NHL Bot','🏒 NHL Bot commands:\n  @NHL               → Today\'s scores\n  @NHL standings     → Conference standings\n  @NHL Flyers        → Team schedule (name or abbrev)\n  @NHL PHI           → Same using 3-letter code\n  @HockeyDB Ovechkin → Player stats', BOT_AV_NHL);
 }
 
 /* ── @HockeyDB ── */
 async function cmdHockeyDB(query){
   query = query.trim();
   if(!query){
-    postBot('HockeyDB', '🗄️ Usage: @HockeyDB [player name]\nExample: @HockeyDB Claude Giroux', BOT_AV_HOCKEYDB);
+    postBot('HockeyDB','🗄️ Usage: @HockeyDB [player name]\nExample: @HockeyDB Ovechkin', BOT_AV_HOCKEYDB);
     return;
   }
-  postBot('HockeyDB', `⏳ Searching for "${query}"…`, BOT_AV_HOCKEYDB);
+  postBot('HockeyDB',`⏳ Searching for "${query}"…`, BOT_AV_HOCKEYDB);
   try{
-    const url = `https://api-web.nhle.com/v1/player-search?name=${encodeURIComponent(query)}&culture=en-US`;
-    const r   = await fetch(url);
-    if(!r.ok) throw new Error(r.status);
-    const d = await r.json();
-    const players = d.players || [];
-    if(!players.length){
-      postBot('HockeyDB', `❌ No players found matching "${query}".`, BOT_AV_HOCKEYDB);
+    // NHL suggest API — reliable and CORS-friendly
+    const suggestUrl = `https://suggest.svc.nhl.com/svc/suggest/v1/minplayers/${encodeURIComponent(query)}/10`;
+    let suggestions = [];
+    try{
+      const r = await fetch(suggestUrl, { signal: AbortSignal.timeout(6000) });
+      const d = await r.json();
+      suggestions = d.suggestions || [];
+    }catch(e){
+      // Fallback: try NHL search API
+      const d = await nhlFetch(`/v1/player-search?name=${encodeURIComponent(query)}&culture=en-US&limit=10`);
+      // Convert to same suggest format
+      const pl = d.players || [];
+      if(pl.length) suggestions = pl.map(p=>`${p.playerId}|${p.firstName}|${p.lastName}|1|${p.position||'?'}|${p.teamAbbrev||''}||`);
+    }
+
+    if(!suggestions.length){
+      postBot('HockeyDB',`❌ No players found matching "${query}". Try a shorter or different spelling.`, BOT_AV_HOCKEYDB);
       return;
     }
-    const p  = players[0];
-    const pid = p.playerId;
-    // Get detailed stats
-    const sr = await fetch(`https://api-web.nhle.com/v1/player/${pid}/landing`);
-    if(!sr.ok) throw new Error(sr.status);
-    const sd = await sr.json();
-    const info  = sd;
-    const pos   = info.position ?? '?';
-    const team  = info.currentTeamAbbrev ?? 'Free Agent';
-    const name  = `${info.firstName?.default ?? ''} ${info.lastName?.default ?? ''}`.trim();
-    const season = (info.featuredStats?.regularSeason?.subSeason) || (info.careerTotals?.regularSeason) || {};
-    const g  = season.goals      ?? '–';
-    const a  = season.assists    ?? '–';
-    const pts= season.points     ?? '–';
-    const gp = season.gamesPlayed?? '–';
-    const career = info.careerTotals?.regularSeason || {};
-    const cg = career.goals   ?? '–';
-    const ca = career.assists ?? '–';
-    const cp = career.points  ?? '–';
-    const cgp= career.gamesPlayed ?? '–';
+
+    // Suggest format: "playerId|firstName|lastName|active|pos|teamAbbrev|..."
+    const parts = suggestions[0].split('|');
+    const pid   = parts[0];
+    const fname = parts[1] || '';
+    const lname = parts[2] || '';
+    const active = parts[3] === '1';
+    const pos   = parts[4] || '?';
+    const team  = parts[5] || 'N/A';
+
+    // Fetch full player card
+    const sd = await nhlFetch(`/v1/player/${pid}/landing`);
+
+    const fullName = `${sd.firstName?.default||fname} ${sd.lastName?.default||lname}`.trim() || `${fname} ${lname}`;
+    const position = sd.position || pos;
+    const teamAbbr = sd.currentTeamAbbrev || team || (active ? '?' : 'Retired');
+
+    // Featured (current) season stats
+    const cur = sd.featuredStats?.regularSeason?.subSeason
+              || sd.featuredStats?.regularSeason
+              || {};
+    // Career totals
+    const car = sd.careerTotals?.regularSeason || {};
+
+    const isGoalie = position === 'G';
+
+    let statsLine;
+    if(isGoalie){
+      const gp  = cur.gamesPlayed ?? '–';
+      const sv  = cur.savePctg    != null ? (cur.savePctg*100).toFixed(1)+'%' : '–';
+      const gaa = cur.goalsAgainstAvg?.toFixed(2) ?? '–';
+      const cgp = car.gamesPlayed ?? '–';
+      const csv = car.savePctg    != null ? (car.savePctg*100).toFixed(1)+'%' : '–';
+      statsLine = `This Season  GP:${gp}  SV%:${sv}  GAA:${gaa}\nCareer       GP:${cgp}  SV%:${csv}`;
+    } else {
+      const gp  = cur.gamesPlayed ?? '–';
+      const g   = cur.goals   ?? '–';
+      const a   = cur.assists ?? '–';
+      const pts = cur.points  ?? '–';
+      const cgp = car.gamesPlayed ?? '–';
+      const cg  = car.goals   ?? '–';
+      const ca  = car.assists ?? '–';
+      const cp  = car.points  ?? '–';
+      statsLine = `This Season  GP:${gp}  G:${g}  A:${a}  PTS:${pts}\nCareer       GP:${cgp}  G:${cg}  A:${ca}  PTS:${cp}`;
+    }
+
     postBot('HockeyDB',
-      `🗄️ ${name}  |  ${pos}  |  ${team}\n${'─'.repeat(30)}\nThis Season  GP:${gp}  G:${g}  A:${a}  PTS:${pts}\nCareer       GP:${cgp}  G:${cg}  A:${ca}  PTS:${cp}`,
+      `🗄️ ${fullName}  |  ${position}  |  ${teamAbbr}\n${'─'.repeat(32)}\n${statsLine}`,
       BOT_AV_HOCKEYDB);
   }catch(e){
-    postBot('HockeyDB', `❌ Could not fetch stats for "${query}". Try a different spelling.`, BOT_AV_HOCKEYDB);
+    postBot('HockeyDB',`❌ Could not fetch stats for "${query}".\nError: ${e.message}`, BOT_AV_HOCKEYDB);
   }
 }
 
@@ -1592,11 +1778,168 @@ function formatGameTime(utcStr){
   if(!utcStr) return 'TBD';
   try{
     return new Date(utcStr).toLocaleTimeString('en-US',{
-      hour:'numeric', minute:'2-digit',
-      timeZone:'America/New_York', timeZoneName:'short'
+      hour:'numeric',minute:'2-digit',
+      timeZone:'America/New_York',timeZoneName:'short'
     });
-  }catch{ return ''; }
+  }catch{return '';}
 }
+
+// ─────────────────────────────────────────────────────────────
+//  TYPING INDICATOR
+// ─────────────────────────────────────────────────────────────
+let typingTimer = null;
+
+function setTyping(){
+  if(!me) return;
+  const ref = db.ref('zc/typing/' + me.uid);
+  ref.set({ name: me.name, avId: me.avId, ts: Date.now() });
+  ref.onDisconnect().remove();
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => ref.remove(), 4000);
+}
+
+function clearTypingStatus(){
+  if(!me) return;
+  clearTimeout(typingTimer);
+  db.ref('zc/typing/' + me.uid).remove();
+}
+
+function listenTyping(){
+  db.ref('zc/typing').on('value', snap => {
+    const all = snap.val() || {};
+    const now = Date.now();
+    const active = Object.entries(all)
+      .filter(([uid, d]) => uid !== me.uid && (now - (d.ts || 0)) < 6000);
+    const bar = document.getElementById('typing-bar');
+    if(!active.length){ bar.innerHTML = ''; return; }
+    let html = '<div class="typing-inner">';
+    active.slice(0,4).forEach(([,d]) => {
+      html += `<img class="typing-av" src="${spriteUrl(d.avId||1)}" alt="">`;
+    });
+    html += '<span class="typing-dots"><span></span><span></span><span></span></span></div>';
+    bar.innerHTML = html;
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  EMOJI PICKER
+// ─────────────────────────────────────────────────────────────
+const EMOJI_CATS = [
+  { icon:'😀', label:'Faces',   emojis:'😀😂🥲😍🥰😘😎🤔🤣😅😊🙂😐😑😶😏😒😞😔😕🙁☹️😣😖😫😩🥺😢😭😤😠😡🤬🤯😳🥵🥶😱😨😰😥😓🫡🤭🫢🤫🤔🫠🤐🥱😴🤤😵‍💫😵🤪😜😝😛🤑🤗😙😗😚😋🤩🥳😏🙃' },
+  { icon:'👍', label:'Hands',   emojis:'👍👎👋🤝🙌👏💪🤜🤛✊👊🤞🤟🤘👌🤌🫡🫶🫂💅🤙👈👉👆👇☝️🫵' },
+  { icon:'❤️', label:'Hearts',  emojis:'❤️🧡💛💚💙💜🖤🤍🤎💕💞💓💗💖💘💝💟❣️💔' },
+  { icon:'🔥', label:'Misc',    emojis:'🔥💯✅❌⚡⭐🌟💫✨🎉🎊🥳🎂🎁🎯🏆🥇🎮🎲🃏🎳💀👻👾🤖💩🦄🐧🐻🦊🐺🐼🐸' },
+  { icon:'🏒', label:'Hockey',  emojis:'🏒🥅🏆🥇🥈🥉🎽⛸️🥊🏅🤜🤛👊💪🔥❄️🚨📣📺🍻🍺🥂' },
+  { icon:'🍕', label:'Food',    emojis:'🍕🍔🌮🌯🍟🍗🥩🥓🍖🍣🍱🍜🍝🍛🥘🍲🍺🍻🥂🍷🥃🧃🧋☕🍵' },
+];
+
+let currentEmojiCat = 0;
+
+function buildEmojiPanel(){
+  const catsEl = document.getElementById('emoji-cats');
+  const gridEl = document.getElementById('emoji-grid');
+  catsEl.innerHTML = EMOJI_CATS.map((c,i)=>
+    `<button class="emoji-cat-btn${i===0?' active':''}" onclick="switchEmojiCat(${i},this)" title="${c.label}">${c.icon}</button>`
+  ).join('');
+  renderEmojiCat(0);
+}
+
+function switchEmojiCat(idx, btn){
+  document.querySelectorAll('.emoji-cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentEmojiCat = idx;
+  renderEmojiCat(idx);
+}
+
+function renderEmojiCat(idx){
+  const gridEl = document.getElementById('emoji-grid');
+  gridEl.innerHTML = [...EMOJI_CATS[idx].emojis].filter(c=>c.trim())
+    .map(e=>`<span class="ep-emoji" onclick="insertEmoji('${e}')" title="${e}">${e}</span>`)
+    .join('');
+}
+
+function insertEmoji(emoji){
+  const ta = document.getElementById('msg-input');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.slice(0,start) + emoji + ta.value.slice(end);
+  ta.selectionStart = ta.selectionEnd = start + emoji.length;
+  ta.focus(); autoResize();
+}
+
+function toggleEmojiPanel(){
+  const panel = document.getElementById('emoji-panel');
+  const gifPan = document.getElementById('gif-panel');
+  gifPan.style.display = 'none';
+  if(panel.style.display === 'none' || !panel.style.display){
+    if(!document.getElementById('emoji-cats').children.length) buildEmojiPanel();
+    panel.style.display = 'block';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  GIF SEARCH  (Tenor v1 with public demo key)
+// ─────────────────────────────────────────────────────────────
+const TENOR_KEY = 'LIVDSRZULELA';
+
+function toggleGifPanel(){
+  const panel = document.getElementById('gif-panel');
+  const emojiPan = document.getElementById('emoji-panel');
+  emojiPan.style.display = 'none';
+  panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'flex' : 'none';
+  if(panel.style.display === 'flex') document.getElementById('gif-input').focus();
+}
+
+function closeGifPanel(){
+  document.getElementById('gif-panel').style.display = 'none';
+}
+
+async function searchGifs(){
+  const q = document.getElementById('gif-input').value.trim();
+  if(!q) return;
+  const grid = document.getElementById('gif-grid');
+  grid.innerHTML = '<div class="gif-loading">⏳ Searching…</div>';
+  try{
+    const url = `https://g.tenor.com/v1/search?q=${encodeURIComponent(q)}&key=${TENOR_KEY}&limit=12&media_filter=minimal&contentfilter=low`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const results = d.results || [];
+    if(!results.length){ grid.innerHTML='<div class="gif-loading">No GIFs found.</div>'; return; }
+    grid.innerHTML = results.map(item=>{
+      const gif = item.media?.[0]?.tinygif || item.media?.[0]?.gif || {};
+      const url = gif.url || '';
+      if(!url) return '';
+      return `<img src="${xss(url)}" alt="${xss(item.title||'gif')}" loading="lazy" onclick="sendGif('${xss(url)}')">`;
+    }).join('');
+  }catch(e){
+    grid.innerHTML = '<div class="gif-loading">❌ Could not load GIFs.</div>';
+  }
+}
+
+function sendGif(gifUrl){
+  const safe = safeImgUrl(gifUrl);
+  if(!safe) return;
+  const rply = replyCtx ? {
+    name: replyCtx.name,
+    text: replyCtx.isImg ? null : replyCtx.encText,
+    isImg: replyCtx.isImg || false
+  } : null;
+  db.ref('zc/messages').push({
+    uid:me.uid, name:me.name, avId:me.avId,
+    text:safe, ts:Date.now(), isImg:true, edited:false, rply
+  });
+  cancelReply();
+  closeGifPanel();
+}
+
+// Close emoji/gif panels when clicking outside
+document.addEventListener('click', e => {
+  if(!e.target.closest('.emoji-panel') && !e.target.closest('#emoji-btn'))
+    document.getElementById('emoji-panel').style.display='none';
+  if(!e.target.closest('.gif-panel') && !e.target.closest('.gif-label'))
+    document.getElementById('gif-panel').style.display='none';
+});
 
 // ─────────────────────────────────────────────────────────────
 //  UTILS
