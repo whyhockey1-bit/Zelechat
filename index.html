@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zelechat</title>
-<link rel="icon" type="image/png" href="flyerslogo.png?v=2">
-<link rel="apple-touch-icon" href="flyerslogo.png?v=2">
+<title>Zelechat · Whyhockey</title>
+<link rel="icon" type="image/png" id="fav-icon" href="">
+<link rel="apple-touch-icon" id="fav-apple" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -729,24 +729,137 @@ body{
   0%,80%,100%{transform:translateY(0);opacity:0.5;}
   40%{transform:translateY(-5px);opacity:1;}
 }
+
+/* =====================================================
+   WHYHOCKEY THEME — Florida Panthers dark palette
+   Overrides only color variables; layout is shared
+===================================================== */
+[data-theme="whyhockey"] {
+  --bg0: #030d1c;
+  --bg1: #071525;
+  --bg2: #0c1e38;
+  --bg3: #12284d;
+  --orange:      #e8a020;
+  --orange-dim:  #b87c10;
+  --orange-glow: rgba(232,160,32,0.18);
+  --orange-text: #f5c76a;
+  --purple:      #CE1126;
+  --purple-dim:  rgba(206,17,38,0.18);
+  --grey:        #7a8899;
+  --grey-dim:    #38485a;
+  --text:        #e8dfc8;
+  --text-soft:   #9a9080;
+  --text-muted:  #4a5668;
+  --border:      rgba(232,160,32,0.22);
+  --border-soft: rgba(255,255,255,0.07);
+  --red:         #ff4455;
+  --green:       #00c896;
+  --shadow:      0 8px 32px rgba(0,0,0,0.7);
+}
+
+/* =====================================================
+   TEAM SELECTOR SCREEN
+===================================================== */
+#selector-screen{
+  position:fixed;inset:0;
+  background:linear-gradient(160deg,#08080f 0%,#060e1e 100%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;padding:16px;
+}
+.selector-card{
+  width:100%;max-width:480px;
+  background:#111119;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  padding:40px 28px 36px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.7);
+  text-align:center;
+}
+.selector-q{
+  font-family:'Syne',sans-serif;
+  font-size:1.45rem;font-weight:800;
+  color:#ede8df;margin-bottom:32px;
+  line-height:1.2;
+}
+.selector-btns{
+  display:flex;gap:14px;
+}
+.sel-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:10px;padding:22px 16px 18px;
+  background:#1a1a26;
+  border:2px solid rgba(255,255,255,0.07);
+  border-radius:18px;cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;
+}
+.sel-btn:hover{transform:translateY(-4px);}
+.sel-flyers:hover{
+  border-color:#ff7b1c;
+  box-shadow:0 8px 28px rgba(255,123,28,0.3);
+}
+.sel-panthers:hover{
+  border-color:#e8a020;
+  box-shadow:0 8px 28px rgba(232,160,32,0.3);
+}
+.sel-logo{
+  width:56px;height:56px;
+  object-fit:contain;image-rendering:auto;
+  border-radius:8px;
+}
+.sel-team{
+  font-family:'Syne',sans-serif;
+  font-size:1.05rem;font-weight:700;
+  color:#ede8df;
+}
+.sel-flyers .sel-team{color:#ff9244;}
+.sel-panthers .sel-team{color:#e8a020;}
+.sel-room{
+  font-size:0.72rem;color:#575465;
+  font-family:'DM Mono',monospace;
+  letter-spacing:0.06em;text-transform:uppercase;
+}
+@media(max-width:380px){
+  .selector-btns{flex-direction:column;}
+  .sel-btn{flex-direction:row;gap:14px;text-align:left;padding:16px;}
+  .sel-logo{width:40px;height:40px;}
+}
+
 </style>
 </head>
 <body>
 
-<div id="login-screen">
+<div id="selector-screen">
+  <div class="selector-card">
+    <div class="selector-q">Which Team are you watching?</div>
+    <div class="selector-btns">
+      <button class="sel-btn sel-flyers" onclick="selectRoom('zelechat')">
+        <img class="sel-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAUDBgcI/8QAMBAAAgEDAgQEAgsAAAAAAAAAAQIDBAURBhIABxMhFBUiMUGBCCMyQlFSVnGTodT/xAAWAQEBAQAAAAAAAAAAAAAAAAADAAL/xAAdEQACAgIDAQAAAAAAAAAAAAABAgADETEEIWFR/9oADAMBAAIRAxEAPwDlit0pBQSxwXDVVjpKh4IpzE6VbFVkjWRO6QFTlWU9iR34g8htX61sP8Nb/n4u3M6irIbbpuc6DDW6S003g7o6VQlnAiXfHI2/aTHJvQekHYEx6dnGdXGWIIYTZ4qOXsd26XcB+zMR/XFKH+QWw9l1nYGY+w6dYM/M04A+Z4BvVluFo6L1ccbQTgmCoglWWGXGM7XQlSRkZGcjIyBx0ry9+j3oul0PablzGqL+bveYPEpTW6WONaGEkhd25SWk7ZI7Y+yRkZOV6w0dNoXmhqLlfU1vmFC6EwS7cbnMHWppcfdf1KrH8rSD48Cl9djsinJXfkezjW1VrY64VtH7iQ8zHoxNa56fV1TFc3tNE1bTtFMkJPho9jxuuc7k2FgQMMWwcYARaEp46ivfUF7ro0hoyI6R6zLxy1hVjCj5z9WCN7EggAAHG4cL6TU8gt1Nb7paLZeoKRSlL4wSq8CkklA8ToxXJJCsSAScAZORb9e3ukNJSxW+jttFSB+lS0nU6Ydzl3Jkd2LHCgkn2RR7DhoE2TSXPbXXL+wwaX1Hpa233wrPLbZ7qkhkQOxY4dWxNEWJYdyDns2MYpGo7vf6nUF319rWVlv91jkFLTyJskcyxmPq7PeOKOM+gnGWCBdwDEVG16i1Baqc01rvt0oYGOTHTVckak/jhSBwtlkkllaWV2kkclmZjksT7kn48ZCKCSB2ZtrHZQpPQ15P/9k=" alt="Philadelphia Flyers">
+        <div class="sel-team">Flyers</div>
+        <div class="sel-room">Zelechat</div>
+      </button>
+      <button class="sel-btn sel-panthers" onclick="selectRoom('whyhockey')">
+        <img class="sel-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAgACADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABwYFCP/EACIQAAMAAgICAwEBAQAAAAAAAAECAwQFERIGEwAHIhQhI//EABcBAAMBAAAAAAAAAAAAAAAAAAIDBAX/xAAmEQABAwIEBgMAAAAAAAAAAAABAhEhAAMEMUFREhNhcZHwIoGh/9oADAMBAAIRAxEAPwDjL5c+J6iuXrY5uXJsPXsyLzNOq5aB1V5GgPcuzDkKTx+WIAC/5Q/XXgute+u2XkEBHXToK5GVdWpNgPw6CQ4Fer0xGHR2/wCdC7B1boiH9dfXflmNi12eDRdfsdG5ybYuMRfHlO+OVmGmp9ok8yyF+WPIoW/Qf4k4lCVcJeWA900mGcTVNqwqFqEdejP3g5Cam/NNLqNj4zmZUMDUTztbkZkcdsZwzLjRnSgFsYA9B2mDOgYBu7cq68kg3zsLceJbOWt1eVu8e2yzthOeNiR90MUUnjyYGWOKcqcecEJZinR/bUAEWUki3n1jgr4jhDXZWPl3WMi2ZKTTE6sV9xtzyfV7bwxpt/hZ5uQoAbtBgb3KC7Kn+KmD7ESRJh38xkQH4iwVnjQzdPzzpllR4PM96mowtZjZCY0sQV/Ul4azuXJo/PINAHKigAYKqDn8Lwh/Rvlfm0vNNBu9BlZfv1lE11/Vj+98iVf6Lsjoig0j1kzMGZnBXuhBA6jXyk+t9zHSeUQtkC6xuyQrbGok7xQ0Qu03f/FJVWU/pQVZlLBWb5pFCZIE7sH137nzUfMWQEkwNNKVPv77J84yvJ7bHO38KHYYYjiTx/WDj4ziVleaFWaUqq6lT2FX6qXI6hAb4n2L5Hj1yyDhXhkqw/myMcWkj9WVKcPyXpMO3R6F2HJPJJ5+Z3m+XbM2k62aB4xYRmsMv+iaTlJZr1bsxXnqT0PBXkfMD4CbCAeIgFWpYOe/v0BFEq8sOlJIGzxX/9k=" alt="Florida Panthers">
+        <div class="sel-team">Panthers</div>
+        <div class="sel-room">Whyhockey</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="login-screen" style="display:none;">
   <div class="login-card">
 
     <div class="login-logo-row">
-      <svg class="login-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat logo">
+      <span id="login-logo-wrap"><svg class="login-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat logo">
         <path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/>
         <path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/>
         <path d="M313.17,324.33v30.3H309.5v-13.8H295.3v13.8h-3.67v-30.3h3.67v12.94h14.2V324.33Z" transform="translate(-189.58 -285.32)"/>
         <path d="M332.79,343v11.62h-3.66V343.14l-10.71-18.81h4.15L331,339.11l8.39-14.78h4.15Z" transform="translate(-189.58 -285.32)"/>
         <path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/>
-      </svg>
-      <div class="login-logo-text">Zelechat</div>
+      </svg></span>
+      <div class="login-logo-text" id="room-name-login">Zelechat</div>
     </div>
-    <div class="login-tagline">Legion of Doom</div>
+    <div class="login-tagline" id="room-tagline">Legion of Doom</div>
 
     <div class="avatar-picker">
       <div class="avatar-ring" onclick="rerollAvatar()" title="Click to randomize">
@@ -794,14 +907,14 @@ body{
 
   <div class="chat-header">
     <div class="header-left">
-      <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat">
+      <span id="header-logo-wrap"><svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat">
         <path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/>
         <path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/>
         <path d="M313.17,324.33v30.3H309.5v-13.8H295.3v13.8h-3.67v-30.3h3.67v12.94h14.2V324.33Z" transform="translate(-189.58 -285.32)"/>
         <path d="M332.79,343v11.62h-3.66V343.14l-10.71-18.81h4.15L331,339.11l8.39-14.78h4.15Z" transform="translate(-189.58 -285.32)"/>
         <path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/>
-      </svg>
-      <div class="header-title">Zelechat</div>
+      </svg></span>
+      <div class="header-title" id="chat-room-name">Zelechat</div>
     </div>
     <div class="users-panel">
       <button class="users-btn" onclick="toggleUsers()" id="users-btn">
@@ -822,7 +935,7 @@ body{
   </div>
 
   <div class="reset-notice">
-    Chat history clears automatically every night at 3:00 AM EST
+    <span id="reset-notice-text">Chat history clears automatically every night at 3:00 AM EST</span>
   </div>
 
   <div class="messages-area" id="msgs"></div>
@@ -884,7 +997,7 @@ body{
     </div>
 
     <div class="input-pill">
-      <textarea id="msg-input" placeholder="Message Zelechat…" rows="1"></textarea>
+      <textarea id="msg-input" placeholder="Message…" rows="1"></textarea>
       <!-- Emoji -->
       <button class="attach-btn" onclick="toggleEmojiPanel()" id="emoji-btn" title="Emoji">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -934,10 +1047,67 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // ─────────────────────────────────────────────────────────────
+//  ROOM SELECTOR CONFIG
+// ─────────────────────────────────────────────────────────────
+const FLYERS_URI   = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAUDBgcI/8QAMBAAAgEDAgQEAgsAAAAAAAAAAQIDBAURBhIABxMhFBUiMUGBCCMyQlFSVnGTodT/xAAWAQEBAQAAAAAAAAAAAAAAAAADAAL/xAAdEQACAgIDAQAAAAAAAAAAAAABAgADETEEIWFR/9oADAMBAAIRAxEAPwDlit0pBQSxwXDVVjpKh4IpzE6VbFVkjWRO6QFTlWU9iR34g8htX61sP8Nb/n4u3M6irIbbpuc6DDW6S003g7o6VQlnAiXfHI2/aTHJvQekHYEx6dnGdXGWIIYTZ4qOXsd26XcB+zMR/XFKH+QWw9l1nYGY+w6dYM/M04A+Z4BvVluFo6L1ccbQTgmCoglWWGXGM7XQlSRkZGcjIyBx0ry9+j3oul0PablzGqL+bveYPEpTW6WONaGEkhd25SWk7ZI7Y+yRkZOV6w0dNoXmhqLlfU1vmFC6EwS7cbnMHWppcfdf1KrH8rSD48Cl9djsinJXfkezjW1VrY64VtH7iQ8zHoxNa56fV1TFc3tNE1bTtFMkJPho9jxuuc7k2FgQMMWwcYARaEp46ivfUF7ro0hoyI6R6zLxy1hVjCj5z9WCN7EggAAHG4cL6TU8gt1Nb7paLZeoKRSlL4wSq8CkklA8ToxXJJCsSAScAZORb9e3ukNJSxW+jttFSB+lS0nU6Ydzl3Jkd2LHCgkn2RR7DhoE2TSXPbXXL+wwaX1Hpa233wrPLbZ7qkhkQOxY4dWxNEWJYdyDns2MYpGo7vf6nUF319rWVlv91jkFLTyJskcyxmPq7PeOKOM+gnGWCBdwDEVG16i1Baqc01rvt0oYGOTHTVckak/jhSBwtlkkllaWV2kkclmZjksT7kn48ZCKCSB2ZtrHZQpPQ15P/9k=';
+const PANTHERS_URI = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAgACADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABwYFCP/EACIQAAMAAgICAwEBAQAAAAAAAAECAwQFERIGEwAHIhQhI//EABcBAAMBAAAAAAAAAAAAAAAAAAIDBAX/xAAmEQABAwIEBgMAAAAAAAAAAAABAhEhAAMEMUFREhNhcZHwIoGh/9oADAMBAAIRAxEAPwDjL5c+J6iuXrY5uXJsPXsyLzNOq5aB1V5GgPcuzDkKTx+WIAC/5Q/XXgute+u2XkEBHXToK5GVdWpNgPw6CQ4Fer0xGHR2/wCdC7B1boiH9dfXflmNi12eDRdfsdG5ybYuMRfHlO+OVmGmp9ok8yyF+WPIoW/Qf4k4lCVcJeWA900mGcTVNqwqFqEdejP3g5Cam/NNLqNj4zmZUMDUTztbkZkcdsZwzLjRnSgFsYA9B2mDOgYBu7cq68kg3zsLceJbOWt1eVu8e2yzthOeNiR90MUUnjyYGWOKcqcecEJZinR/bUAEWUki3n1jgr4jhDXZWPl3WMi2ZKTTE6sV9xtzyfV7bwxpt/hZ5uQoAbtBgb3KC7Kn+KmD7ESRJh38xkQH4iwVnjQzdPzzpllR4PM96mowtZjZCY0sQV/Ul4azuXJo/PINAHKigAYKqDn8Lwh/Rvlfm0vNNBu9BlZfv1lE11/Vj+98iVf6Lsjoig0j1kzMGZnBXuhBA6jXyk+t9zHSeUQtkC6xuyQrbGok7xQ0Qu03f/FJVWU/pQVZlLBWb5pFCZIE7sH137nzUfMWQEkwNNKVPv77J84yvJ7bHO38KHYYYjiTx/WDj4ziVleaFWaUqq6lT2FX6qXI6hAb4n2L5Hj1yyDhXhkqw/myMcWkj9WVKcPyXpMO3R6F2HJPJJ5+Z3m+XbM2k62aB4xYRmsMv+iaTlJZr1bsxXnqT0PBXkfMD4CbCAeIgFWpYOe/v0BFEq8sOlJIGzxX/9k=';
+
+const ROOMS = {
+  zelechat: {
+    id: 'zelechat', theme: 'zelechat',
+    name: 'Zelechat', tagline: 'Legion of Doom',
+    password: 'Zelepukin', encKey: 'ZC_enc_Zelepukin_2024',
+    path: 'zc', favicon: FLYERS_URI,
+    loginLogo: `<svg class="login-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c"><path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/><path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/><path d="M313.17,324.33v30.3H309.5v-13.8H295.3v13.8h-3.67v-30.3h3.67v12.94h14.2V324.33Z" transform="translate(-189.58 -285.32)"/><path d="M332.79,343v11.62h-3.66V343.14l-10.71-18.81h4.15L331,339.11l8.39-14.78h4.15Z" transform="translate(-189.58 -285.32)"/><path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/></svg>`,
+    headerLogo: `<svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c"><path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/><path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/><path d="M313.17,324.33v30.3H309.5v-13.8H295.3v13.8h-3.67v-30.3h3.67v12.94h14.2V324.33Z" transform="translate(-189.58 -285.32)"/><path d="M332.79,343v11.62h-3.66V343.14l-10.71-18.81h4.15L331,339.11l8.39-14.78h4.15Z" transform="translate(-189.58 -285.32)"/><path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/></svg>`
+  },
+  whyhockey: {
+    id: 'whyhockey', theme: 'whyhockey',
+    name: 'Whyhockey', tagline: 'Stanley Cup Champions 2024 & 2025',
+    password: 'Whyzerman', encKey: 'WH_enc_Whyzerman_2024',
+    path: 'why', favicon: PANTHERS_URI,
+    loginLogo: `<img class="login-logo-img" src="${PANTHERS_URI}" alt="Whyhockey">`,
+    headerLogo: `<img class="header-logo" src="${PANTHERS_URI}" alt="Whyhockey">`
+  }
+};
+
+let cfg = null;
+
+function selectRoom(roomId) {
+  cfg = ROOMS[roomId];
+  ROOM_PW = cfg.password;
+  ENC_KEY = cfg.encKey;
+
+  // Apply CSS theme
+  document.documentElement.dataset.theme = cfg.theme;
+
+  // Swap favicon
+  document.getElementById('fav-icon').href  = cfg.favicon;
+  document.getElementById('fav-apple').href = cfg.favicon;
+  document.title = cfg.name;
+
+  // Update logos
+  document.getElementById('login-logo-wrap').innerHTML  = cfg.loginLogo;
+  document.getElementById('header-logo-wrap').innerHTML = cfg.headerLogo;
+
+  // Update text content
+  document.getElementById('room-name-login').textContent  = cfg.name;
+  document.getElementById('room-tagline').textContent     = cfg.tagline;
+  document.getElementById('chat-room-name').textContent   = cfg.name;
+  document.getElementById('msg-input').placeholder        = 'Message ' + cfg.name + '\u2026';
+  document.getElementById('reset-notice-text').textContent =
+    cfg.name + ' history clears automatically every night at 3:00 AM EST';
+
+  // Hide selector, show login
+  document.getElementById('selector-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display    = 'flex';
+}
+
+// ─────────────────────────────────────────────────────────────
 //  CONSTANTS
 // ─────────────────────────────────────────────────────────────
-const ROOM_PW  = "Zelepukin";
-const ENC_KEY  = "ZC_enc_" + ROOM_PW + "_2024";
+let ROOM_PW  = "Zelepukin";
+let ENC_KEY  = "ZC_enc_" + ROOM_PW + "_2024";
 const MAX_POKEMON = 151;
 
 const POKEMON = [
@@ -1040,7 +1210,7 @@ function enterChat(){
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('chat-screen').style.display  = 'flex';
 
-  const pRef = db.ref('zc/users/' + me.uid);
+  const pRef = db.ref(cfg.path+'/users/'+me.uid);
   pRef.set({ name: me.name, avId: me.avId, ts: Date.now() });
   pRef.onDisconnect().remove();
 
@@ -1091,7 +1261,7 @@ function get3amNYThreshold(){
 }
 
 function checkReset(){
-  const metaRef   = db.ref('zc/meta/lastReset');
+  const metaRef   = db.ref(cfg.path+'/meta/lastReset');
   const threshold = get3amNYThreshold();
   const now       = Date.now();
   if(now <= threshold) return;
@@ -1100,7 +1270,7 @@ function checkReset(){
     if((last || 0) >= threshold) return; // already done — abort
     return now;
   }, (err, committed) => {
-    if(!err && committed) db.ref('zc/messages').remove();
+    if(!err && committed) db.ref(cfg.path+'/messages').remove();
   });
 }
 
@@ -1108,7 +1278,7 @@ function checkReset(){
 //  LISTEN FOR MESSAGES
 // ─────────────────────────────────────────────────────────────
 function listenMessages(){
-  const ref = db.ref('zc/messages').orderByChild('ts');
+  const ref = db.ref(cfg.path+'/messages').orderByChild('ts');
 
   ref.on('child_added', snap => {
     const msg = snap.val();
@@ -1142,7 +1312,7 @@ function listenMessages(){
 //  REACTIONS HELPER
 // ─────────────────────────────────────────────────────────────
 function addReaction(msgId, emoji){
-  const ref = db.ref(`zc/messages/${msgId}/reactions/${me.uid}`);
+  const ref = db.ref(`${cfg.path}/messages/${msgId}/reactions/${me.uid}`);
   ref.once('value', snap => {
     if(snap.val() === emoji) ref.remove(); // Toggle off if clicked again
     else ref.set(emoji);
@@ -1322,7 +1492,7 @@ async function sendMsg(){
     cancelEdit();
     ta.value = ''; autoResize();
     // Transaction aborts silently if message was deleted before save
-    db.ref('zc/messages/' + editId).transaction(cur => {
+    db.ref(cfg.path+'/messages/'+editId).transaction(cur => {
       if(cur === null) return; // deleted — abort
       return Object.assign({}, cur, { text: enc(text), edited: true });
     });
@@ -1347,7 +1517,7 @@ async function sendMsg(){
     isImg: replyCtx.isImg || false
   } : null;
 
-  db.ref('zc/messages').push({
+  db.ref(cfg.path+'/messages').push({
     uid:   me.uid,
     name:  me.name,
     avId:  me.avId,
@@ -1415,7 +1585,7 @@ function dispatchImageMsg(dataURL){
     text:  replyCtx.isImg ? null : replyCtx.encText,
     isImg: replyCtx.isImg || false
   } : null;
-  db.ref('zc/messages').push({
+  db.ref(cfg.path+'/messages').push({
     uid: me.uid, name: me.name, avId: me.avId,
     text: dataURL, ts: Date.now(), isImg: true, edited: false, rply
   });
@@ -1463,14 +1633,14 @@ function delMsg(id){
   const msg = msgCache[id];
   if(!msg || msg.uid !== me.uid) return;
   if(confirm('Delete this message for everyone?'))
-    db.ref('zc/messages/' + id).remove();
+    db.ref(cfg.path+'/messages/'+id).remove();
 }
 
 // ─────────────────────────────────────────────────────────────
 //  ONLINE USERS
 // ─────────────────────────────────────────────────────────────
 function listenUsers(){
-  db.ref('zc/users').on('value', snap => {
+  db.ref(cfg.path+'/users').on('value', snap => {
     const users = snap.val() || {};
     const list  = Object.entries(users);
 
@@ -1571,7 +1741,7 @@ function resolveTeam(q){
 }
 
 function postBot(botName, text, avId){
-  db.ref('zc/messages').push({
+  db.ref(cfg.path+'/messages').push({
     uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
     name:botName, avId,
     text:enc(text), ts:Date.now(),
@@ -1579,18 +1749,26 @@ function postBot(botName, text, avId){
   });
 }
 
-// Fetch wrapper — tries direct, then corsproxy.io fallback
+// Fetch wrapper — tries direct NHL API, falls back to corsproxy.io on any failure
+// Uses Promise.race for timeout since AbortSignal.timeout isn't in all browsers
+function fetchTimeout(url, ms){
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { signal: controller.signal })
+    .finally(() => clearTimeout(id));
+}
+
 async function nhlFetch(path){
   const direct = 'https://api-web.nhle.com' + path;
   const proxy  = 'https://corsproxy.io/?' + encodeURIComponent(direct);
   let r;
   try {
-    r = await fetch(direct, { signal: AbortSignal.timeout(7000) });
+    r = await fetchTimeout(direct, 7000);
     if(r.ok) return await r.json();
   } catch(e){}
   // Fallback via CORS proxy
-  r = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
-  if(!r.ok) throw new Error('HTTP ' + r.status);
+  r = await fetchTimeout(proxy, 10000);
+  if(!r.ok) throw new Error('HTTP ' + r.status + ' for ' + path);
   return await r.json();
 }
 
@@ -1700,79 +1878,86 @@ async function cmdHockeyDB(query){
     return;
   }
   postBot('HockeyDB',`⏳ Searching for "${query}"…`, BOT_AV_HOCKEYDB);
-  try{
-    // NHL suggest API — reliable and CORS-friendly
-    const suggestUrl = `https://suggest.svc.nhl.com/svc/suggest/v1/minplayers/${encodeURIComponent(query)}/10`;
-    let suggestions = [];
-    try{
-      const r = await fetch(suggestUrl, { signal: AbortSignal.timeout(6000) });
-      const d = await r.json();
-      suggestions = d.suggestions || [];
-    }catch(e){
-      // Fallback: try NHL search API
-      const d = await nhlFetch(`/v1/player-search?name=${encodeURIComponent(query)}&culture=en-US&limit=10`);
-      // Convert to same suggest format
-      const pl = d.players || [];
-      if(pl.length) suggestions = pl.map(p=>`${p.playerId}|${p.firstName}|${p.lastName}|1|${p.position||'?'}|${p.teamAbbrev||''}||`);
-    }
 
-    if(!suggestions.length){
-      postBot('HockeyDB',`❌ No players found matching "${query}". Try a shorter or different spelling.`, BOT_AV_HOCKEYDB);
+  try{
+    // ── Step 1: Find the player ──────────────────────────────
+    // nhlFetch handles CORS proxy fallback automatically
+    const searchData = await nhlFetch(
+      `/v1/player-search?name=${encodeURIComponent(query)}&culture=en-US&limit=10`
+    );
+
+    const players = searchData.players || searchData.data || [];
+    if(!players.length){
+      postBot('HockeyDB',
+        `❌ No players found for "${query}".\nTip: Try last name only — e.g. @HockeyDB Giroux`,
+        BOT_AV_HOCKEYDB);
       return;
     }
 
-    // Suggest format: "playerId|firstName|lastName|active|pos|teamAbbrev|..."
-    const parts = suggestions[0].split('|');
-    const pid   = parts[0];
-    const fname = parts[1] || '';
-    const lname = parts[2] || '';
-    const active = parts[3] === '1';
-    const pos   = parts[4] || '?';
-    const team  = parts[5] || 'N/A';
+    const p   = players[0];
 
-    // Fetch full player card
+    // Field names vary across API versions — handle both shapes
+    const pid   = p.playerId || p.id;
+    const fname = strField(p.firstName) || strField(p.name)?.split(' ')[0] || '';
+    const lname = strField(p.lastName)  || strField(p.name)?.split(' ').slice(1).join(' ') || '';
+    const pos0  = p.position || p.positionCode || '?';
+    const team0 = strField(p.teamAbbrev) || '';
+
+    if(!pid){
+      postBot('HockeyDB',`❌ Could not extract player ID from search results.`, BOT_AV_HOCKEYDB);
+      return;
+    }
+
+    // ── Step 2: Fetch full player card ───────────────────────
     const sd = await nhlFetch(`/v1/player/${pid}/landing`);
 
-    const fullName = `${sd.firstName?.default||fname} ${sd.lastName?.default||lname}`.trim() || `${fname} ${lname}`;
-    const position = sd.position || pos;
-    const teamAbbr = sd.currentTeamAbbrev || team || (active ? '?' : 'Retired');
-
-    // Featured (current) season stats
-    const cur = sd.featuredStats?.regularSeason?.subSeason
-              || sd.featuredStats?.regularSeason
-              || {};
-    // Career totals
-    const car = sd.careerTotals?.regularSeason || {};
-
+    const fullName = `${strField(sd.firstName)||fname} ${strField(sd.lastName)||lname}`.trim();
+    const position = sd.position || pos0;
+    const teamAbbr = strField(sd.currentTeamAbbrev) || team0 || 'N/A';
     const isGoalie = position === 'G';
+
+    // ── Step 3: Parse stats ──────────────────────────────────
+    // Try multiple paths the API uses depending on season timing
+    const cur = sd.featuredStats?.regularSeason?.subSeason
+             || sd.featuredStats?.regularSeason
+             || sd.currentSeasonStats
+             || {};
+    const car = sd.careerTotals?.regularSeason || {};
 
     let statsLine;
     if(isGoalie){
-      const gp  = cur.gamesPlayed ?? '–';
-      const sv  = cur.savePctg    != null ? (cur.savePctg*100).toFixed(1)+'%' : '–';
-      const gaa = cur.goalsAgainstAvg?.toFixed(2) ?? '–';
-      const cgp = car.gamesPlayed ?? '–';
-      const csv = car.savePctg    != null ? (car.savePctg*100).toFixed(1)+'%' : '–';
-      statsLine = `This Season  GP:${gp}  SV%:${sv}  GAA:${gaa}\nCareer       GP:${cgp}  SV%:${csv}`;
+      const sv  = fmtPct(cur.savePctg);
+      const gaa = cur.goalsAgainstAvg != null ? cur.goalsAgainstAvg.toFixed(2) : '–';
+      const csv = fmtPct(car.savePctg);
+      const cgaa= car.goalsAgainstAvg != null ? car.goalsAgainstAvg.toFixed(2) : '–';
+      statsLine =
+        `This Season  GP:${cur.gamesPlayed??'–'}  SV%:${sv}  GAA:${gaa}\n`+
+        `Career       GP:${car.gamesPlayed??'–'}  SV%:${csv}  GAA:${cgaa}`;
     } else {
-      const gp  = cur.gamesPlayed ?? '–';
-      const g   = cur.goals   ?? '–';
-      const a   = cur.assists ?? '–';
-      const pts = cur.points  ?? '–';
-      const cgp = car.gamesPlayed ?? '–';
-      const cg  = car.goals   ?? '–';
-      const ca  = car.assists ?? '–';
-      const cp  = car.points  ?? '–';
-      statsLine = `This Season  GP:${gp}  G:${g}  A:${a}  PTS:${pts}\nCareer       GP:${cgp}  G:${cg}  A:${ca}  PTS:${cp}`;
+      statsLine =
+        `This Season  GP:${cur.gamesPlayed??'–'}  G:${cur.goals??'–'}  A:${cur.assists??'–'}  PTS:${cur.points??'–'}\n`+
+        `Career       GP:${car.gamesPlayed??'–'}  G:${car.goals??'–'}  A:${car.assists??'–'}  PTS:${car.points??'–'}`;
     }
 
     postBot('HockeyDB',
-      `🗄️ ${fullName}  |  ${position}  |  ${teamAbbr}\n${'─'.repeat(32)}\n${statsLine}`,
+      `🗄️ ${fullName}  |  ${position}  |  ${teamAbbr}\n${'─'.repeat(30)}\n${statsLine}`,
       BOT_AV_HOCKEYDB);
-  }catch(e){
-    postBot('HockeyDB',`❌ Could not fetch stats for "${query}".\nError: ${e.message}`, BOT_AV_HOCKEYDB);
+
+  }catch(err){
+    postBot('HockeyDB',
+      `❌ HockeyDB error for "${query}":\n${err.message}\nTry again or use last name only.`,
+      BOT_AV_HOCKEYDB);
   }
 }
+
+// Helper: extract string from either a plain string or a { default: "..." } object
+function strField(v){
+  if(!v) return '';
+  if(typeof v === 'string') return v;
+  if(typeof v === 'object') return v.default || v.value || Object.values(v)[0] || '';
+  return String(v);
+}
+function fmtPct(v){ return v != null ? (v < 1 ? (v*100).toFixed(1) : v.toFixed(1))+'%' : '–'; }
 
 function formatGameTime(utcStr){
   if(!utcStr) return 'TBD';
@@ -1791,7 +1976,7 @@ let typingTimer = null;
 
 function setTyping(){
   if(!me) return;
-  const ref = db.ref('zc/typing/' + me.uid);
+  const ref = db.ref(cfg.path+'/typing/'+me.uid);
   ref.set({ name: me.name, avId: me.avId, ts: Date.now() });
   ref.onDisconnect().remove();
   clearTimeout(typingTimer);
@@ -1801,11 +1986,11 @@ function setTyping(){
 function clearTypingStatus(){
   if(!me) return;
   clearTimeout(typingTimer);
-  db.ref('zc/typing/' + me.uid).remove();
+  db.ref(cfg.path+'/typing/'+me.uid).remove();
 }
 
 function listenTyping(){
-  db.ref('zc/typing').on('value', snap => {
+  db.ref(cfg.path+'/typing').on('value', snap => {
     const all = snap.val() || {};
     const now = Date.now();
     const active = Object.entries(all)
@@ -1925,7 +2110,7 @@ function sendGif(gifUrl){
     text: replyCtx.isImg ? null : replyCtx.encText,
     isImg: replyCtx.isImg || false
   } : null;
-  db.ref('zc/messages').push({
+  db.ref(cfg.path+'/messages').push({
     uid:me.uid, name:me.name, avId:me.avId,
     text:safe, ts:Date.now(), isImg:true, edited:false, rply
   });
