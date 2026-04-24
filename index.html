@@ -374,6 +374,32 @@ body{
 /* Edited */
 .edited-tag{font-size:0.68rem;opacity:0.42;margin-left:5px;font-style:italic;}
 
+/* Bot badge */
+.bot-badge{
+  display:inline-block;
+  font-size:0.6rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.06em;
+  background:var(--purple);color:#000;
+  border-radius:4px;padding:1px 5px;
+  margin-left:5px;vertical-align:middle;opacity:0.85;
+}
+/* Bot bubble uses a purple-tinted background */
+.msg-wrap.bot-wrap .msg-bubble{
+  background:var(--bg3);
+  border-color:rgba(155,120,200,0.3);
+}
+/* Help tip shown in input placeholder when user types @ */
+.at-hint{
+  position:absolute;bottom:calc(100% + 6px);left:12px;
+  background:var(--bg1);border:1px solid var(--border);
+  border-radius:10px;padding:7px 12px;
+  font-size:0.78rem;color:var(--text-soft);
+  white-space:pre;pointer-events:none;
+  box-shadow:var(--shadow);
+  animation:fadeSlide 0.15s ease;
+  z-index:50;
+}
+
 /* =====================================================
    REACTIONS UI
 ===================================================== */
@@ -698,7 +724,8 @@ body{
     </button>
   </div>
 
-  <div class="input-zone">
+  <div class="input-zone" style="position:relative;">
+    <div id="at-hint" class="at-hint" style="display:none;">@NHL · @NHL standings · @NHL [team] · @HockeyDB [player name]</div>
     <div class="input-pill">
       <textarea id="msg-input" placeholder="Message Zelechat…" rows="1"></textarea>
       <button class="attach-btn" onclick="document.getElementById('img-file').click()" title="Send image or GIF">
@@ -740,33 +767,9 @@ const db = firebase.database();
 // ─────────────────────────────────────────────────────────────
 //  CONSTANTS
 // ─────────────────────────────────────────────────────────────
-
-// P1 NOTE — Client-side password reality:
-// Because this is a purely static HTML file with no server, the password
-// and its derived key are necessarily present in the JavaScript that every
-// browser downloads. A determined person who downloads the file can read them.
-// What the password check still provides:
-//   • Casual visitors who land on the page are blocked.
-//   • The AES encryption protects messages *in the Firebase database* from
-//     anyone who gains read access there without the file.
-// To truly hide the password you would need a backend (e.g. a serverless
-// function that validates credentials before issuing a Firebase custom token).
-//
-// To improve resistance to offline key extraction we derive the AES key via
-// PBKDF2 (100k iterations, SHA-256) rather than plain string concatenation.
-// This does NOT prevent someone who has the source file from finding the key —
-// it just makes brute-forcing a different password harder.
-
-const ROOM_PW = "Zelepukin";
+const ROOM_PW  = "Zelepukin";
+const ENC_KEY  = "ZC_enc_" + ROOM_PW + "_2024";
 const MAX_POKEMON = 151;
-
-// Derive a strong AES key from the room password using PBKDF2
-const _pbkdfSalt = CryptoJS.enc.Utf8.parse('ZeleChat_v4_salt_2024');
-const ENC_KEY = CryptoJS.PBKDF2(ROOM_PW, _pbkdfSalt, {
-  keySize: 256 / 32,
-  iterations: 100000,
-  hasher: CryptoJS.algo.SHA256
-});
 
 const POKEMON = [
   "Bulbasaur","Ivysaur","Venusaur","Charmander","Charmeleon","Charizard",
@@ -851,21 +854,12 @@ function doLogin(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  ENCRYPTION  (AES-256 with PBKDF2-derived key)
+//  ENCRYPTION
 // ─────────────────────────────────────────────────────────────
-function enc(text){
-  // CryptoJS.AES.encrypt accepts a WordArray key directly
-  return CryptoJS.AES.encrypt(text, ENC_KEY, {
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7
-  }).toString();
-}
+function enc(text){ return CryptoJS.AES.encrypt(text, ENC_KEY).toString(); }
 function dec(ct){
   try{
-    const b = CryptoJS.AES.decrypt(ct, ENC_KEY, {
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7
-    });
+    const b = CryptoJS.AES.decrypt(ct, ENC_KEY);
     return b.toString(CryptoJS.enc.Utf8) || '[message]';
   }catch(e){ return '[message]'; }
 }
@@ -892,7 +886,11 @@ function enterChat(){
     if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
     if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); }
   });
-  ta.addEventListener('input', autoResize);
+  ta.addEventListener('input', () => {
+    autoResize();
+    const hint = document.getElementById('at-hint');
+    hint.style.display = ta.value.startsWith('@') ? 'block' : 'none';
+  });
   ta.addEventListener('paste', handlePaste);
 
   document.addEventListener('click', e => {
@@ -902,44 +900,29 @@ function enterChat(){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  DAILY RESET — 3 AM America/New_York (DST-aware)
+//  DAILY RESET — 3 AM America/New_York (DST-aware, atomic)
 // ─────────────────────────────────────────────────────────────
-
-// FIX P2: Use toLocaleString with explicit IANA timezone so we correctly
-// follow Eastern Standard Time (UTC-5) AND Eastern Daylight Time (UTC-4).
-// The old approach pinned UTC-5 year-round, drifting by 1 h during DST.
 function get3amNYThreshold(){
-  const now = new Date();
-  // Parse "what time is it right now in New York" — this respects DST
+  const now   = new Date();
+  // Parse wall-clock time in New York — handles EST and EDT automatically
   const nyNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-  // Build a Date representing 3:00:00 AM today in NY wall-clock time
   const ny3am = new Date(nyNow);
   ny3am.setHours(3, 0, 0, 0);
-  // Recover UTC ms: the wall-clock offset = now(UTC) - nyNow(UTC-based parse)
   const offsetMs = now.getTime() - nyNow.getTime();
   return ny3am.getTime() + offsetMs;
 }
 
-// FIX P1: Use a Firebase transaction so only ONE client can ever trigger
-// the wipe even if multiple browsers load past 3 AM simultaneously.
-// A malicious/misconfigured clock can still write a bogus lastReset value,
-// but it cannot wipe messages more than once per day because the transaction
-// aborts when lastReset is already >= today's threshold.
 function checkReset(){
   const metaRef   = db.ref('zc/meta/lastReset');
   const threshold = get3amNYThreshold();
   const now       = Date.now();
-
-  if(now <= threshold) return; // Hasn't reached 3 AM today yet
-
-  metaRef.transaction(lastReset => {
-    // Only claim the reset if nobody else already has for this cycle
-    if((lastReset || 0) >= threshold) return; // Abort — already done
-    return now;                               // Claim it atomically
-  }, (error, committed) => {
-    if(!error && committed){
-      db.ref('zc/messages').remove();
-    }
+  if(now <= threshold) return;
+  // Atomic transaction — only the first client past 3 AM triggers the wipe
+  metaRef.transaction(last => {
+    if((last || 0) >= threshold) return; // already done — abort
+    return now;
+  }, (err, committed) => {
+    if(!err && committed) db.ref('zc/messages').remove();
   });
 }
 
@@ -1046,15 +1029,10 @@ function appendMsg(id, msg){
 
   let body;
   if(msg.isImg){
-    // FIX P1: Validate URL before inserting into DOM to prevent XSS.
-    // Only data:image/ and https:// are legitimate values we write.
     const safeSrc = safeImgUrl(msg.text);
-    if(safeSrc){
-      // Store URL in a data-attribute; onclick handler reads it safely
-      body = `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`;
-    } else {
-      body = `<span style="opacity:0.5;font-size:0.82rem;">[invalid image]</span>`;
-    }
+    body = safeSrc
+      ? `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`
+      : `<span style="opacity:0.5;font-size:0.82rem;">[invalid image]</span>`;
   } else {
     body = xss(text).replace(/\n/g, '<br>');
   }
@@ -1096,13 +1074,18 @@ function appendMsg(id, msg){
   }
 
   const wrap = document.createElement('div');
-  wrap.className = 'msg-wrap ' + (mine ? 'mine' : 'theirs');
+  // Bot messages always render as "theirs" (left-aligned) with a purple tint
+  const isBot = !!msg.isBot;
+  wrap.className = 'msg-wrap ' + (mine ? 'mine' : 'theirs') + (isBot ? ' bot-wrap' : '');
   wrap.id = 'm-' + id;
+
+  const botBadge = isBot ? '<span class="bot-badge">bot</span>' : '';
+
   wrap.innerHTML = `
     <div class="msg-av"><img src="${spriteUrl(msg.avId)}" alt=""></div>
     <div class="msg-col">
       <div class="msg-meta">
-        <span class="uname">${xss(msg.name)}</span>
+        <span class="uname">${xss(msg.name)}</span>${botBadge}
         <span>${timeStr}</span>
       </div>
       <div class="msg-bubble" id="b-${id}">
@@ -1128,11 +1111,9 @@ function patchMsg(id, msg){
   if(bt){
     if(msg.isImg){
       const safeSrc = safeImgUrl(msg.text);
-      if(safeSrc){
-        bt.innerHTML = `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`;
-      } else {
-        bt.innerHTML = `<span style="opacity:0.5;font-size:0.82rem;">[invalid image]</span>`;
-      }
+      bt.innerHTML = safeSrc
+        ? `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`
+        : `<span style="opacity:0.5;font-size:0.82rem;">[invalid image]</span>`;
     } else {
       bt.innerHTML = xss(dec(msg.text)).replace(/\n/g, '<br>');
     }
@@ -1153,7 +1134,7 @@ function patchMsg(id, msg){
 // ─────────────────────────────────────────────────────────────
 //  SEND
 // ─────────────────────────────────────────────────────────────
-function sendMsg(){
+async function sendMsg(){
   const ta   = document.getElementById('msg-input');
   const text = ta.value.trim();
 
@@ -1162,17 +1143,21 @@ function sendMsg(){
     const editId = editCtx.id;
     cancelEdit();
     ta.value = ''; autoResize();
-    // FIX P2: Use a transaction so we never recreate a message that was
-    // deleted between the time the user opened the editor and pressed Save.
-    // If the record is null (deleted), the transaction aborts silently.
-    db.ref('zc/messages/' + editId).transaction(current => {
-      if(current === null) return; // Abort — message was deleted
-      return Object.assign({}, current, { text: enc(text), edited: true });
+    // Transaction aborts silently if message was deleted before save
+    db.ref('zc/messages/' + editId).transaction(cur => {
+      if(cur === null) return; // deleted — abort
+      return Object.assign({}, cur, { text: enc(text), edited: true });
     });
     return;
   }
 
   if(!text) return;
+
+  // Bot command? Handle and skip the normal message send
+  if(text.startsWith('@')){
+    const handled = await handleBotCommand(text);
+    if(handled){ ta.value = ''; autoResize(); cancelReply(); return; }
+  }
 
   const rply = replyCtx ? {
     name:  replyCtx.name,
@@ -1216,16 +1201,13 @@ function handlePaste(e){
   }
 }
 
-// FIX P2: GIF files are skipped past the canvas step so animation is preserved.
-// Only static images (jpeg/png/webp/etc.) go through canvas compression.
 function processAndSend(file){
   const reader = new FileReader();
   reader.onload = ev => {
     if(file.type === 'image/gif'){
-      // Send GIF data URL directly — no canvas re-encode (would destroy animation)
+      // GIFs skip canvas — canvas re-encode destroys animation
       dispatchImageMsg(ev.target.result);
     } else {
-      // Compress static images to max 600 px wide, JPEG 75 %
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
@@ -1242,25 +1224,16 @@ function processAndSend(file){
   reader.readAsDataURL(file);
 }
 
-// FIX P2: Reply metadata now correctly preserves the quoted text when
-// replying to a text message with an image (was incorrectly marking text
-// replies as isImg:true and dropping the quoted text).
 function dispatchImageMsg(dataURL){
+  // Correctly preserve quoted text when replying to a text msg with an image
   const rply = replyCtx ? {
     name:  replyCtx.name,
-    text:  replyCtx.isImg ? null : replyCtx.encText, // keep quoted text if replying to text
+    text:  replyCtx.isImg ? null : replyCtx.encText,
     isImg: replyCtx.isImg || false
   } : null;
-
   db.ref('zc/messages').push({
-    uid:   me.uid,
-    name:  me.name,
-    avId:  me.avId,
-    text:  dataURL,
-    ts:    Date.now(),
-    isImg: true,
-    edited:false,
-    rply
+    uid: me.uid, name: me.name, avId: me.avId,
+    text: dataURL, ts: Date.now(), isImg: true, edited: false, rply
   });
   cancelReply();
 }
@@ -1339,22 +1312,236 @@ function toggleUsers(){
 // ─────────────────────────────────────────────────────────────
 //  SECURITY HELPERS
 // ─────────────────────────────────────────────────────────────
-
-// FIX P1: Only allow data:image/ blobs (what we generate) and https:// URLs.
-// Blocks javascript: / data:text/ / vbscript: etc. that could run code.
 function safeImgUrl(src){
   if(typeof src !== 'string') return null;
   if(src.startsWith('data:image/')) return src;
   if(src.startsWith('https://'))    return src;
   return null;
 }
-
-// Safe image opener — reads from the data-attribute set by appendMsg/patchMsg
-// so there is no chance of an injected URL reaching window.open.
 function openImg(el){
-  const src = el.getAttribute('data-imgsrc');
-  const safe = safeImgUrl(src);
+  const safe = safeImgUrl(el.getAttribute('data-imgsrc'));
   if(safe) window.open(safe, '_blank', 'noopener,noreferrer');
+}
+
+// ─────────────────────────────────────────────────────────────
+//  BOT SYSTEM
+//  Commands:  @NHL              → today's scores
+//             @NHL standings    → Eastern + Western standings
+//             @NHL [ABBREV]     → that team's next/current game
+//             @HockeyDB [name]  → search a player's career stats
+// ─────────────────────────────────────────────────────────────
+const BOT_AV_NHL      = 6;   // Charizard
+const BOT_AV_HOCKEYDB = 59;  // Arcanine
+
+// Map full team names / common aliases → official NHL 3-letter abbreviations
+const TEAM_ABBREVS = {
+  'anaheim':    'ANA','ducks':       'ANA',
+  'boston':     'BOS','bruins':      'BOS',
+  'buffalo':    'BUF','sabres':      'BUF',
+  'calgary':    'CGY','flames':      'CGY',
+  'carolina':   'CAR','hurricanes':  'CAR','canes':'CAR',
+  'chicago':    'CHI','blackhawks':  'CHI','hawks':'CHI',
+  'colorado':   'COL','avalanche':   'COL','avs':  'COL',
+  'columbus':   'CBJ','blue jackets':'CBJ',
+  'dallas':     'DAL','stars':       'DAL',
+  'detroit':    'DET','red wings':   'DET','wings':'DET',
+  'edmonton':   'EDM','oilers':      'EDM',
+  'florida':    'FLA','panthers':    'FLA',
+  'los angeles':'LAK','kings':       'LAK','la kings':'LAK',
+  'minnesota':  'MIN','wild':        'MIN',
+  'montreal':   'MTL','canadiens':   'MTL','habs':'MTL',
+  'nashville':  'NSH','predators':   'NSH','preds':'NSH',
+  'new jersey': 'NJD','devils':      'NJD',
+  'new york islanders':'NYI','islanders':'NYI','isles':'NYI',
+  'new york rangers':'NYR','rangers': 'NYR',
+  'ottawa':     'OTT','senators':    'OTT','sens':'OTT',
+  'philadelphia':'PHI','flyers':     'PHI',
+  'pittsburgh': 'PIT','penguins':    'PIT','pens':'PIT',
+  'san jose':   'SJS','sharks':      'SJS',
+  'seattle':    'SEA','kraken':      'SEA',
+  'st. louis':  'STL','blues':       'STL',
+  'tampa bay':  'TBL','lightning':   'TBL','bolts':'TBL',
+  'toronto':    'TOR','maple leafs': 'TOR','leafs':'TOR',
+  'utah':       'UTA','utah hockey club':'UTA',
+  'vancouver':  'VAN','canucks':     'VAN',
+  'vegas':      'VGK','golden knights':'VGK','vgk':'VGK',
+  'washington': 'WSH','capitals':    'WSH','caps':'WSH',
+  'winnipeg':   'WPG','jets':        'WPG'
+};
+
+function resolveTeam(q){
+  q = q.toLowerCase().trim();
+  if(TEAM_ABBREVS[q]) return TEAM_ABBREVS[q];
+  // Try 3-letter abbrev directly (upper)
+  const up = q.toUpperCase();
+  const all = Object.values(TEAM_ABBREVS);
+  if(all.includes(up)) return up;
+  // Partial match
+  for(const [k,v] of Object.entries(TEAM_ABBREVS)){
+    if(k.includes(q)) return v;
+  }
+  return null;
+}
+
+function postBot(botName, text, avId){
+  db.ref('zc/messages').push({
+    uid: 'bot_' + botName.replace(/\s/g,'_').toLowerCase(),
+    name: botName,
+    avId,
+    text:   enc(text),
+    ts:     Date.now(),
+    isImg:  false,
+    edited: false,
+    rply:   null,
+    isBot:  true
+  });
+}
+
+// Called from sendMsg() — returns true if the message was a bot command
+async function handleBotCommand(rawText){
+  const lower = rawText.toLowerCase().trim();
+  if(lower.startsWith('@nhl'))      { await cmdNHL(rawText.slice(4).trim());      return true; }
+  if(lower.startsWith('@hockeydb')) { await cmdHockeyDB(rawText.slice(9).trim()); return true; }
+  return false;
+}
+
+/* ── @NHL ── */
+async function cmdNHL(args){
+  const sub = args.toLowerCase().trim();
+
+  if(!sub || sub === 'scores' || sub === 'score'){
+    postBot('NHL Bot', '⏳ Fetching today\'s scores…', BOT_AV_NHL);
+    try{
+      const r = await fetch('https://api-web.nhle.com/v1/score/now');
+      if(!r.ok) throw new Error('API ' + r.status);
+      const d = await r.json();
+      if(!d.games || d.games.length === 0){
+        postBot('NHL Bot', '🏒 No NHL games scheduled today.', BOT_AV_NHL);
+        return;
+      }
+      const dateLabel = d.gameWeek?.[0]?.date || 'Today';
+      let out = `🏒 NHL Scores — ${dateLabel}\n${'─'.repeat(28)}\n`;
+      for(const g of d.games){
+        const away  = g.awayTeam, home = g.homeTeam;
+        const st    = g.gameState;
+        const score = (st === 'FUT' || st === 'PRE')
+          ? formatGameTime(g.startTimeUTC)
+          : `${away.score ?? 0}  –  ${home.score ?? 0}`;
+        const tag   = st === 'LIVE' || st === 'CRIT' ? ' 🔴 LIVE'
+                    : st === 'FINAL' || st === 'OFF'  ? ' ✓ Final'
+                    : '';
+        out += `${away.abbrev} vs ${home.abbrev}  ${score}${tag}\n`;
+      }
+      postBot('NHL Bot', out.trim(), BOT_AV_NHL);
+    }catch(e){
+      postBot('NHL Bot', '❌ Could not reach NHL API. Try again in a moment.', BOT_AV_NHL);
+    }
+    return;
+  }
+
+  if(sub === 'standings' || sub === 'stand'){
+    postBot('NHL Bot', '⏳ Fetching standings…', BOT_AV_NHL);
+    try{
+      const r = await fetch('https://api-web.nhle.com/v1/standings/now');
+      if(!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      const teams = d.standings || [];
+      const east  = teams.filter(t => t.conferenceAbbrev === 'E').sort((a,b) => a.conferenceSequence - b.conferenceSequence).slice(0,8);
+      const west  = teams.filter(t => t.conferenceAbbrev === 'W').sort((a,b) => a.conferenceSequence - b.conferenceSequence).slice(0,8);
+      const fmt   = arr => arr.map((t,i) => `${i+1}. ${t.teamAbbrev?.default ?? t.teamName?.default}  ${t.points}pts  (${t.wins}-${t.losses}-${t.otLosses})`).join('\n');
+      postBot('NHL Bot',
+        `🏒 NHL Standings — Top 8 per Conference\n${'─'.repeat(32)}\n🔵 EASTERN\n${fmt(east)}\n\n🔴 WESTERN\n${fmt(west)}`,
+        BOT_AV_NHL);
+    }catch(e){
+      postBot('NHL Bot', '❌ Could not fetch standings.', BOT_AV_NHL);
+    }
+    return;
+  }
+
+  // Team lookup
+  const abbrev = resolveTeam(sub);
+  if(abbrev){
+    postBot('NHL Bot', `⏳ Looking up ${abbrev}…`, BOT_AV_NHL);
+    try{
+      const r = await fetch(`https://api-web.nhle.com/v1/club-schedule-season/${abbrev}/now`);
+      if(!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      const games = (d.games || []).slice(0, 5);
+      if(!games.length){ postBot('NHL Bot', `No upcoming games found for ${abbrev}.`, BOT_AV_NHL); return; }
+      let out = `🏒 ${abbrev} — Next Games\n${'─'.repeat(26)}\n`;
+      for(const g of games){
+        const opp   = g.homeTeam.abbrev === abbrev ? g.awayTeam.abbrev : g.homeTeam.abbrev;
+        const where = g.homeTeam.abbrev === abbrev ? 'vs' : '@';
+        const dt    = new Date(g.startTimeUTC);
+        const label = dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        out += `${label}  ${abbrev} ${where} ${opp}\n`;
+      }
+      postBot('NHL Bot', out.trim(), BOT_AV_NHL);
+    }catch(e){
+      postBot('NHL Bot', `❌ Could not find schedule for ${abbrev}.`, BOT_AV_NHL);
+    }
+    return;
+  }
+
+  postBot('NHL Bot',
+    '🏒 NHL Bot commands:\n  @NHL            → Today\'s scores\n  @NHL standings  → Conference standings\n  @NHL Flyers     → Team\'s next games\n  @NHL PHI        → (3-letter abbrev also works)',
+    BOT_AV_NHL);
+}
+
+/* ── @HockeyDB ── */
+async function cmdHockeyDB(query){
+  query = query.trim();
+  if(!query){
+    postBot('HockeyDB', '🗄️ Usage: @HockeyDB [player name]\nExample: @HockeyDB Claude Giroux', BOT_AV_HOCKEYDB);
+    return;
+  }
+  postBot('HockeyDB', `⏳ Searching for "${query}"…`, BOT_AV_HOCKEYDB);
+  try{
+    const url = `https://api-web.nhle.com/v1/player-search?name=${encodeURIComponent(query)}&culture=en-US`;
+    const r   = await fetch(url);
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    const players = d.players || [];
+    if(!players.length){
+      postBot('HockeyDB', `❌ No players found matching "${query}".`, BOT_AV_HOCKEYDB);
+      return;
+    }
+    const p  = players[0];
+    const pid = p.playerId;
+    // Get detailed stats
+    const sr = await fetch(`https://api-web.nhle.com/v1/player/${pid}/landing`);
+    if(!sr.ok) throw new Error(sr.status);
+    const sd = await sr.json();
+    const info  = sd;
+    const pos   = info.position ?? '?';
+    const team  = info.currentTeamAbbrev ?? 'Free Agent';
+    const name  = `${info.firstName?.default ?? ''} ${info.lastName?.default ?? ''}`.trim();
+    const season = (info.featuredStats?.regularSeason?.subSeason) || (info.careerTotals?.regularSeason) || {};
+    const g  = season.goals      ?? '–';
+    const a  = season.assists    ?? '–';
+    const pts= season.points     ?? '–';
+    const gp = season.gamesPlayed?? '–';
+    const career = info.careerTotals?.regularSeason || {};
+    const cg = career.goals   ?? '–';
+    const ca = career.assists ?? '–';
+    const cp = career.points  ?? '–';
+    const cgp= career.gamesPlayed ?? '–';
+    postBot('HockeyDB',
+      `🗄️ ${name}  |  ${pos}  |  ${team}\n${'─'.repeat(30)}\nThis Season  GP:${gp}  G:${g}  A:${a}  PTS:${pts}\nCareer       GP:${cgp}  G:${cg}  A:${ca}  PTS:${cp}`,
+      BOT_AV_HOCKEYDB);
+  }catch(e){
+    postBot('HockeyDB', `❌ Could not fetch stats for "${query}". Try a different spelling.`, BOT_AV_HOCKEYDB);
+  }
+}
+
+function formatGameTime(utcStr){
+  if(!utcStr) return 'TBD';
+  try{
+    return new Date(utcStr).toLocaleTimeString('en-US',{
+      hour:'numeric', minute:'2-digit',
+      timeZone:'America/New_York', timeZoneName:'short'
+    });
+  }catch{ return ''; }
 }
 
 // ─────────────────────────────────────────────────────────────
