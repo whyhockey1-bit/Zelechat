@@ -12,6 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 <style>
 /* =====================================================
    VARIABLES
@@ -109,6 +110,7 @@ body{
   line-height:1;
 }
 
+/* 3. Updated Tagline */
 .login-tagline{
   text-align:center;font-size:0.82rem;
   color:var(--text-muted);letter-spacing:0.08em;
@@ -645,7 +647,7 @@ body{
 .scores-dropdown{
   display:none;position:absolute;top:calc(100% + 8px);right:0;
   width:290px;background:var(--bg1);border:1px solid var(--border);
-  border-radius:var(--radius);z-index:200;box-shadow:var(--shadow);
+  border-radius:var(--radius);z-index:100;box-shadow:var(--shadow);
   animation:fadeSlide 0.15s ease;overflow:hidden;
 }
 .scores-dropdown.open{display:block;}
@@ -840,376 +842,34 @@ body{
 }
 
 /* Responsive */
-
-
-/* Extra small — hide scores btn text "Scores", keep icon */
- — Florida Panthers dark palette
+@media(max-width:520px){
+  .msg-wrap{max-width:92%;}
+  .login-card{padding:24px 18px 20px;}
+  .scores-dropdown{width:calc(100vw - 28px);right:-14px;}
+} — Florida Panthers dark palette
    Overrides only color variables; layout is shared
 ===================================================== */
-
-/* =====================================================
-   MOBILE-FIRST INPUT LAYOUT
-===================================================== */
-.input-row{display:flex;align-items:flex-end;gap:8px;width:100%;}
-.input-zone{
-  background:var(--bg1);border-top:1px solid var(--border);
-  padding:8px 12px;flex-shrink:0;
-  display:flex;flex-direction:column;gap:0;position:relative;
-}
-.plus-btn{
-  width:38px;height:38px;flex-shrink:0;
-  background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:50%;color:var(--text-muted);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;
-}
-.plus-btn:hover,.plus-btn.open{color:var(--orange);border-color:var(--orange);background:var(--orange-glow);}
-.plus-btn.open svg{transform:rotate(45deg);}
-.plus-btn svg{transition:transform 0.2s;}
-.attach-menu{
-  position:absolute;bottom:calc(100% + 4px);left:0;right:0;
-  background:var(--bg1);border:1px solid var(--border);
-  border-radius:14px;padding:10px 8px;
-  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
-  z-index:300;box-shadow:var(--shadow);animation:fadeSlide 0.2s ease;
-}
-.attach-menu-item{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:10px;padding:9px 4px;cursor:pointer;
-  font-size:0.7rem;font-family:'DM Sans',sans-serif;color:var(--text-soft);
-  transition:all 0.18s;
-}
-.attach-menu-item:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-glow);}
-.desktop-only{display:flex;}
-
-/* =====================================================
-   MOBILE BOTTOM NAV
-===================================================== */
-.mobile-bottom-nav{
-  display:none;
-  background:var(--bg1);border-top:1px solid var(--border);
-  flex-shrink:0;
-}
-.mbn-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  background:none;border:none;cursor:pointer;
-  color:var(--text-soft);font-size:0.7rem;font-family:'DM Sans',sans-serif;
-  padding:7px 4px;border-radius:8px;transition:color 0.18s;
-}
-.mbn-btn:hover,.mbn-btn.active{color:var(--orange);}
-.mbn-count{
-  display:inline-block;background:var(--orange);color:#000;
-  border-radius:8px;padding:0 5px;font-size:0.65rem;font-weight:700;margin-left:2px;
-}
-
-/* =====================================================
-   MOBILE ≤ 600px
-===================================================== */
-@media(max-width:600px){
-  .desktop-only{display:none !important;}
-  #send-btn{display:flex !important;}
-  .mobile-bottom-nav{
-    display:flex;
-    position:fixed;bottom:0;left:0;right:0;z-index:150;
-    padding:4px 0 max(6px,env(safe-area-inset-bottom,6px));
-  }
-  #chat-screen{padding-bottom:54px;}
-  .input-zone{padding:6px 8px;}
-  .input-row{gap:6px;}
-  .send-btn{width:40px;height:40px;flex-shrink:0;}
-  .plus-btn{width:36px;height:36px;}
-  .chat-header{padding:7px 10px;}
-  .header-right{gap:4px;}
-  .header-title{font-size:1.05rem;}
-  .scores-btn,.users-btn{display:none;}
-  .util-btn{width:28px;height:28px;}
-  .purge-text,.sb-btn-label{display:none;}
-  #purge-btn{padding:6px 8px;}
-  .sb-btn{display:none !important;}
-  .scores-dropdown,.users-dropdown{
-    position:fixed;bottom:54px;left:0;right:0;top:auto;
-    width:100%;max-height:60vh;overflow-y:auto;
-    border-radius:16px 16px 0 0;
-  }
-  .attach-menu{
-    position:fixed;bottom:54px;left:0;right:0;
-    border-radius:16px 16px 0 0;
-    grid-template-columns:repeat(5,1fr);
-    padding:14px 10px 10px;
-  }
-  .msg-wrap{max-width:90%;}
-  .login-card{padding:22px 14px 18px;}
-}
-@media(max-width:380px){
-  .attach-menu{grid-template-columns:repeat(4,1fr);}
-  .header-title{font-size:0.95rem;}
-}
-
-
 [data-theme="whyhockey"] {
-  /* ── Reverse Retro Panthers: deep ocean + sky blue + Panthers red + gold ── */
-  --bg0:         #030d1c;
-  --bg1:         #061828;
-  --bg2:         #0a2238;
-  --bg3:         #0e2e4e;
-  --orange:      #00c2f5;       /* sky blue — primary action color    */
-  --orange-dim:  #009dc8;
-  --orange-glow: rgba(0,194,245,0.22);
-  --orange-text: #6de5ff;
-  --purple:      #CC0033;       /* Panthers red                        */
-  --purple-dim:  rgba(204,0,51,0.18);
-  --grey:        #4e7a98;
-  --grey-dim:    #1a3550;
-  --text:        #ddf0fa;
-  --text-soft:   #6ea4c0;
-  --text-muted:  #2c4e68;
-  --border:      rgba(0,194,245,0.28);
-  --border-soft: rgba(0,194,245,0.10);
-  --red:         #ff3355;
-  --green:       #00dba0;
-  --shadow:      0 8px 32px rgba(0,0,0,0.82);
-  --gold:        #FFB81C;
-}
-
-/* ══════════════════════════════════════════════════════
-   PANTHERS: element-level overrides — makes every
-   surface visually DIFFERENT from Zelechat
-══════════════════════════════════════════════════════ */
-
-/* Body: deep ocean gradient from bottom */
-[data-theme="whyhockey"] body {
-  background:
-    radial-gradient(ellipse 110% 55% at 50% 115%,
-      rgba(0, 120, 200, 0.18) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 10% 80%,
-      rgba(0, 100, 160, 0.10) 0%, transparent 55%),
-    #030d1c;
-}
-
-/* Chat header: blue-tinted with teal border + gold bottom line */
-[data-theme="whyhockey"] .chat-header {
-  background: linear-gradient(180deg, #081f38 0%, #061828 100%);
-  border-bottom: 1px solid rgba(0,194,245,0.30);
-  box-shadow: 0 2px 0 rgba(255,184,28,0.18), 0 3px 16px rgba(0,0,0,0.5);
-}
-
-/* Header title: sky blue glow */
-[data-theme="whyhockey"] .header-title {
-  color: #00c2f5;
-  text-shadow:
-    0 0 12px rgba(0,194,245,0.6),
-    0 0 30px rgba(0,194,245,0.25);
-}
-
-/* Messages area: ocean depth gradient */
-[data-theme="whyhockey"] .messages-area {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 100%,
-      rgba(0, 80, 140, 0.10) 0%, transparent 70%),
-    transparent;
-}
-
-/* Input zone: deeper blue tint */
-[data-theme="whyhockey"] .input-zone {
-  background: linear-gradient(0deg, #071524 0%, #061828 100%);
-  border-top: 1px solid rgba(0,194,245,0.22);
-}
-
-/* Input pill: ocean blue border */
-[data-theme="whyhockey"] .input-pill {
-  background: rgba(8, 30, 55, 0.8);
-  border-color: rgba(0,194,245,0.15);
-}
-[data-theme="whyhockey"] .input-pill:focus-within {
-  border-color: #00c2f5;
-}
-
-/* Send button: sky blue */
-[data-theme="whyhockey"] .send-btn {
-  background: #00c2f5;
-  box-shadow: 0 3px 12px rgba(0,194,245,0.45);
-}
-[data-theme="whyhockey"] .send-btn:hover {
-  background: #30d4ff;
-  box-shadow: 0 4px 18px rgba(0,194,245,0.6);
-}
-
-/* Scores / users buttons: blue border on hover */
-[data-theme="whyhockey"] .scores-btn,
-[data-theme="whyhockey"] .users-btn {
-  background: rgba(8, 28, 50, 0.8);
-  border-color: rgba(0,194,245,0.22);
-}
-[data-theme="whyhockey"] .scores-btn:hover,
-[data-theme="whyhockey"] .users-btn:hover {
-  border-color: #00c2f5;
-}
-
-/* Dropdowns */
-[data-theme="whyhockey"] .users-dropdown,
-[data-theme="whyhockey"] .scores-dropdown {
-  background: #071828;
-  border-color: rgba(0,194,245,0.28);
-}
-
-/* Context bars (reply/edit) */
-[data-theme="whyhockey"] .context-bar {
-  background: #071828;
-  border-top-color: rgba(0,194,245,0.22);
-}
-
-/* Typing bar */
-[data-theme="whyhockey"] .typing-bar {
-  background: linear-gradient(0deg, #071524 0%, #061828 100%);
-}
-
-/* Reset notice: animated teal wave */
-[data-theme="whyhockey"] .reset-notice {
-  background: linear-gradient(
-    90deg,
-    rgba(6,24,40,1) 0%,
-    rgba(0,194,245,0.10) 50%,
-    rgba(6,24,40,1) 100%
-  );
-  background-size: 200% 100%;
-  border-bottom-color: rgba(0,194,245,0.18);
-  animation: waveSlide 5s linear infinite;
-  color: rgba(0,194,245,0.55);
-}
-@keyframes waveSlide {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Login screen: ocean sunset */
-[data-theme="whyhockey"] #login-screen {
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 108%,
-      rgba(0,130,210,0.22) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 30% at 20% 75%,
-      rgba(255,184,28,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 30% at 80% 75%,
-      rgba(204,0,51,0.07) 0%, transparent 55%),
-    #030d1c;
-}
-
-/* Login card: teal glow border */
-[data-theme="whyhockey"] .login-card {
-  background: #071828;
-  border-color: rgba(0,194,245,0.22);
-  box-shadow:
-    0 0 0 1px rgba(0,194,245,0.15),
-    0 0 50px rgba(0,120,200,0.12),
-    0 24px 48px rgba(0,0,0,0.6);
-}
-
-/* Login logo text: sky blue */
-[data-theme="whyhockey"] .login-logo-text {
-  color: #00c2f5;
-  text-shadow: 0 0 24px rgba(0,194,245,0.5);
-}
-
-/* Login tagline: gold */
-[data-theme="whyhockey"] .login-tagline {
-  color: #FFB81C;
-  opacity: 0.8;
-}
-
-/* Enter button: sky blue */
-[data-theme="whyhockey"] .btn-enter {
-  background: #00c2f5;
-  box-shadow: 0 4px 16px rgba(0,194,245,0.40);
-  color: #03080f;
-}
-[data-theme="whyhockey"] .btn-enter:hover {
-  background: #30d4ff;
-}
-
-/* Avatar ring: teal */
-[data-theme="whyhockey"] .avatar-ring {
-  border-color: #00c2f5;
-  box-shadow: 0 0 20px rgba(0,194,245,0.3), inset 0 0 10px rgba(0,0,0,0.4);
-}
-
-/* Input fields on login: teal focus */
-[data-theme="whyhockey"] .field input:focus {
-  border-color: #00c2f5;
-  box-shadow: 0 0 0 3px rgba(0,194,245,0.18);
-}
-
-/* Mine bubbles: sky blue gradient */
-[data-theme="whyhockey"] .msg-wrap.mine .msg-bubble {
-  background: linear-gradient(135deg, #00c2f5 0%, #0098d4 100%);
-  color: #03080f;
-  border-color: transparent;
-}
-[data-theme="whyhockey"] .msg-wrap.mine .rq {
-  border-left-color: rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.12);
-}
-
-/* Their bubbles: ocean depth */
-[data-theme="whyhockey"] .msg-wrap.theirs .msg-bubble {
-  background: rgba(8, 30, 55, 0.9);
-  border-color: rgba(0,194,245,0.12);
-}
-
-/* Reply/edit bar: purple = Panthers red */
-[data-theme="whyhockey"] .cbar-name { color: #00c2f5; }
-
-/* Scrollbar: teal */
-[data-theme="whyhockey"] ::-webkit-scrollbar-thumb {
-  background: rgba(0,194,245,0.25);
-}
-
-/* Reactions: teal active */
-[data-theme="whyhockey"] .rx-btn.mine-rx {
-  background: rgba(0,194,245,0.2);
-  border-color: rgba(0,194,245,0.4);
-  color: #00c2f5;
-}
-
-/* Bot badge: teal */
-[data-theme="whyhockey"] .bot-badge {
-  background: #00c2f5;
-  color: #03080f;
-}
-
-/* Emoji panel / GIF panel */
-[data-theme="whyhockey"] .emoji-panel,
-[data-theme="whyhockey"] .gif-panel {
-  background: #071828;
-  border-color: rgba(0,194,245,0.25);
-}
-
-/* Hot take bar: teal glow */
-[data-theme="whyhockey"] .hot-take-bar {
-  background: linear-gradient(90deg,
-    rgba(0,50,100,0.25) 0%,
-    rgba(0,194,245,0.10) 100%);
-  border-top-color: rgba(0,194,245,0.3);
-  border-bottom-color: rgba(0,194,245,0.3);
-}
-
-/* Light mode override for Panthers */
-[data-theme="whyhockey"].light {
-  --bg0: #e8f6fc;
-  --bg1: #ffffff;
-  --bg2: #d4eef8;
-  --bg3: #bee5f3;
-  --text: #051525;
-  --text-soft: #1a5070;
-  --text-muted: #4a90b0;
-}
-[data-theme="whyhockey"].light body {
-  background:
-    radial-gradient(ellipse 100% 50% at 50% 100%,
-      rgba(0,150,220,0.10) 0%, transparent 70%),
-    #e8f6fc;
-}
-[data-theme="whyhockey"].light .chat-header {
-  background: linear-gradient(180deg, #d4eef8 0%, #ffffff 100%);
+  --bg0: #030d1c;
+  --bg1: #071525;
+  --bg2: #0c1e38;
+  --bg3: #12284d;
+  --orange:      #e8a020;
+  --orange-dim:  #b87c10;
+  --orange-glow: rgba(232,160,32,0.18);
+  --orange-text: #f5c76a;
+  --purple:      #CE1126;
+  --purple-dim:  rgba(206,17,38,0.18);
+  --grey:        #7a8899;
+  --grey-dim:    #38485a;
+  --text:        #e8dfc8;
+  --text-soft:   #9a9080;
+  --text-muted:  #4a5668;
+  --border:      rgba(232,160,32,0.22);
+  --border-soft: rgba(255,255,255,0.07);
+  --red:         #ff4455;
+  --green:       #00c896;
+  --shadow:      0 8px 32px rgba(0,0,0,0.7);
 }
 
 /* =====================================================
@@ -1339,26 +999,7 @@ body{
 }
 
 
-/* ── Purge button (xxxPurge privilege only) ── */
-#purge-btn{
-  display:none; /* shown only for xxxPurge username */
-  align-items:center;gap:6px;
-  background:rgba(255,55,55,0.12);
-  border:1px solid rgba(255,55,55,0.35);
-  border-radius:20px;
-  color:#ff5555;
-  padding:7px 13px;
-  cursor:pointer;
-  font-size:0.82rem;font-family:'DM Sans',sans-serif;font-weight:600;
-  transition:background 0.2s, border-color 0.2s, box-shadow 0.2s;
-  white-space:nowrap;flex-shrink:0;
-}
-#purge-btn:hover{
-  background:rgba(255,55,55,0.22);
-  border-color:rgba(255,55,55,0.7);
-  box-shadow:0 0 14px rgba(255,55,55,0.25);
-}
-#purge-btn:active{ transform:scale(0.96); }
+/* ── Utility icon buttons (sound / theme / bell) ── */
 .util-btn{
   background:none;border:none;cursor:pointer;
   color:var(--text-muted);
@@ -1372,9 +1013,6 @@ body{
 .util-btn:hover{color:var(--orange);background:var(--orange-glow);}
 .util-btn.active-state{color:var(--orange);}
 .util-btn.muted{color:var(--text-muted);opacity:0.45;}
-.util-btn.notif-denied{color:var(--red) !important;opacity:1;}
-.util-btn.notif-denied svg{filter:drop-shadow(0 0 3px rgba(255,85,85,0.5));}
-.util-btn.notif-granted{color:var(--orange) !important;}
 /* Notification bell badge */
 .bell-wrap{position:relative;display:flex;}
 .bell-dot{
@@ -1439,427 +1077,14 @@ body{
 
 /* Whyhockey light keeps gold accent */
 [data-theme="whyhockey"].light{
-  --bg0:#f0f8fc;
+  --bg0:#faf8f4;
   --bg1:#ffffff;
-  --bg2:#e6f4fa;
-  --bg3:#d4eaf6;
-  --text:#0a1e2c;
-  --text-soft:#2a4a5e;
-  --text-muted:#7090a0;
+  --bg2:#f2ede6;
+  --bg3:#e8e1d8;
+  --text:#1a1820;
+  --text-soft:#4a4860;
+  --text-muted:#9694a8;
 }
-[data-theme="whyhockey"].light .msg-wrap.mine .msg-bubble{
-  color: #001824;
-}
-
-/* ── Room switch button ── */
-.room-switch-btn{
-  display:flex;align-items:center;gap:7px;
-  background:var(--bg3);
-  border:1px solid var(--border-soft);
-  border-radius:20px;
-  color:var(--text-soft);
-  padding:5px 12px 5px 8px;
-  cursor:pointer;
-  font-size:0.78rem;font-family:'DM Sans',sans-serif;font-weight:600;
-  transition:all 0.2s;white-space:nowrap;
-  margin-left:4px;
-  flex-shrink:0;
-}
-.room-switch-btn:hover{
-  border-color:var(--orange);
-  color:var(--text);
-  background:var(--orange-glow);
-}
-.room-switch-btn img{width:22px;height:22px;border-radius:4px;object-fit:contain;}
-
-/* ── Room-switch password modal ── */
-.rspw-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.65);
-  z-index:5000;
-  display:flex;align-items:center;justify-content:center;
-  padding:16px;
-  animation:fadeIn 0.15s ease;
-}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.rspw-card{
-  background:var(--bg1);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:28px 24px 22px;
-  width:100%;max-width:340px;
-  box-shadow:var(--shadow);
-  text-align:center;
-}
-.rspw-logo{
-  display:flex;align-items:center;justify-content:center;gap:9px;
-  margin-bottom:14px;
-}
-.rspw-logo img{width:36px;height:36px;object-fit:contain;}
-.rspw-room-name{
-  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
-  color:var(--orange);
-}
-.rspw-sub{
-  font-size:0.78rem;color:var(--text-muted);margin-bottom:18px;
-}
-.rspw-input{
-  width:100%;background:var(--bg2);
-  border:1px solid var(--border-soft);border-radius:10px;
-  color:var(--text);padding:11px 13px;
-  font-size:0.95rem;font-family:'DM Sans',sans-serif;
-  outline:none;margin-bottom:6px;
-  transition:border-color 0.2s,box-shadow 0.2s;
-}
-.rspw-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-glow);}
-.rspw-err{
-  color:var(--red);font-size:0.78rem;
-  min-height:18px;margin-bottom:10px;
-}
-.rspw-btns{display:flex;gap:8px;margin-top:2px;}
-.rspw-cancel{
-  flex:1;background:none;border:1px solid var(--border-soft);border-radius:8px;
-  color:var(--text-soft);padding:10px;cursor:pointer;
-  font-family:'DM Sans',sans-serif;font-size:0.9rem;
-  transition:border-color 0.15s;
-}
-.rspw-cancel:hover{border-color:var(--orange);}
-.rspw-join{
-  flex:2;background:var(--orange);border:none;border-radius:8px;
-  color:#000;font-weight:700;padding:10px;cursor:pointer;
-  font-family:'DM Sans',sans-serif;font-size:0.9rem;
-  transition:opacity 0.15s;
-}
-.rspw-join:hover{opacity:0.88;}
-
-
-/* ═══════════════════════════════════════════════════════
-   HOT TAKE — 60-second pinned message
-═══════════════════════════════════════════════════════ */
-.hot-take-bar{
-  display:none;
-  background: linear-gradient(90deg, rgba(255,83,13,0.12) 0%, rgba(255,160,0,0.10) 100%);
-  border-top:1px solid rgba(255,123,28,0.3);
-  border-bottom:1px solid rgba(255,123,28,0.3);
-  padding:8px 16px;
-  align-items:center;gap:10px;
-  flex-shrink:0;
-  animation:fadeSlide 0.2s ease;
-  position:relative;overflow:hidden;
-}
-.hot-take-bar.show{display:flex;}
-.hot-take-bar::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg, transparent 0%, rgba(255,123,28,0.06) 50%, transparent 100%);
-  animation:htScan 2.5s linear infinite;pointer-events:none;
-}
-@keyframes htScan{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
-.ht-icon{font-size:1.1rem;flex-shrink:0;line-height:1;}
-.ht-label{
-  font-size:0.65rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:0.1em;color:var(--orange);margin-right:2px;
-}
-.ht-text{
-  flex:1;font-size:0.88rem;color:var(--text);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.ht-author{font-size:0.72rem;color:var(--text-muted);white-space:nowrap;}
-.ht-timer-wrap{
-  display:flex;flex-direction:column;align-items:flex-end;gap:2px;
-  flex-shrink:0;min-width:36px;
-}
-.ht-timer{
-  font-size:0.68rem;font-family:'DM Mono',monospace;
-  color:var(--orange);text-align:right;
-}
-.ht-progress{
-  width:36px;height:2px;background:var(--border-soft);border-radius:1px;overflow:hidden;
-}
-.ht-bar{height:100%;background:var(--orange);transition:width 0.95s linear;}
-
-/* Hot take button in toolbar */
-.hot-take-btn{
-  background:none;border:none;cursor:pointer;
-  color:var(--text-muted);padding:2px;flex-shrink:0;
-  transition:color 0.2s;line-height:0;
-  display:flex;align-items:center;justify-content:center;
-}
-.hot-take-btn:hover{color:var(--orange);}
-
-/* Hot take modal */
-.ht-modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);
-  z-index:500;display:none;align-items:center;justify-content:center;padding:16px;
-}
-.ht-modal-overlay.show{display:flex;}
-.ht-modal{
-  background:var(--bg1);border:1px solid var(--border);
-  border-radius:18px;padding:24px 22px 20px;
-  width:100%;max-width:420px;
-  box-shadow:var(--shadow);
-}
-.ht-modal-title{
-  font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;
-  color:var(--orange);margin-bottom:14px;
-  display:flex;align-items:center;gap:8px;
-}
-.ht-modal textarea{
-  width:100%;background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:10px;color:var(--text);padding:11px 13px;
-  font-size:0.93rem;font-family:'DM Sans',sans-serif;
-  resize:none;height:90px;outline:none;
-  transition:border-color 0.2s;
-}
-.ht-modal textarea:focus{border-color:var(--orange);}
-.ht-char-count{
-  text-align:right;font-size:0.7rem;color:var(--text-muted);
-  font-family:'DM Mono',monospace;margin:4px 0 12px;
-}
-.ht-char-count.over{color:var(--red);}
-.ht-modal-btns{display:flex;gap:9px;justify-content:flex-end;}
-.ht-cancel-btn,.ht-post-btn{
-  border-radius:9px;padding:9px 18px;cursor:pointer;
-  font-size:0.88rem;font-family:'DM Sans',sans-serif;font-weight:600;
-  border:1px solid var(--border);background:var(--bg2);color:var(--text-soft);
-  transition:all 0.18s;
-}
-.ht-post-btn{background:var(--orange);color:#000;border-color:transparent;}
-.ht-cancel-btn:hover{border-color:var(--orange);}
-.ht-post-btn:hover{opacity:0.88;}
-
-/* ═══════════════════════════════════════════════════════
-   POLLS — Firebase-backed, pinned during vote
-═══════════════════════════════════════════════════════ */
-.poll-bar{
-  display:none;
-  background:var(--bg1);
-  border-bottom:1px solid var(--border);
-  padding:10px 16px;flex-shrink:0;
-  animation:fadeSlide 0.2s ease;
-}
-.poll-bar.show{display:block;}
-.poll-header-row{
-  display:flex;align-items:center;gap:8px;margin-bottom:8px;
-}
-.poll-label{
-  font-size:0.65rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:0.1em;color:var(--purple);flex-shrink:0;
-}
-.poll-question{font-size:0.9rem;font-weight:600;color:var(--text);flex:1;}
-.poll-timer-badge{
-  font-size:0.68rem;font-family:'DM Mono',monospace;
-  color:var(--text-muted);white-space:nowrap;flex-shrink:0;
-}
-.poll-options{display:flex;flex-direction:column;gap:5px;}
-.poll-opt{
-  position:relative;background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:9px;padding:7px 11px;cursor:pointer;overflow:hidden;
-  transition:border-color 0.18s;
-}
-.poll-opt:hover{border-color:var(--orange);}
-.poll-opt.voted{border-color:var(--orange);cursor:default;}
-.poll-opt.ended{cursor:default;}
-.poll-opt-fill{
-  position:absolute;inset:0;background:var(--orange-glow);
-  border-radius:9px;transform-origin:left;transition:transform 0.5s ease;
-  transform:scaleX(0);
-}
-.poll-opt.voted .poll-opt-fill,.poll-opt.ended .poll-opt-fill{transform:scaleX(var(--pct,0));}
-.poll-opt-text{position:relative;font-size:0.85rem;color:var(--text);}
-.poll-opt-pct{
-  position:absolute;right:11px;top:50%;transform:translateY(-50%);
-  font-size:0.72rem;font-family:'DM Mono',monospace;color:var(--orange-text);
-  display:none;
-}
-.poll-opt.voted .poll-opt-pct,.poll-opt.ended .poll-opt-pct{display:block;}
-.poll-results-row{
-  margin-top:7px;font-size:0.72rem;color:var(--text-muted);
-  font-family:'DM Mono',monospace;
-}
-
-/* Poll button in toolbar */
-.poll-btn{
-  background:none;border:none;cursor:pointer;
-  color:var(--text-muted);padding:2px 5px;flex-shrink:0;
-  font-size:0.72rem;font-weight:700;font-family:'DM Mono',monospace;
-  letter-spacing:0.06em;
-  border:1px solid var(--grey-dim);border-radius:4px;
-  transition:color 0.2s,border-color 0.2s;
-}
-.poll-btn:hover{color:var(--orange);border-color:var(--orange);}
-
-/* Poll modal */
-.poll-modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);
-  z-index:500;display:none;align-items:center;justify-content:center;padding:16px;
-}
-.poll-modal-overlay.show{display:flex;}
-.poll-modal{
-  background:var(--bg1);border:1px solid var(--border);
-  border-radius:18px;padding:24px 22px 20px;
-  width:100%;max-width:440px;box-shadow:var(--shadow);
-}
-.poll-modal-title{
-  font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;
-  color:var(--purple);margin-bottom:14px;display:flex;align-items:center;gap:8px;
-}
-.pm-field{margin-bottom:12px;}
-.pm-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:4px;}
-.pm-input{
-  width:100%;background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:9px;color:var(--text);padding:9px 12px;
-  font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;
-  transition:border-color 0.2s;
-}
-.pm-input:focus{border-color:var(--orange);}
-.pm-options-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-.pm-opt-row{display:flex;gap:6px;align-items:center;}
-.pm-opt-row .pm-input{flex:1;}
-.pm-add-btn,.pm-rem-btn{
-  background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:7px;color:var(--text-muted);cursor:pointer;
-  padding:7px 10px;font-size:0.82rem;transition:all 0.15s;flex-shrink:0;
-}
-.pm-add-btn:hover{border-color:var(--orange);color:var(--orange);}
-.pm-rem-btn:hover{border-color:var(--red);color:var(--red);}
-.pm-duration{display:flex;gap:8px;margin-bottom:14px;}
-.pm-dur-btn{
-  flex:1;padding:8px;background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:9px;color:var(--text-soft);cursor:pointer;font-size:0.85rem;
-  font-family:'DM Sans',sans-serif;transition:all 0.15s;text-align:center;
-}
-.pm-dur-btn.active{background:var(--orange-glow);border-color:var(--orange);color:var(--orange);}
-.pm-btns{display:flex;gap:9px;justify-content:flex-end;}
-.pm-cancel,.pm-post{
-  border-radius:9px;padding:9px 18px;cursor:pointer;
-  font-size:0.88rem;font-family:'DM Sans',sans-serif;font-weight:600;
-  border:1px solid var(--border);background:var(--bg2);color:var(--text-soft);
-  transition:all 0.18s;
-}
-.pm-post{background:var(--purple);color:#fff;border-color:transparent;}
-.pm-cancel:hover{border-color:var(--orange);}
-.pm-post:hover{opacity:0.88;}
-
-/* ═══════════════════════════════════════════════════════
-   SOUNDBOARD — right-side panel, DJ only button visible
-═══════════════════════════════════════════════════════ */
-.sb-btn{
-  background:linear-gradient(135deg, var(--orange) 0%, var(--orange-dim) 100%);
-  border:none;border-radius:20px;
-  color:#000;padding:7px 13px;cursor:pointer;
-  display:none;/* shown only for DJ users */
-  align-items:center;gap:6px;
-  font-size:0.82rem;font-weight:700;font-family:'DM Sans',sans-serif;
-  transition:opacity 0.2s,box-shadow 0.2s;
-  white-space:nowrap;
-  box-shadow:0 2px 10px var(--orange-glow);
-  flex-shrink:0;
-}
-.sb-btn:hover{opacity:0.88;box-shadow:0 4px 14px var(--orange-glow);}
-.sb-btn.open{box-shadow:0 0 0 2px var(--orange), 0 4px 14px var(--orange-glow);}
-
-.sb-panel{
-  position:fixed;
-  top:0;right:0;bottom:0;
-  width:200px;
-  background:var(--bg1);
-  border-left:1px solid var(--border);
-  z-index:180;
-  display:none;flex-direction:column;
-  box-shadow:-8px 0 32px rgba(0,0,0,0.4);
-  animation:sbSlide 0.2s ease;
-}
-.sb-panel.open{display:flex;}
-@keyframes sbSlide{from{transform:translateX(200px);}to{transform:translateX(0);}}
-.sb-panel-hdr{
-  padding:14px 14px 10px;
-  border-bottom:1px solid var(--border-soft);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.sb-panel-title{
-  font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;
-  color:var(--orange);
-}
-.sb-mute-btn{
-  background:none;border:none;cursor:pointer;color:var(--text-muted);
-  font-size:0.72rem;font-family:'DM Mono',monospace;
-  padding:3px 7px;border:1px solid var(--grey-dim);border-radius:5px;
-  transition:all 0.15s;
-}
-.sb-mute-btn:hover{color:var(--red);border-color:var(--red);}
-.sb-mute-btn.muted{color:var(--red);border-color:var(--red);background:rgba(255,85,85,0.08);}
-.sb-sounds{
-  flex:1;overflow-y:auto;padding:10px;
-  display:grid;grid-template-columns:1fr 1fr;gap:7px;
-}
-.sb-sound-btn{
-  background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:10px;padding:10px 6px 8px;
-  cursor:pointer;text-align:center;
-  transition:all 0.18s;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-}
-.sb-sound-btn:hover{border-color:var(--orange);background:var(--orange-glow);}
-.sb-sound-btn:active{transform:scale(0.94);}
-.sb-sound-btn.playing{border-color:var(--orange);box-shadow:0 0 8px var(--orange-glow);}
-.sb-sound-ico{font-size:1.4rem;line-height:1;}
-.sb-sound-name{font-size:0.65rem;color:var(--text-soft);font-family:'DM Mono',monospace;}
-.sb-footer{
-  padding:10px 14px;border-top:1px solid var(--border-soft);
-  font-size:0.68rem;color:var(--text-muted);text-align:center;
-}
-/* Shift chat layout when soundboard open */
-#chat-screen.sb-open{margin-right:200px;}
-
-
-/* ── Notification sound settings modal ── */
-.snd-modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.72);
-  z-index:600;display:none;align-items:center;justify-content:center;padding:16px;
-}
-.snd-modal-overlay.show{display:flex;}
-.snd-modal{
-  background:var(--bg1);border:1px solid var(--border);
-  border-radius:18px;padding:22px 20px 18px;
-  width:100%;max-width:400px;box-shadow:var(--shadow);
-}
-.snd-modal-title{
-  font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;
-  color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;
-}
-.snd-field-label{
-  font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;
-  color:var(--text-muted);margin-bottom:5px;
-}
-.snd-url-input{
-  width:100%;background:var(--bg2);border:1px solid var(--border-soft);
-  border-radius:9px;color:var(--text);padding:10px 12px;
-  font-size:0.88rem;font-family:'DM Mono',monospace;outline:none;
-  transition:border-color 0.2s;margin-bottom:6px;
-}
-.snd-url-input:focus{border-color:var(--orange);}
-.snd-hint{
-  font-size:0.7rem;color:var(--text-muted);line-height:1.55;margin-bottom:14px;
-}
-.snd-hint a{color:var(--orange-text);text-decoration:none;}
-.snd-hint a:hover{text-decoration:underline;}
-.snd-btn-row{display:flex;gap:8px;}
-.snd-test-btn,.snd-save-btn,.snd-cancel-btn{
-  border-radius:9px;padding:9px 16px;cursor:pointer;
-  font-size:0.86rem;font-family:'DM Sans',sans-serif;font-weight:600;
-  border:1px solid var(--border);background:var(--bg2);color:var(--text-soft);
-  transition:all 0.18s;
-}
-.snd-save-btn{background:var(--orange);color:#000;border-color:transparent;flex:1;}
-.snd-save-btn:hover{opacity:0.88;}
-.snd-test-btn:hover,.snd-cancel-btn:hover{border-color:var(--orange);}
-.snd-reset{
-  background:none;border:none;cursor:pointer;color:var(--text-muted);
-  font-size:0.72rem;text-decoration:underline;padding:0;margin-top:8px;
-  display:block;font-family:'DM Sans',sans-serif;
-}
-.snd-reset:hover{color:var(--orange);}
-
 </style>
 </head>
 <body>
@@ -1968,32 +1193,10 @@ body{
         <path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/>
       </svg></span>
       <div class="header-title" id="chat-room-name">Zelechat</div>
-      <!-- Room toggle button -->
-      <button class="room-switch-btn" id="room-switch-btn" onclick="switchRoom(this.dataset.target)" title="Switch chat room">
-        <img id="rsb-logo" src="" alt="">
-        <span id="rsb-name"></span>
-      </button>
     </div>
     <div class="header-right">
-      <!-- Soundboard button — only for DJ usernames -->
-      <button class="sb-btn" id="sb-btn" onclick="toggleSoundboard()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        <span class="sb-btn-label">Soundboard</span>
-      </button>
-
-      <!-- Purge button — only rendered for username xxxPurge -->
-      <button id="purge-btn" onclick="purgeChat()" title="Clear all chat history">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"/>
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-          <path d="M10 11v6"/><path d="M14 11v6"/>
-          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-        </svg>
-        <span class="purge-text">Purge Chat</span>
-      </button>
-
       <!-- Utility buttons: sound / theme / notifications -->
-      <button class="util-btn" id="sound-btn" onclick="toggleSound()" ondblclick="openSoundSettings();event.preventDefault()" title="Click to toggle · Double-click to change sound">
+      <button class="util-btn" id="sound-btn" onclick="toggleSound()" title="Toggle message sound">
         <svg id="sound-icon-on" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         <svg id="sound-icon-off" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
       </button>
@@ -2002,29 +1205,19 @@ body{
         <svg id="theme-icon-light" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
       <div class="bell-wrap">
-        <button class="util-btn" id="notif-btn" onclick="requestNotifications()" title="Notification settings">
-          <!-- Default: not yet asked -->
-          <svg id="bell-default" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <!-- Granted: active/on -->
-          <svg id="bell-granted" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <!-- Denied: slashed bell -->
-          <svg id="bell-denied" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+        <button class="util-btn" id="notif-btn" onclick="requestNotifications()" title="Enable notifications">
+          <svg id="bell-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </button>
-        <span class="bell-dot" id="bell-dot"></span>
+        <span class="bell-dot show" id="bell-dot"></span>
       </div>
 
       <!-- NHL Scores Widget -->
       <div class="scores-panel" id="scores-panel">
         <button class="scores-btn" id="scores-btn" onclick="toggleScoresPanel()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
-            <line x1="7" y1="8" x2="7" y2="12"/>
-            <line x1="12" y1="6" x2="12" y2="12"/>
-            <line x1="17" y1="9" x2="17" y2="12"/>
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
           </svg>
-          <span class="scores-btn-label">Scores</span>
+          Scores
         </button>
         <div class="scores-dropdown" id="scores-dd">
           <div class="scores-hdr">
@@ -2054,7 +1247,7 @@ body{
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        <span class="users-btn-label">Online</span> <span class="count" id="online-cnt">0</span>
+        Online <span class="count" id="online-cnt">0</span>
       </button>
       <div class="users-dropdown" id="users-dd">
         <div class="users-header">Who's here</div>
@@ -2065,23 +1258,8 @@ body{
   </div><!-- /.chat-header -->
 
   <div class="reset-notice">
-    <span id="reset-notice-text">Chat history is server-managed at 3:00 AM ET</span>
+    <span id="reset-notice-text">Chat history clears automatically every night at 3:00 AM EST</span>
   </div>
-
-  <!-- Hot Take pinned bar -->
-  <div class="hot-take-bar" id="hot-take-bar">
-    <span class="ht-icon">🔥📌</span>
-    <span class="ht-label">Hot Take</span>
-    <span class="ht-text" id="ht-text"></span>
-    <span class="ht-author" id="ht-author"></span>
-    <div class="ht-timer-wrap">
-      <span class="ht-timer" id="ht-timer">60s</span>
-      <div class="ht-progress"><div class="ht-bar" id="ht-bar"></div></div>
-    </div>
-  </div>
-
-  <!-- Poll pinned bar -->
-  <div class="poll-bar" id="poll-bar"></div>
 
   <div class="msgs-container">
     <div class="messages-area" id="msgs"></div>
@@ -2125,11 +1303,11 @@ body{
   <!-- Typing indicator -->
   <div class="typing-bar" id="typing-bar"></div>
 
-  <div class="input-zone" id="input-zone">
+  <div class="input-zone" style="position:relative;">
     <!-- @ command hint -->
     <div id="at-hint" class="at-hint" style="display:none;">@NHL · @NHL standings · @NHL [team] · @HockeyDB [player name]</div>
 
-    <!-- Emoji panel (opens above input) -->
+    <!-- Emoji panel -->
     <div id="emoji-panel" class="emoji-panel" style="display:none;">
       <div class="emoji-panel-cats" id="emoji-cats"></div>
       <div class="emoji-grid" id="emoji-grid"></div>
@@ -2147,144 +1325,39 @@ body{
       <div class="gif-grid" id="gif-grid"><div class="gif-loading">Search for a GIF above ↑</div></div>
     </div>
 
-    <!-- Attach menu — slides up on mobile when "+" is tapped -->
-    <div id="attach-menu" class="attach-menu" style="display:none;">
-      <button class="attach-menu-item" onclick="toggleEmojiPanel();closeAttachMenu()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-        Emoji
+    <div class="input-pill">
+      <textarea id="msg-input" placeholder="Message…" rows="1"></textarea>
+      <!-- Emoji -->
+      <button class="attach-btn" onclick="toggleEmojiPanel()" id="emoji-btn" title="Emoji">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+          <line x1="9" y1="9" x2="9.01" y2="9"/>
+          <line x1="15" y1="9" x2="15.01" y2="9"/>
+        </svg>
       </button>
-      <button class="attach-menu-item" onclick="toggleGifPanel();closeAttachMenu()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><text x="5" y="16" font-size="9" fill="currentColor" stroke="none" font-family="monospace" font-weight="bold">GIF</text></svg>
-        GIF
-      </button>
-      <button class="attach-menu-item" onclick="document.getElementById('img-file').click();closeAttachMenu()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Photo
-      </button>
-      <button class="attach-menu-item" onclick="openPollModal();closeAttachMenu()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="6" rx="2"/><rect x="3" y="13" width="12" height="6" rx="2"/></svg>
-        Poll
-      </button>
-      <button class="attach-menu-item" onclick="openHotTakeModal();closeAttachMenu()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
-        Hot Take
-      </button>
-    </div>
-
-    <div class="input-row">
-      <!-- "+" button: on desktop opens emoji; on mobile opens attach-menu -->
-      <button class="plus-btn" id="plus-btn" onclick="togglePlusMenu()" title="Attach">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-
-      <div class="input-pill">
-        <!-- enterkeyhint="send" tells mobile keyboard to show Send/Go instead of Return -->
-        <textarea id="msg-input" placeholder="Message…" rows="1"
-          enterkeyhint="send"
-          inputmode="text"></textarea>
-        <!-- Emoji button inside pill — desktop only via CSS -->
-        <button class="attach-btn desktop-only" onclick="toggleEmojiPanel()" id="emoji-btn" title="Emoji">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-            <line x1="9" y1="9" x2="9.01" y2="9"/>
-            <line x1="15" y1="9" x2="15.01" y2="9"/>
-          </svg>
-        </button>
-        <!-- GIF, POLL, Pin — desktop only -->
-        <button class="gif-label desktop-only" onclick="toggleGifPanel()" title="Search GIFs">GIF</button>
-        <button class="poll-btn desktop-only" onclick="openPollModal()" title="Create a Poll">POLL</button>
-        <button class="hot-take-btn desktop-only" onclick="openHotTakeModal()" title="Post a Hot Take (60s pin)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="17" x2="12" y2="22"/>
-            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
-          </svg>
-        </button>
-        <button class="attach-btn desktop-only" onclick="document.getElementById('img-file').click()" title="Send image">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-        </button>
-      </div>
-      <input type="file" id="img-file" accept="image/*" onchange="handleImg(event)">
-
-      <!-- Send button — ALWAYS visible -->
-      <button class="send-btn" id="send-btn" onclick="sendMsg()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"/>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      <!-- GIF -->
+      <button class="gif-label" onclick="toggleGifPanel()" title="Search GIFs">GIF</button>
+      <!-- Image upload -->
+      <button class="attach-btn" onclick="document.getElementById('img-file').click()" title="Send image">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
         </svg>
       </button>
     </div>
-  </div>
-
-
-  <!-- Hot Take modal -->
-  <div class="ht-modal-overlay" id="ht-modal-overlay">
-    <div class="ht-modal">
-      <div class="ht-modal-title">🔥📌 Hot Take</div>
-      <textarea id="ht-input" placeholder="Drop your hot take (max 250 chars)…" maxlength="250"
-        oninput="document.getElementById('ht-char').textContent=(250-this.value.length)+' left';document.getElementById('ht-char').className='ht-char-count'+(this.value.length>=250?' over':'');"></textarea>
-      <div class="ht-char-count" id="ht-char">250 left</div>
-      <div class="ht-modal-btns">
-        <button class="ht-cancel-btn" onclick="closeHotTakeModal()">Cancel</button>
-        <button class="ht-post-btn" onclick="postHotTake()">Post Hot Take 🔥</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Poll modal -->
-  <div class="poll-modal-overlay" id="poll-modal-overlay">
-    <div class="poll-modal">
-      <div class="poll-modal-title">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="6" rx="2"/><rect x="3" y="13" width="12" height="6" rx="2"/></svg>
-        Create a Poll
-      </div>
-      <div class="pm-field">
-        <div class="pm-label">Question</div>
-        <input class="pm-input" id="pm-question" type="text" placeholder="Ask something…" maxlength="120">
-      </div>
-      <div class="pm-label" style="margin-bottom:6px">Options (2–5)</div>
-      <div class="pm-options-list" id="pm-opts">
-        <div class="pm-opt-row"><input class="pm-input" type="text" placeholder="Option 1" maxlength="80"><button class="pm-rem-btn" onclick="removePollOpt(this)" style="display:none">✕</button></div>
-        <div class="pm-opt-row"><input class="pm-input" type="text" placeholder="Option 2" maxlength="80"><button class="pm-rem-btn" onclick="removePollOpt(this)" style="display:none">✕</button></div>
-      </div>
-      <button class="pm-add-btn" id="pm-add-btn" onclick="addPollOpt()" style="margin-bottom:14px;width:100%">+ Add Option</button>
-      <div class="pm-label" style="margin-bottom:6px">Duration</div>
-      <div class="pm-duration">
-        <button class="pm-dur-btn active" data-dur="900000" onclick="selectPollDur(this)">15 min</button>
-        <button class="pm-dur-btn" data-dur="3600000" onclick="selectPollDur(this)">1 hour</button>
-      </div>
-      <div class="pm-btns">
-        <button class="pm-cancel" onclick="closePollModal()">Cancel</button>
-        <button class="pm-post" onclick="submitPoll()">Start Poll</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Room-switch password modal -->
-  <div class="rspw-overlay" id="rspw-overlay" style="display:none" onclick="if(event.target===this)cancelRoomSwitch()">
-    <div class="rspw-card">
-      <div class="rspw-logo">
-        <img id="rspw-logo" src="" alt="">
-        <span class="rspw-room-name" id="rspw-room-name"></span>
-      </div>
-      <div class="rspw-sub">Enter the room password to join</div>
-      <input class="rspw-input" type="password" id="rspw-pw" placeholder="Password…"
-             onkeydown="if(event.key==='Enter')confirmRoomSwitch();if(event.key==='Escape')cancelRoomSwitch()">
-      <div class="rspw-err" id="rspw-err"></div>
-      <div class="rspw-btns">
-        <button class="rspw-cancel" onclick="cancelRoomSwitch()">Cancel</button>
-        <button class="rspw-join" onclick="confirmRoomSwitch()">Join Room →</button>
-      </div>
-    </div>
+    <input type="file" id="img-file" accept="image/*" onchange="handleImg(event)">
+    <button class="send-btn" onclick="sendMsg()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
   </div>
 
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 //  FIREBASE CONFIG
@@ -2312,8 +1385,7 @@ const ROOMS = {
   zelechat: {
     id: 'zelechat', theme: 'zelechat',
     name: 'Zelechat', tagline: 'Legion of Doom',
-    pwHash: 'e7e22d645ce35e00451ad7c850483520f37d39016e487a142c563697a0425475',
-    encKeyPrefix: 'ZC_enc_',
+    password: 'Zelepukin', encKey: 'ZC_enc_Zelepukin_2024',
     path: 'zc', favicon: FLYERS_URI,
     loginLogo: `<svg class="login-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c"><path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/><path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/><path d="M313.17,324.33v30.3H309.5v-13.8H295.3v13.8h-3.67v-30.3h3.67v12.94h14.2V324.33Z" transform="translate(-189.58 -285.32)"/><path d="M332.79,343v11.62h-3.66V343.14l-10.71-18.81h4.15L331,339.11l8.39-14.78h4.15Z" transform="translate(-189.58 -285.32)"/><path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/></svg>`,
     headerLogo: `<svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c"><path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/><path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/><path d="M313.17,324.33v30.3H309.5v-13.8H295.3v13.8h-3.67v-30.3h3.67v12.94h14.2V324.33Z" transform="translate(-189.58 -285.32)"/><path d="M332.79,343v11.62h-3.66V343.14l-10.71-18.81h4.15L331,339.11l8.39-14.78h4.15Z" transform="translate(-189.58 -285.32)"/><path d="M362.77,397.73c-7.75.86-15.55,1.35-23.32,2.09-7.31.7-13.87,3-18.92,8.75-5.24,6-10.57,11.94-16.15,17.63-2.87,2.92-3.24,4.9-.18,8.08,14.47,15.06,26.63,32.22,42.29,46.19,1.53,1.37,2.68,3,1.78,5.28a3.59,3.59,0,0,1-3.1,2.2c-2.45.32-3.56-1.41-4.6-3.14-1.37-2.26-2.19-4.79-4-6.84-11.15-12.52-22.2-25.13-33.32-37.68-2.79-3.14-4.21-4.72-5.6-4.77s-2.81,1.63-5.6,4.77c-11.12,12.55-22.17,25.16-33.32,37.68-1.82,2-2.64,4.58-4,6.84-1,1.73-2.15,3.46-4.6,3.14a3.59,3.59,0,0,1-3.1-2.2c-.9-2.23.25-3.91,1.78-5.28,15.66-14,27.82-31.13,42.29-46.19,3.06-3.18,2.69-5.16-.18-8.08-5.58-5.69-10.91-11.63-16.15-17.63-5.05-5.78-11.61-8.05-18.92-8.75-7.77-.74-15.57-1.23-23.32-2.09-4.89-.53-6.82-3.32-5.52-7.47,1.41-4.53,5.43-3.59,8.65-3.32a264.46,264.46,0,0,1,27.86,4c4.23.86,6.77,4,9.39,7,7.53,8.64,15.07,17.26,22.5,26,.84,1,1.52,1.61,2.25,1.65s1.41-.65,2.25-1.65c7.43-8.72,15-17.34,22.5-26,2.62-3,5.16-6.16,9.39-7a264.46,264.46,0,0,1,27.86-4c3.22-.27,7.24-1.21,8.65,3.32C369.59,394.41,367.66,397.2,362.77,397.73Z" transform="translate(-189.58 -285.32)"/></svg>`
@@ -2321,8 +1393,7 @@ const ROOMS = {
   whyhockey: {
     id: 'whyhockey', theme: 'whyhockey',
     name: 'Whyhockey', tagline: 'Stanley Cup Champions 2024 & 2025',
-    pwHash: 'f1c26171f8784d5c9e829eee74bf3595e4b060a5919c840dc5f8e2b3d99e1668',
-    encKeyPrefix: 'WH_enc_',
+    password: 'Whyzerman', encKey: 'WH_enc_Whyzerman_2024',
     path: 'why', favicon: PANTHERS_URI,
     loginLogo: `<img class="login-logo-img" src="${PANTHERS_URI}" alt="Whyhockey">`,
     headerLogo: `<img class="header-logo" src="${PANTHERS_URI}" alt="Whyhockey">`
@@ -2330,26 +1401,11 @@ const ROOMS = {
 };
 
 let cfg = null;
-const roomSecrets = {};
-const ACTIVE_POLL_META_KEY = 'activePoll';
-
-function hashPassword(pw){
-  return CryptoJS.SHA256(String(pw)).toString(CryptoJS.enc.Hex);
-}
-
-function deriveEncKey(roomCfg, pw){
-  return `${roomCfg.encKeyPrefix}${pw}_2024`;
-}
-
-function cacheRoomSecret(roomId, pw){
-  const roomCfg = ROOMS[roomId];
-  roomSecrets[roomId] = { pw, encKey: deriveEncKey(roomCfg, pw) };
-}
 
 function selectRoom(roomId) {
   cfg = ROOMS[roomId];
-  ROOM_PW = null;
-  ENC_KEY = null;
+  ROOM_PW = cfg.password;
+  ENC_KEY = cfg.encKey;
 
   // Apply CSS theme
   document.documentElement.dataset.theme = cfg.theme;
@@ -2369,7 +1425,7 @@ function selectRoom(roomId) {
   document.getElementById('chat-room-name').textContent   = cfg.name;
   document.getElementById('msg-input').placeholder        = 'Message ' + cfg.name + '\u2026';
   document.getElementById('reset-notice-text').textContent =
-    cfg.name + ' history is server-managed at 3:00 AM ET';
+    cfg.name + ' history clears automatically every night at 3:00 AM EST';
 
   // Reset counters from any previous room session
   unreadCount  = 0;
@@ -2385,7 +1441,6 @@ function selectRoom(roomId) {
 // ─────────────────────────────────────────────────────────────
 let ROOM_PW  = null; // set by selectRoom()
 let ENC_KEY  = null; // set by selectRoom()
-let roomResetCutoff = 0;
 const MAX_POKEMON = 151;
 
 const POKEMON = [
@@ -2462,27 +1517,16 @@ function doLogin(){
   if(name.length < 2 || name.length > 20){
     document.getElementById('err-name').style.display = 'block'; ok = false;
   }
-  if(hashPassword(pw) !== cfg.pwHash){
+  if(pw !== ROOM_PW){
     document.getElementById('err-pw').style.display = 'block'; ok = false;
   }
   if(!ok) return;
 
   _loginPending = true;
   const btn = document.querySelector('.btn-enter');
-  if(btn){ btn.disabled = true; btn.textContent = 'Entering\u2026'; }
-  // Use a session-stable uid so page refreshes don't create a new presence record.
-  // sessionStorage persists uid for the browser tab's lifetime — a new tab or
-  // a deliberate logout gets a fresh uid.
-  let uid = sessionStorage.getItem('zc_session_uid');
-  if(!uid){
-    uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-    sessionStorage.setItem('zc_session_uid', uid);
-  }
+  if(btn){ btn.disabled = true; btn.textContent = 'Entering…'; }
+  const uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
   me = { uid, name, avId: pickAvId };
-  cacheRoomSecret(cfg.id, pw);
-  ROOM_PW = pw;
-  ENC_KEY = roomSecrets[cfg.id].encKey;
-  authenticatedRooms.add(cfg.id);
   enterChat();
 }
 
@@ -2518,48 +1562,16 @@ function enterChat(){
   initTheme();
   initNotifications();
   initScrollFAB();
-  updateRoomSwitchBtn();
-  checkPurgePrivilege();
-
-  // One-shot sweep: remove any stale/blank presence records immediately on join.
-  // This clears zombies left by crashed tabs or failed onDisconnect events.
-  (function sweepStaleUsers(){
-    const STALE = Date.now() - 70000;
-    db.ref(cfg.path + '/users').once('value', snap => {
-      const data = snap.val() || {};
-      Object.entries(data).forEach(([uid, u]) => {
-        if(!u || !u.name || !u.avId || (u.ts || 0) < STALE){
-          db.ref(cfg.path + '/users/' + uid).remove();
-        }
-      });
-    });
-  })();
-
-  checkReset().finally(() => {
-    listenMessages();
-  });
+  checkReset();
+  listenMessages();
   listenUsers();
   listenTyping();
-  listenHotTake();
-  listenPolls();
-  listenSoundboard();
-  checkDJPrivilege();
-  buildSoundboard();
-  // Init soundboard mute from localStorage
-  sbMuted = localStorage.getItem("zc_sbmute") === "1";
-  const sbMuteBtn = document.getElementById("sb-mute-btn");
-  if(sbMuteBtn){ sbMuteBtn.textContent = sbMuted?"Unmute":"Mute"; sbMuteBtn.classList.toggle("muted",sbMuted); }
 
   const ta = document.getElementById('msg-input');
-  // keydown handles desktop Enter
   ta.addEventListener('keydown', e => {
     if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); return; }
     if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); return; }
     setTyping();
-  });
-  // keypress backup for iOS Safari and Android keyboards
-  ta.addEventListener('keypress', e => {
-    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
   });
   ta.addEventListener('input', () => {
     autoResize();
@@ -2578,11 +1590,31 @@ function enterChat(){
   // (global click handler registered at module level below)
 }
 
+// ─────────────────────────────────────────────────────────────
+//  DAILY RESET — 3 AM America/New_York (DST-aware, atomic)
+// ─────────────────────────────────────────────────────────────
+function get3amNYThreshold(){
+  const now   = new Date();
+  // Parse wall-clock time in New York — handles EST and EDT automatically
+  const nyNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const ny3am = new Date(nyNow);
+  ny3am.setHours(3, 0, 0, 0);
+  const offsetMs = now.getTime() - nyNow.getTime();
+  return ny3am.getTime() + offsetMs;
+}
+
 function checkReset(){
-  const metaRef = db.ref(cfg.path+'/meta/lastReset');
-  return metaRef.once('value')
-    .then(snap => { roomResetCutoff = Number(snap.val() || 0); })
-    .catch(() => { roomResetCutoff = 0; });
+  const metaRef   = db.ref(cfg.path+'/meta/lastReset');
+  const threshold = get3amNYThreshold();
+  const now       = Date.now();
+  if(now <= threshold) return;
+  // Atomic transaction — only the first client past 3 AM triggers the wipe
+  metaRef.transaction(last => {
+    if((last || 0) >= threshold) return; // already done — abort
+    return now;
+  }, (err, committed) => {
+    if(!err && committed) db.ref(cfg.path+'/messages').remove();
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2590,10 +1622,6 @@ function checkReset(){
 // ─────────────────────────────────────────────────────────────
 let _msgRef = null;
 let _initialLoadDone = false; // true once all historical messages have loaded
-function isVisibleMessage(msg){
-  if(!msg) return false;
-  return !roomResetCutoff || Number(msg.ts || 0) >= roomResetCutoff;
-}
 function listenMessages(){
   if(_msgRef) _msgRef.off();
   _initialLoadDone = false;
@@ -2602,18 +1630,11 @@ function listenMessages(){
 
   ref.on('child_added', snap => {
     const msg = snap.val();
-    if(!msg) return; // guard against null snapshots
-    if(!isVisibleMessage(msg)) return;
     msgCache[snap.key] = msg;
     if(!rendered[snap.key]){
       rendered[snap.key] = true;
-      try{
-        appendMsg(snap.key, msg);
-        scrollBottom();
-      }catch(e){
-        console.error('appendMsg failed for', snap.key, e);
-        // Don't re-throw — keep the listener alive for subsequent messages
-      }
+      appendMsg(snap.key, msg);
+      scrollBottom();
     }
   });
 
@@ -2621,31 +1642,20 @@ function listenMessages(){
   _msgRef.once('value', () => { _initialLoadDone = true; scrollBottom(true); });
 
   ref.on('child_changed', snap => {
-    try{
-      const msg = snap.val();
-      if(!msg) return;
-      if(!isVisibleMessage(msg)){
-        delete msgCache[snap.key];
-        delete rendered[snap.key];
-        document.getElementById('m-' + snap.key)?.remove();
-        return;
-      }
-      msgCache[snap.key] = msg;
-      patchMsg(snap.key, msg);
-    }catch(e){ console.error('child_changed error:', e); }
+    const msg = snap.val();
+    msgCache[snap.key] = msg;
+    patchMsg(snap.key, msg);
   });
 
   ref.on('child_removed', snap => {
-    try{
-      delete msgCache[snap.key];
-      delete rendered[snap.key];
-      const el = document.getElementById('m-' + snap.key);
-      if(el){
-        el.style.transition = 'opacity 0.25s';
-        el.style.opacity    = '0';
-        setTimeout(() => el.remove(), 260);
-      }
-    }catch(e){ console.error('child_removed error:', e); }
+    delete msgCache[snap.key];
+    delete rendered[snap.key];
+    const el = document.getElementById('m-' + snap.key);
+    if(el){
+      el.style.transition = 'opacity 0.25s';
+      el.style.opacity    = '0';
+      setTimeout(() => el.remove(), 260);
+    }
   });
 }
 
@@ -2858,65 +1868,23 @@ async function sendMsg(){
     isImg: replyCtx.isImg || false
   } : null;
 
-  // Clear UI optimistically before the async write completes
-  const sentText = text;
+  db.ref(cfg.path+'/messages').push({
+    uid:   me.uid,
+    name:  me.name,
+    avId:  me.avId,
+    text:  enc(text),
+    ts:    Date.now(),
+    isImg: false,
+    edited:false,
+    rply
+  });
+
   ta.value = ''; autoResize(); cancelReply();
   clearTypingStatus();
   document.getElementById('at-hint').style.display = 'none';
+  // Sending a message implies user is at bottom — clear scroll badge
   scrollUnread = 0; updateScrollBadge();
   document.getElementById('scroll-fab')?.classList.remove('show');
-
-  // Await the push so we can catch Firebase permission errors.
-  // try-catch alone won't work here — push() returns a Promise.
-  let encText;
-  try { encText = enc(sentText); }
-  catch(e){ showSendError('Encryption error — room not loaded yet. Please refresh.'); ta.value = sentText; return; }
-
-  try{
-    await db.ref(cfg.path+'/messages').push({
-      uid:   me.uid,
-      name:  me.name,
-      avId:  me.avId,
-      text:  encText,
-      ts:    Date.now(),
-      isImg: false,
-      edited:false,
-      rply
-    });
-  }catch(err){
-    console.error('Firebase send failed:', err.code || err.message);
-    // Restore text so user doesn't lose their message
-    ta.value = sentText;
-    autoResize();
-    if(err.code === 'PERMISSION_DENIED'){
-      showSendError('Permission denied — check Firebase database rules. The rule for "' + cfg.path + '" must allow write.');
-    } else {
-      showSendError('Send failed: ' + (err.message || err.code || 'unknown error'));
-    }
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-//  SEND ERROR TOAST
-// ─────────────────────────────────────────────────────────────
-function showSendError(msg){
-  let toast = document.getElementById('send-error-toast');
-  if(!toast){
-    toast = document.createElement('div');
-    toast.id = 'send-error-toast';
-    toast.style.cssText = [
-      'position:fixed','bottom:90px','left:50%','transform:translateX(-50%)',
-      'background:#ff4444','color:#fff','padding:10px 18px','border-radius:10px',
-      'font-family:DM Sans,sans-serif','font-size:0.85rem','z-index:9999',
-      'box-shadow:0 4px 16px rgba(0,0,0,0.5)','max-width:90vw','text-align:center',
-      'line-height:1.4'
-    ].join(';');
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.style.display = 'block';
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 7000);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2965,25 +1933,18 @@ function processAndSend(file){
   reader.readAsDataURL(file);
 }
 
-async function dispatchImageMsg(dataURL){
+function dispatchImageMsg(dataURL){
+  // Correctly preserve quoted text when replying to a text msg with an image
   const rply = replyCtx ? {
     name:  replyCtx.name,
     text:  replyCtx.isImg ? null : replyCtx.encText,
     isImg: replyCtx.isImg || false
   } : null;
-  try{
-    await db.ref(cfg.path+'/messages').push({
-      uid: me.uid, name: me.name, avId: me.avId,
-      text: dataURL, ts: Date.now(), isImg: true, edited: false, rply
-    });
-    cancelReply();
-  }catch(err){
-    console.error('Image send failed:', err.code || err.message);
-    if(err.code === 'PERMISSION_DENIED')
-      showSendError('Permission denied — check Firebase rules for "' + cfg.path + '".');
-    else
-      showSendError('Image send failed: ' + (err.message || err.code));
-  }
+  db.ref(cfg.path+'/messages').push({
+    uid: me.uid, name: me.name, avId: me.avId,
+    text: dataURL, ts: Date.now(), isImg: true, edited: false, rply
+  });
+  cancelReply();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -3039,24 +2000,9 @@ function listenUsers(){
   _usersRef = db.ref(cfg.path+'/users');
   _usersRef.on('value', snap => {
     const users = snap.val() || {};
-    const now   = Date.now();
-    // STALE FILTER: heartbeat runs every 25s; drop any record not updated in 70s.
-    // This removes zombies from crashed tabs, forced closes, and failed onDisconnect.
-    // BLANK FILTER: skip records with empty/missing name or avId (corrupted entries).
-    const STALE_MS = 70000;
-    const list = Object.entries(users).filter(([uid, u]) => {
-      if(!u || !u.name || !u.avId) return false;          // blank / corrupted
-      if((now - (u.ts || 0)) > STALE_MS) {
-        // Quietly remove the stale record from Firebase so it doesn't linger
-        db.ref(cfg.path + '/users/' + uid).remove();
-        return false;
-      }
-      return true;
-    });
+    const list  = Object.entries(users);
 
     document.getElementById('online-cnt').textContent = list.length;
-    const mc = document.getElementById('mobile-online-cnt');
-    if(mc) mc.textContent = list.length;
 
     const ul = document.getElementById('users-list');
     ul.innerHTML = '';
@@ -3064,10 +2010,10 @@ function listenUsers(){
     // Sort current user to top
     const sorted = [...list].sort(([a],[b]) => (a===me.uid?-1:b===me.uid?1:0));
     sorted.forEach(([uid, u]) => {
-      const row     = document.createElement('div');
-      const isMe    = uid === me.uid;
-      row.className = 'user-row' + (isMe ? ' me-row' : '');
-      row.innerHTML = `<img src="${spriteUrl(u.avId)}" alt=""><span class="uname">${xss(u.name)}</span>`;
+      const row      = document.createElement('div');
+      const isMe     = uid === me.uid;
+      row.className  = 'user-row' + (isMe ? ' me-row' : '');
+      row.innerHTML  = `<img src="${spriteUrl(u.avId)}" alt=""><span class="uname">${xss(u.name)}</span>`;
       ul.appendChild(row);
     });
   });
@@ -3148,14 +2094,12 @@ function resolveTeam(q){
 }
 
 function postBot(botName, text, avId){
-  try{
-    db.ref(cfg.path+'/messages').push({
-      uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
-      name:botName, avId,
-      text:enc(text), ts:Date.now(),
-      isImg:false, edited:false, rply:null, isBot:true
-    });
-  }catch(e){ console.error('postBot failed:', e); }
+  db.ref(cfg.path+'/messages').push({
+    uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
+    name:botName, avId,
+    text:enc(text), ts:Date.now(),
+    isImg:false, edited:false, rply:null, isBot:true
+  });
 }
 
 // Fetch wrapper — tries direct NHL API, falls back to corsproxy.io on any failure
@@ -3195,11 +2139,10 @@ async function cmdNHL(args){
   if(!sub || sub === 'scores' || sub === 'score'){
     postBot('NHL Bot','⏳ Fetching today\'s scores…', BOT_AV_NHL);
     try{
-      const hockeyDate = getHockeyDate();
-      const d = await nhlFetch('/v1/score/' + hockeyDate);
+      const d = await nhlFetch('/v1/score/now');
       const games = d.games || [];
       if(!games.length){ postBot('NHL Bot','🏒 No NHL games scheduled today.', BOT_AV_NHL); return; }
-      const dateLabel = d.currentDate || hockeyDate;
+      const dateLabel = d.currentDate || (games[0]?.gameDate) || 'Today';
       let out = `🏒 NHL Scores — ${dateLabel}\n${'─'.repeat(26)}\n`;
       for(const g of games){
         const away = g.awayTeam, home = g.homeTeam;
@@ -3483,8 +2426,6 @@ function toggleEmojiPanel(){
 // ─────────────────────────────────────────────────────────────
 //  GIF SEARCH  (Tenor v1 with public demo key)
 // ─────────────────────────────────────────────────────────────
-// NOTE: 'LIVDSRZULELA' is Tenor's public demo key.
-// For production / high-volume use, get a free key at https://developers.google.com/tenor
 const TENOR_KEY = 'LIVDSRZULELA';
 
 function toggleGifPanel(){
@@ -3554,7 +2495,6 @@ function toggleScoresPanel(){
   scoresOpen = !scoresOpen;
   const dd  = document.getElementById('scores-dd');
   const btn = document.getElementById('scores-btn');
-  if(!dd || !btn) return;
   dd.classList.toggle('open', scoresOpen);
   btn.classList.toggle('active', scoresOpen);
 
@@ -3565,43 +2505,7 @@ function toggleScoresPanel(){
     clearInterval(scoresAutoTimer);
     scoresAutoTimer = null;
     stopCountdownTick();
-    // Clear reveal timers so they don't fire against closed panel
-    for(const {hideTimer} of revealedGames.values()) clearTimeout(hideTimer);
-    revealedGames.clear();
   }
-}
-
-// ─────────────────────────────────────────────────────────────
-//  SCORES DATE LOGIC
-//  The NHL API endpoint /v1/score/now uses NHL's own internal
-//  day cutover, which often keeps showing yesterday's games
-//  well into the next morning.
-//
-//  Instead we calculate the correct "hockey date" ourselves:
-//    • If it is currently before 3:00 AM New York time,
-//      we are still on "last night's hockey day" — show
-//      the previous calendar date's games.
-//    • At or after 3:00 AM New York time, show today's games.
-//
-//  We then fetch the date-specific endpoint /v1/score/YYYY-MM-DD,
-//  which always returns exactly the games for the requested date.
-// ─────────────────────────────────────────────────────────────
-
-function getHockeyDate(){
-  // Get the current wall-clock date in New York (handles EST/EDT automatically)
-  const nyStr = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  const nyNow = new Date(nyStr);
-
-  // Before 3 AM → still "last night's" hockey day → use yesterday
-  if(nyNow.getHours() < 3){
-    nyNow.setDate(nyNow.getDate() - 1);
-  }
-
-  // Format as YYYY-MM-DD for the NHL API
-  const y = nyNow.getFullYear();
-  const m = String(nyNow.getMonth() + 1).padStart(2, '0');
-  const d = String(nyNow.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
 }
 
 async function fetchAndRenderScores(showSpinner){
@@ -3610,16 +2514,13 @@ async function fetchAndRenderScores(showSpinner){
     listEl.innerHTML = '<div class="scores-loading">⏳ Loading scores…</div>';
 
   try{
-    const hockeyDate = getHockeyDate();
-    // Use the date-specific endpoint so we always get the right day
-    scoresData = await nhlFetch('/v1/score/' + hockeyDate);
-    // Inject the date in case the API response omits it
-    if(!scoresData.currentDate) scoresData.currentDate = hockeyDate;
+    scoresData = await nhlFetch('/v1/score/now');
     renderScoresList();
     const now = new Date();
     document.getElementById('scores-updated-ts').textContent =
       now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('scores-footer').style.display = '';
+    const footer = document.getElementById('scores-footer');
+    footer.style.display = '';
   }catch(e){
     document.getElementById('scores-list').innerHTML =
       '<div class="scores-loading">⚠️ Could not load scores.<br>Check connection and try again.</div>';
@@ -3631,32 +2532,17 @@ function renderScoresList(){
   const games  = scoresData.games || [];
   const date   = scoresData.currentDate || scoresData.gameDate || '';
 
-  // Pretty date label — show "Yesterday" or "Today" when applicable
+  // Pretty date label
   if(date){
     const [y,m,d] = date.split('-');
-    const gameDay = new Date(+y, +m-1, +d);
-    const nyStr   = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-    const nyNow   = new Date(nyStr);
-    const todayNY = new Date(nyNow.getFullYear(), nyNow.getMonth(), nyNow.getDate());
-    const diffDays = Math.round((todayNY - gameDay) / 86400000);
-
-    let label;
-    if(diffDays === 0)      label = 'Today';
-    else if(diffDays === 1) label = 'Yesterday';
-    else                    label = gameDay.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-
-    document.getElementById('scores-date').textContent = label;
+    const dt = new Date(+y,+m-1,+d);
+    document.getElementById('scores-date').textContent =
+      dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   }
 
   if(!games.length){
-    // Determine whether we're showing today or yesterday so the message makes sense
-    const nyStr = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-    const nyHour = new Date(nyStr).getHours();
-    const msg = nyHour < 3
-      ? 'No games last night 🏒'
-      : 'No NHL games scheduled today 🏒';
     document.getElementById('scores-list').innerHTML =
-      `<div class="scores-loading">${msg}</div>`;
+      '<div class="scores-loading">No NHL games today 🏒</div>';
     return;
   }
 
@@ -3744,7 +2630,7 @@ function buildGameCard(g){
       scoreHtml = `
         <div class="game-score-row">
           <span class="team-abbr">${awayA}</span>
-          <button class="reveal-btn" onclick="revealScore(${id}); event.stopPropagation();">
+          <button class="reveal-btn" onclick="revealScore(${id})">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             Reveal
           </button>
@@ -3845,180 +2731,52 @@ function autoResize(){
 //  Models a puck striking the metal post: sharp impact noise
 //  + metallic ring decay across three inharmonic partials.
 // ─────────────────────────────────────────────────────────────
-let soundEnabled = true;
+let soundEnabled  = true;
+let _sfxCtx       = null;
+let _sfxBuf       = null;
 
-// ── Goal Horn ────────────────────────────────────────────────
-// Three-oscillator air-horn (fundamental + 2nd + 5th partial),
-// run through a WaveShaper for that brassy NHL goal-horn timbre,
-// shaped by an ADSR-style gain envelope.  ~1.1 s duration.
-// ─────────────────────────────────────────────────────────────
-//  NOTIFICATION SOUND
-//  • Plays a URL-based audio file if the user has set one
-//  • Falls back to improved Web Audio synthesis otherwise
-//  • Double-click the speaker button to open sound settings
-// ─────────────────────────────────────────────────────────────
+function getSfxCtx(){
+  const Ctor = window.AudioContext || window.webkitAudioContext;
+  if(!Ctor) return null;
+  if(!_sfxCtx || _sfxCtx.state === 'closed'){
+    _sfxCtx = new Ctor();
+    _sfxBuf = buildPostPing(_sfxCtx);
+  }
+  return _sfxCtx;
+}
+
+function buildPostPing(ctx){
+  const sr  = ctx.sampleRate;
+  const dur = 0.9;                              // 900 ms total
+  const buf = ctx.createBuffer(1, Math.floor(sr * dur), sr);
+  const d   = buf.getChannelData(0);
+  for(let i = 0; i < d.length; i++){
+    const t   = i / sr;
+    // Sharp impact noise (first 14 ms)
+    const imp = t < 0.014 ? (Math.random()*2-1) * Math.exp(-t*280) * 0.55 : 0;
+    // Three metallic partials with different decay rates
+    const p1  = Math.sin(2*Math.PI* 780*t) * 0.42 * Math.exp(-t* 7);
+    const p2  = Math.sin(2*Math.PI*1560*t) * 0.26 * Math.exp(-t*12);
+    const p3  = Math.sin(2*Math.PI*2420*t) * 0.14 * Math.exp(-t*20);
+    d[i] = (imp + p1 + p2 + p3) * 0.65;
+  }
+  return buf;
+}
 
 function playHockeySound(){
   if(!soundEnabled) return;
-  // 1. User-overridden URL takes highest priority
-  const url = localStorage.getItem('zc_notif_sound_url');
-  if(url){ _playAudioUrl(url, false); return; }
-  // 2. YouTube clip (USe_6igPcXU @0:14 for 2s) — default
-  _playYtNotifClip();
-}
-
-// Used by the soundboard goal horn (full, sustained version)
-function _triggerHockeySound(fullHorn){
-  if(!fullHorn){
-    // Notification ping — use YouTube clip
-    playHockeySound();
-  } else {
-    // Full goal horn for soundboard — synthesised blast + crowd
-    _synthHorn(true);
-  }
-}
-
-// Play any direct audio URL
-function _playAudioUrl(url, loop){
   try{
-    const a = new Audio(url);
-    a.volume = 0.62; // ~17% quieter
-    a.loop   = !!loop;
-    const p  = a.play();
-    if(p && p.catch) p.catch(() => _synthNotifSound()); // fallback if URL fails
-  }catch(e){ _synthNotifSound(); }
-}
-
-// ── Improved synthesis: short bright "ding-horn" ping ────────
-// Closer to the brief horn stab heard between whistles in a real arena —
-// a narrow fundamental around 480 Hz with two harmonics, heavy soft-clip
-// for that pressurized-air timbre, sharp attack and very quick decay.
-function _synthNotifSound(){
-  try{
-    const Ctor = window.AudioContext || window.webkitAudioContext;
-    if(!Ctor) return;
-    const ctx = new Ctor();
+    const ctx = getSfxCtx();
+    if(!ctx || !_sfxBuf) return;
     if(ctx.state === 'suspended') ctx.resume();
-    const t0 = ctx.currentTime;
-
-    // Waveshaper: aggressive tanh clip for compressed-air character
-    const ws = ctx.createWaveShaper();
-    const N = 512; const c = new Float32Array(N);
-    for(let i=0;i<N;i++){ const x=(i*2/N)-1; c[i]=Math.tanh(6*x); }
-    ws.curve = c;
-
-    // Resonant bandpass centred on the fundamental's 2nd harmonic
-    const bpf = ctx.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = 960; bpf.Q.value = 2.2;
-
-    // Very short gain envelope: 8ms attack, 380ms sustain, 80ms release
-    const env = ctx.createGain();
-    env.gain.setValueAtTime(0, t0);
-    env.gain.linearRampToValueAtTime(0.35, t0 + 0.008); // ~17% quieter
-    env.gain.setValueAtTime(0.35, t0 + 0.38);
-    env.gain.exponentialRampToValueAtTime(0.001, t0 + 0.46);
-
-    // Three partials: fundamental 480 Hz + 2nd + 3rd harmonic
-    // Sawtooth gives richer harmonic content than square for a horn
-    [[480, 1.0], [960, 0.55], [1440, 0.22]].forEach(([f, a]) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type  = 'sawtooth';
-      o.frequency.setValueAtTime(f, t0);
-      // Characteristic pitch droop of a pressurised-air horn
-      o.frequency.exponentialRampToValueAtTime(f * 0.978, t0 + 0.06);
-      g.gain.value = a;
-      o.connect(g); g.connect(ws);
-      o.start(t0); o.stop(t0 + 0.5);
-    });
-
-    ws.connect(bpf); bpf.connect(env); env.connect(ctx.destination);
-    setTimeout(() => { try{ ctx.close(); }catch(e){} }, 800);
-  }catch(e){}
-}
-
-// ── Full sustain horn (used by soundboard Goal Horn button) ──
-function _synthHorn(fullHorn){
-  try{
-    const Ctor = window.AudioContext || window.webkitAudioContext;
-    if(!Ctor) return;
-    const ctx = new Ctor();
-    if(ctx.state === 'suspended') ctx.resume();
-    const t0   = ctx.currentTime;
-    const dur  = fullHorn ? 2.0 : 0.46;
-    const peak = fullHorn ? 0.55 : 0.42;
-
-    const ws = ctx.createWaveShaper();
-    const N = 512; const c = new Float32Array(N);
-    for(let i=0;i<N;i++){ const x=(i*2/N)-1; c[i]=Math.tanh(6*x); }
-    ws.curve = c;
-
-    const bpf = ctx.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = 960; bpf.Q.value = 2.2;
-
-    const env = ctx.createGain();
-    env.gain.setValueAtTime(0, t0);
-    env.gain.linearRampToValueAtTime(peak, t0 + 0.008);
-    env.gain.setValueAtTime(peak, t0 + dur * 0.78);
-    env.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-
-    [[480, 1.0],[960, 0.55],[1440, 0.22]].forEach(([f, a]) => {
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.type  = 'sawtooth';
-      o.frequency.setValueAtTime(f, t0);
-      o.frequency.exponentialRampToValueAtTime(f * 0.978, t0 + 0.06);
-      g.gain.value = a;
-      o.connect(g); g.connect(ws);
-      o.start(t0); o.stop(t0 + dur + 0.05);
-    });
-
-    ws.connect(bpf); bpf.connect(env); env.connect(ctx.destination);
-
-    if(fullHorn){
-      // Crowd noise burst
-      const bLen = Math.floor(ctx.sampleRate * 1.4);
-      const buf  = ctx.createBuffer(1, bLen, ctx.sampleRate);
-      const d    = buf.getChannelData(0);
-      for(let i=0;i<bLen;i++) d[i] = (Math.random()*2-1) * Math.exp(-i/(ctx.sampleRate*1.1));
-      const ns  = ctx.createBufferSource(); ns.buffer = buf;
-      const ng  = ctx.createGain();
-      ng.gain.setValueAtTime(0.22, t0+0.06);
-      ng.gain.exponentialRampToValueAtTime(0.001, t0+1.6);
-      ns.connect(ng); ng.connect(ctx.destination); ns.start(t0+0.05);
-    }
-
-    setTimeout(() => { try{ ctx.close(); }catch(e){} }, (dur + 0.8) * 1000);
-  }catch(e){}
-}
-
-// ── Sound settings modal ─────────────────────────────────────
-function openSoundSettings(){
-  const saved = localStorage.getItem('zc_notif_sound_url') || '';
-  document.getElementById('snd-url-input').value = saved;
-  document.getElementById('snd-modal-overlay').classList.add('show');
-  setTimeout(() => document.getElementById('snd-url-input').focus(), 80);
-}
-function closeSoundSettings(){
-  document.getElementById('snd-modal-overlay').classList.remove('show');
-}
-function testNotifSound(){
-  const url = document.getElementById('snd-url-input').value.trim();
-  if(url){ _playAudioUrl(url, false); return; }
-  // Test the YouTube clip
-  _playYtNotifClip();
-}
-function saveNotifSound(){
-  const url = document.getElementById('snd-url-input').value.trim();
-  if(url){ localStorage.setItem('zc_notif_sound_url', url); }
-  else   { localStorage.removeItem('zc_notif_sound_url'); }
-  closeSoundSettings();
-  playHockeySound(); // quick confirmation play
-}
-function resetNotifSound(){
-  localStorage.removeItem('zc_notif_sound_url');
-  document.getElementById('snd-url-input').value = '';
-  // Play the YouTube clip as confirmation
-  _playYtNotifClip();
+    const src  = ctx.createBufferSource();
+    src.buffer = _sfxBuf;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.55;
+    src.connect(gain);
+    gain.connect(ctx.destination);
+    src.start(0);
+  }catch(e){ /* audio not available */ }
 }
 
 function toggleSound(){
@@ -4027,10 +2785,12 @@ function toggleSound(){
   document.getElementById('sound-icon-on').style.display  = soundEnabled ? '' : 'none';
   document.getElementById('sound-icon-off').style.display = soundEnabled ? 'none' : '';
   document.getElementById('sound-btn').classList.toggle('muted', !soundEnabled);
-  // No confirmation ping — toggling sound should be silent
+  // Play a quick confirmation ping when enabling
+  if(soundEnabled) playHockeySound();
 }
 
 function initSound(){
+  // Read stored preference and apply silently (no AudioContext, no ping)
   const stored = localStorage.getItem('zc_sound');
   soundEnabled = (stored !== '0');
   document.getElementById('sound-icon-on').style.display  = soundEnabled ? '' : 'none';
@@ -4089,17 +2849,17 @@ function requestNotifications(){
     alert('Your browser does not support notifications.'); return;
   }
   if(Notification.permission === 'granted'){
-    updateNotifIcon(); return;
-  }
-  if(Notification.permission === 'denied'){
-    alert('Notifications are blocked by your browser. Please update site permissions to enable them.');
+    document.getElementById('bell-dot').classList.remove('show');
+    document.getElementById('notif-btn').classList.add('active-state');
     return;
   }
-  Notification.requestPermission().then(() => {
-    updateNotifIcon();
-    if(Notification.permission === 'granted'){
+  Notification.requestPermission().then(perm => {
+    if(perm === 'granted'){
+      document.getElementById('bell-dot').classList.remove('show');
+      document.getElementById('notif-btn').classList.add('active-state');
+      // Confirm with a test notification
       new Notification('Notifications enabled!', {
-        body: 'You will be notified of new messages.',
+        body: 'You'll be notified of new messages.',
         icon: cfg ? cfg.favicon : ''
       });
     }
@@ -4107,7 +2867,11 @@ function requestNotifications(){
 }
 
 function initNotifications(){
-  updateNotifIcon();
+  // If already granted, reflect that in the UI silently
+  if(Notification.permission === 'granted'){
+    document.getElementById('bell-dot').classList.remove('show');
+    document.getElementById('notif-btn').classList.add('active-state');
+  }
 }
 
 function maybeSendNotification(msg){
@@ -4180,796 +2944,6 @@ function trackScrollUnread(msg){
   }
 }
 
-function checkPurgePrivilege(){
-  if(me?.name === 'xxxPurge'){
-    document.getElementById('purge-btn').style.display = 'flex';
-  } else {
-    document.getElementById('purge-btn').style.display = 'none';
-  }
-}
-
-function purgeChat(){
-  // Double confirmation — destructive action affects everyone
-  if(!confirm(`⚠️ Clear ALL messages in ${cfg.name} for everyone?\n\nThis cannot be undone.`)) return;
-  if(!confirm(`Are you sure? This will permanently delete the entire chat history.`)) return;
-
-  const now = Date.now();
-  db.ref(cfg.path + '/messages').remove();
-  db.ref(cfg.path + '/meta/lastReset').set(now);
-  db.ref(cfg.path + '/messages').push({
-    uid:    'system',
-    name:   'System',
-    avId:   132,
-    text:   enc(`Chat history was cleared by ${me.name}.`),
-    ts:     now + 1,
-    isImg:  false,
-    edited: false,
-    rply:   null,
-    isBot:  true
-  });
-}
-
-
-// ─────────────────────────────────────────────────────────────
-//  ROOM SWITCHING  (Tasks 3, 4, 5)
-//  • Toggle button in header switches Flyers ↔ Panthers
-//  • Username + avatar preserved across rooms
-//  • Password prompted only once per room per session
-// ─────────────────────────────────────────────────────────────
-const authenticatedRooms = new Set(); // rooms user has already authed into
-let   _pendingSwitchRoom  = null;     // target roomId while modal is open
-
-function switchRoom(targetRoomId){
-  if(!cfg || targetRoomId === cfg.id) return;
-  if(authenticatedRooms.has(targetRoomId)){
-    performRoomSwitch(targetRoomId);
-  } else {
-    openRoomSwitchModal(targetRoomId);
-  }
-}
-
-function openRoomSwitchModal(targetRoomId){
-  const tc = ROOMS[targetRoomId];
-  _pendingSwitchRoom = targetRoomId;
-  document.getElementById('rspw-logo').src      = tc.favicon;
-  document.getElementById('rspw-room-name').textContent = tc.name;
-  document.getElementById('rspw-pw').value      = '';
-  document.getElementById('rspw-err').textContent = '';
-  document.documentElement.dataset.theme = tc.theme; // preview theme
-  document.getElementById('rspw-overlay').style.display = 'flex';
-  setTimeout(() => document.getElementById('rspw-pw').focus(), 50);
-}
-
-function cancelRoomSwitch(){
-  document.getElementById('rspw-overlay').style.display = 'none';
-  // Restore current room theme
-  if(cfg) document.documentElement.dataset.theme = cfg.theme;
-  _pendingSwitchRoom = null;
-}
-
-function confirmRoomSwitch(){
-  const tc = ROOMS[_pendingSwitchRoom];
-  const pw = document.getElementById('rspw-pw').value;
-  if(hashPassword(pw) !== tc.pwHash){
-    document.getElementById('rspw-err').textContent = 'Wrong password — try again.';
-    document.getElementById('rspw-pw').select();
-    return;
-  }
-  document.getElementById('rspw-overlay').style.display = 'none';
-  cacheRoomSecret(_pendingSwitchRoom, pw);
-  authenticatedRooms.add(_pendingSwitchRoom);
-  performRoomSwitch(_pendingSwitchRoom);
-  _pendingSwitchRoom = null;
-}
-
-function performRoomSwitch(targetRoomId){
-  const prevPath = cfg.path;
-  const savedMe  = { ...me }; // preserve name + avId (Tasks 4)
-
-  // 1. Detach all Firebase listeners for old room
-  if(_msgRef)    { _msgRef.off();    _msgRef    = null; }
-  if(_usersRef)  { _usersRef.off();  _usersRef  = null; }
-  if(_typingRef) { _typingRef.off(); _typingRef = null; }
-  clearInterval(window._presenceInterval);
-  clearTimeout(typingTimer);
-  _typingActive = false;
-
-  // 2. Remove user from old room
-  db.ref(prevPath + '/users/'  + savedMe.uid).remove();
-  db.ref(prevPath + '/typing/' + savedMe.uid).remove();
-
-  // 3. Switch config
-  cfg    = ROOMS[targetRoomId];
-  ROOM_PW = roomSecrets[targetRoomId]?.pw || null;
-  ENC_KEY = roomSecrets[targetRoomId]?.encKey || null;
-  me      = savedMe; // keep name + avId
-
-  // 4. Update all theme + UI text
-  document.documentElement.dataset.theme         = cfg.theme;
-  document.getElementById('fav-icon').href        = cfg.favicon;
-  document.getElementById('fav-apple').href       = cfg.favicon;
-  document.title                                  = cfg.name;
-  document.getElementById('header-logo-wrap').innerHTML  = cfg.headerLogo;
-  document.getElementById('chat-room-name').textContent  = cfg.name;
-  document.getElementById('msg-input').placeholder       = 'Message ' + cfg.name + '\u2026';
-  document.getElementById('reset-notice-text').textContent =
-    cfg.name + ' history is server-managed at 3:00 AM ET';
-
-  // 5. Clear message display
-  document.getElementById('msgs').innerHTML = '';
-  rendered = {}; msgCache = {};
-
-  // 6. Cancel edit/reply contexts
-  if(editCtx) cancelEdit();
-  cancelReply();
-
-  // 7. Reset counters + UI
-  unreadCount = 0; scrollUnread = 0; _initialLoadDone = false;
-  updateDocTitle(); updateScrollBadge();
-  document.getElementById('scroll-fab')?.classList.remove('show');
-
-  // 8. Update room switch button
-  updateRoomSwitchBtn();
-  checkPurgePrivilege();
-
-  // 9. Re-register presence in new room
-  const pRef = db.ref(cfg.path + '/users/' + me.uid);
-  pRef.set({ name: me.name, avId: me.avId, ts: Date.now() });
-  pRef.onDisconnect().remove();
-  window._presenceInterval = setInterval(() => pRef.update({ ts: Date.now() }), 25000);
-
-  // 10. Clear transient UI state from old room
-  hideHotTake();
-  hidePoll();
-  stopCountdownTick();                  // stop scores countdown tick
-  clearInterval(_pollCountdown);        // stop poll countdown
-  for(const {hideTimer} of revealedGames.values()) clearTimeout(hideTimer);
-  revealedGames.clear();
-  if(scoresOpen){ toggleScoresPanel(); } // close scores panel if open
-
-  // 11. Detach hot-take / poll / soundboard listeners for old room
-  if(_htListenRef)   { _htListenRef.off();   _htListenRef   = null; }
-  if(_pollListenRef) { _pollListenRef.off();  _pollListenRef = null; }
-  if(_sbListenRef)   { _sbListenRef.off();    _sbListenRef   = null; }
-
-  // Sweep stale presence records in the new room before starting listeners
-  (function sweepStaleUsers(){
-    const STALE = Date.now() - 70000;
-    db.ref(cfg.path + '/users').once('value', snap => {
-      const data = snap.val() || {};
-      Object.entries(data).forEach(([uid, u]) => {
-        if(!u || !u.name || !u.avId || (u.ts || 0) < STALE){
-          db.ref(cfg.path + '/users/' + uid).remove();
-        }
-      });
-    });
-  })();
-
-  // 12. Start all listeners for new room (each one only once)
-  checkReset().finally(() => {
-    listenMessages();
-  });
-  listenUsers();
-  listenTyping();
-  listenHotTake();
-  listenPolls();
-  listenSoundboard();
-  checkDJPrivilege();
-  buildSoundboard();
-  // Restore soundboard mute state
-  sbMuted = localStorage.getItem("zc_sbmute") === "1";
-  const sbMuteBtn = document.getElementById("sb-mute-btn");
-  if(sbMuteBtn){ sbMuteBtn.textContent = sbMuted?"Unmute":"Mute"; sbMuteBtn.classList.toggle("muted",sbMuted); }
-}
-
-function updateRoomSwitchBtn(){
-  const otherId = cfg.id === 'zelechat' ? 'whyhockey' : 'zelechat';
-  const other   = ROOMS[otherId];
-  const btn     = document.getElementById('room-switch-btn');
-  btn.dataset.target = otherId;
-  document.getElementById('rsb-logo').src        = other.favicon;
-  document.getElementById('rsb-name').textContent = other.name;
-}
-
-
-function updateNotifIcon(){
-  const perm = (typeof Notification !== "undefined") ? Notification.permission : "default";
-  // Show the right SVG
-  document.getElementById("bell-default").style.display = perm === "default" ? "" : "none";
-  document.getElementById("bell-granted").style.display = perm === "granted" ? "" : "none";
-  document.getElementById("bell-denied").style.display  = perm === "denied"  ? "" : "none";
-  // Dot only when permission not yet decided
-  const dot = document.getElementById("bell-dot");
-  dot.classList.toggle("show", perm === "default");
-  // Button colour
-  const btn = document.getElementById("notif-btn");
-  btn.classList.remove("notif-granted", "notif-denied");
-  if(perm === "granted") btn.classList.add("notif-granted");
-  if(perm === "denied")  btn.classList.add("notif-denied");
-}
-
-
-// ─────────────────────────────────────────────────────────────
-//  HOT TAKE  (60-second pinned message)
-// ─────────────────────────────────────────────────────────────
-let _htCountdownTimer = null;
-let _htListenRef      = null;
-
-function openHotTakeModal(){
-  document.getElementById('ht-input').value = '';
-  document.getElementById('ht-char').textContent = '250 left';
-  document.getElementById('ht-char').className = 'ht-char-count';
-  document.getElementById('ht-modal-overlay').classList.add('show');
-  setTimeout(() => document.getElementById('ht-input').focus(), 60);
-}
-function closeHotTakeModal(){
-  document.getElementById('ht-modal-overlay').classList.remove('show');
-}
-
-function postHotTake(){
-  const text = document.getElementById('ht-input').value.trim();
-  if(!text) return;
-  if(text.length > 250){ alert('Max 250 characters.'); return; }
-  const endsAt = Date.now() + 60000;
-  db.ref(cfg.path + '/hottake').set({
-    text:    enc(text),
-    author:  me.name,
-    avId:    me.avId,
-    endsAt,
-    ts:      Date.now()
-  });
-  closeHotTakeModal();
-}
-
-function listenHotTake(){
-  if(_htListenRef){ _htListenRef.off(); _htListenRef = null; }
-  _htListenRef = db.ref(cfg.path + '/hottake');
-  _htListenRef.on('value', snap => {
-    const d = snap.val();
-    if(!d || Date.now() > d.endsAt){ hideHotTake(); return; }
-    showHotTake(d);
-  });
-}
-
-function showHotTake(d){
-  const bar   = document.getElementById('hot-take-bar');
-  const total = 60000;
-  document.getElementById('ht-text').textContent   = dec(d.text);
-  document.getElementById('ht-author').textContent = '— ' + d.author;
-  bar.classList.add('show');
-  clearInterval(_htCountdownTimer);
-  _htCountdownTimer = setInterval(() => {
-    const rem = Math.max(0, Math.ceil((d.endsAt - Date.now()) / 1000));
-    const pct = Math.max(0, (d.endsAt - Date.now()) / total * 100);
-    document.getElementById('ht-timer').textContent = rem + 's';
-    document.getElementById('ht-bar').style.width   = pct + '%';
-    if(rem <= 0){ hideHotTake(); }
-  }, 800);
-}
-
-function hideHotTake(){
-  clearInterval(_htCountdownTimer);
-  document.getElementById('hot-take-bar').classList.remove('show');
-}
-
-// ─────────────────────────────────────────────────────────────
-//  POLLS
-// ─────────────────────────────────────────────────────────────
-let _pollListenRef  = null;
-let _activePollId   = null;
-let _pollCountdown  = null;
-let _pollDuration   = 900000; // 15 min default
-
-function openPollModal(){
-  document.getElementById('pm-question').value = '';
-  // Reset options to 2
-  const list = document.getElementById('pm-opts');
-  list.innerHTML = '';
-  for(let i = 1; i <= 2; i++) addPollOpt();
-  list.querySelectorAll('.pm-rem-btn').forEach(b => b.style.display='none');
-  document.getElementById('poll-modal-overlay').classList.add('show');
-  setTimeout(() => document.getElementById('pm-question').focus(), 60);
-}
-function closePollModal(){
-  document.getElementById('poll-modal-overlay').classList.remove('show');
-}
-
-function selectPollDur(btn){
-  document.querySelectorAll('.pm-dur-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  _pollDuration = parseInt(btn.dataset.dur);
-}
-
-function addPollOpt(){
-  const list = document.getElementById('pm-opts');
-  if(list.children.length >= 5) return;
-  const idx = list.children.length + 1;
-  const row = document.createElement('div');
-  row.className = 'pm-opt-row';
-  row.innerHTML = `<input class="pm-input" type="text" placeholder="Option ${idx}" maxlength="80">
-    <button class="pm-rem-btn" onclick="removePollOpt(this)">✕</button>`;
-  list.appendChild(row);
-  // Show remove buttons if > 2 options
-  updatePollRemBtns();
-  if(list.children.length >= 5) document.getElementById('pm-add-btn').style.display='none';
-}
-
-function removePollOpt(btn){
-  const list = document.getElementById('pm-opts');
-  if(list.children.length <= 2) return;
-  btn.closest('.pm-opt-row').remove();
-  updatePollRemBtns();
-  document.getElementById('pm-add-btn').style.display = '';
-}
-
-function updatePollRemBtns(){
-  const list = document.getElementById('pm-opts');
-  const show = list.children.length > 2;
-  list.querySelectorAll('.pm-rem-btn').forEach(b => b.style.display = show ? '' : 'none');
-}
-
-async function submitPoll(){
-  const q = document.getElementById('pm-question').value.trim();
-  if(!q){ alert('Please enter a question.'); return; }
-  const opts = Array.from(document.querySelectorAll('#pm-opts .pm-input'))
-    .map(i => i.value.trim()).filter(Boolean);
-  if(opts.length < 2){ alert('Need at least 2 options.'); return; }
-  const pollId = 'p' + Date.now();
-  const endsAt = Date.now() + _pollDuration;
-  const activeRef = db.ref(cfg.path + '/meta/' + ACTIVE_POLL_META_KEY);
-  try{
-    const result = await activeRef.transaction(cur => {
-      const now = Date.now();
-      if(cur && cur.id && Number(cur.endsAt || 0) > now) return;
-      return { id: pollId, endsAt };
-    });
-    if(!result.committed){
-      alert('There is already an active poll in this room.');
-      return;
-    }
-    await db.ref(cfg.path + '/polls/' + pollId).set({
-      question: enc(q),
-      options:  opts.map(o => enc(o)),
-      endsAt,
-      createdBy:me.name,
-      votes:    {},
-      active:   true
-    });
-    closePollModal();
-  }catch(err){
-    console.error('Poll create failed:', err);
-    if(err && err.code === 'PERMISSION_DENIED') alert('Poll creation is blocked by Firebase rules.');
-    else alert('Could not create poll right now.');
-    activeRef.once('value', snap => {
-      const meta = snap.val();
-      if(meta && meta.id === pollId) activeRef.remove();
-    });
-  }
-}
-
-function listenPolls(){
-  if(_pollListenRef){ _pollListenRef.off(); _pollListenRef = null; }
-  // Listen for the most recent active poll
-  _pollListenRef = db.ref(cfg.path + '/polls')
-    .orderByChild('endsAt').limitToLast(1);
-  _pollListenRef.on('value', snap => {
-    const all = snap.val();
-    if(!all){ hidePoll(); return; }
-    const [pollId, poll] = Object.entries(all)[0];
-    if(!poll.active || Date.now() > poll.endsAt){
-      // Show ended results briefly if we were showing this poll
-      if(_activePollId === pollId) renderPoll(pollId, poll, true);
-      else hidePoll();
-      return;
-    }
-    _activePollId = pollId;
-    renderPoll(pollId, poll, false);
-  });
-}
-
-function renderPoll(pollId, poll, ended){
-  const bar   = document.getElementById('poll-bar');
-  const q     = dec(poll.question);
-  const opts  = (poll.options || []).map(o => dec(o));
-  const votes = poll.votes || {};
-  const myVote = votes[me.uid];
-  const totalVotes = Object.keys(votes).length;
-  const rem   = Math.max(0, Math.ceil((poll.endsAt - Date.now()) / 1000));
-  const remStr = rem > 60
-    ? Math.ceil(rem/60) + ' min'
-    : rem + 's';
-
-  let html = `<div class="poll-header-row">
-    <span class="poll-label">📊 Poll</span>
-    <span class="poll-question">${xss(q)}</span>
-    <span class="poll-timer-badge">${ended ? 'Ended' : ('⏱ ' + remStr)}</span>
-  </div><div class="poll-options">`;
-
-  opts.forEach((opt, i) => {
-    const voteCount = Object.values(votes).filter(v => v === i).length;
-    const pct = totalVotes > 0 ? voteCount / totalVotes : 0;
-    const cls = ended ? 'ended' : (myVote !== undefined ? 'voted' : '');
-    // Build onclick safely — avoids template-literal-in-template-literal escaping issues
-    const voteCall = (ended || myVote !== undefined) ? '' : ('castVote(' + JSON.stringify(pollId) + ',' + i + '); event.stopPropagation()');
-    html += `<div class="poll-opt ${cls}" style="--pct:${pct}" onclick="${voteCall}">
-      <div class="poll-opt-fill"></div>
-      <span class="poll-opt-text">${xss(opt)}</span>
-      <span class="poll-opt-pct">${Math.round(pct*100)}%</span>
-    </div>`;
-  });
-  html += '</div>';
-  if(ended){
-    if(totalVotes === 0){
-      html += `<div class="poll-results-row">Poll ended · No votes cast</div>`;
-    } else {
-      const winIdx = opts.reduce((best,_,i) => {
-        const c  = Object.values(votes).filter(v => v === i).length;
-        const bc = Object.values(votes).filter(v => v === best).length;
-        return c > bc ? i : best;
-      }, 0);
-      const winCount = Object.values(votes).filter(v => v === winIdx).length;
-      html += `<div class="poll-results-row">Total votes: ${totalVotes} · 🏆 ${xss(opts[winIdx])} (${winCount})</div>`;
-    }
-  }
-
-  bar.innerHTML = html;
-  bar.classList.add('show');
-  clearInterval(_pollCountdown);
-  if(!ended){
-    _pollCountdown = setInterval(() => {
-      const remaining = Math.max(0, Math.ceil((poll.endsAt - Date.now()) / 1000));
-      const badge = bar.querySelector('.poll-timer-badge');
-      if(badge) badge.textContent = remaining > 60 ? Math.ceil(remaining/60)+' min' : remaining+'s';
-      if(remaining <= 0){
-        clearInterval(_pollCountdown);
-        db.ref(cfg.path+'/polls/'+pollId).update({active:false});
-        db.ref(cfg.path + '/meta/' + ACTIVE_POLL_META_KEY).once('value', snap => {
-          const meta = snap.val();
-          if(meta && meta.id === pollId) db.ref(cfg.path + '/meta/' + ACTIVE_POLL_META_KEY).remove();
-        });
-      }
-    }, 1000);
-  }
-}
-
-function hidePoll(){
-  clearInterval(_pollCountdown);
-  _activePollId = null;
-  document.getElementById('poll-bar').classList.remove('show');
-}
-
-function castVote(pollId, optIdx){
-  if(!me || !cfg) return;
-  db.ref(cfg.path+'/polls/'+pollId+'/votes/'+me.uid).transaction(cur => {
-    if(cur !== null && cur !== undefined) return;
-    return Number(optIdx);
-  });
-}
-
-// ─────────────────────────────────────────────────────────────
-//  SOUNDBOARD  — YouTube IFrame API powered
-//
-//  Each button maps to a YouTube URL + start time (seconds).
-//  The DJ clicks → everyone's embedded YouTube player fires the
-//  same clip simultaneously via Firebase broadcast.
-//
-//  ADDING YOUR OWN SOUNDS:
-//    1. Find any video on YouTube with the sound you want
-//    2. Click "Edit Clips" in the DJ Board panel
-//    3. Paste the full YouTube URL + set start time in seconds
-//    4. Hit Save — done, all users hear it next time it's played
-//
-//  SPOTIFY: Not possible — Spotify embeds have no JS control API
-//           so playback can't be triggered programmatically.
-// ─────────────────────────────────────────────────────────────
-
-const SB_DEFAULTS = [
-  { id:'goal',     icon:'🚨', name:'Goal Horn',
-    url:'https://www.youtube.com/watch?v=SYVLj6zeETg', startSec:0,  durSec:5  },
-  { id:'lets_go',  icon:'📢', name:"Let's Go!",
-    url:'https://www.youtube.com/watch?v=FRrFutjRDAI', startSec:0,  durSec:4  },
-  { id:'crowd',    icon:'👥', name:'Crowd Cheer',
-    url:'https://www.youtube.com/watch?v=7eoQb9avYds', startSec:0,  durSec:4  },
-  { id:'airhorn',  icon:'📣', name:'Air Horn',
-    url:'https://www.youtube.com/watch?v=FTQbiNvZqaY', startSec:0,  durSec:3  },
-  { id:'whistle',  icon:'🎵', name:'Whistle',
-    url:'https://www.youtube.com/watch?v=4bQlFRObUrU', startSec:0,  durSec:2  },
-  { id:'slapshot', icon:'🏒', name:'Slapshot',
-    url:'https://www.youtube.com/watch?v=yNQaB3dBYhk', startSec:0,  durSec:2  },
-  { id:'penalty',  icon:'⛔', name:'Penalty',
-    url:'https://www.youtube.com/watch?v=8ybW48rKBME', startSec:0,  durSec:3  },
-  { id:'charge',   icon:'⚡', name:'Charge!',
-    url:'https://www.youtube.com/watch?v=bRZPmjJCdtY', startSec:0,  durSec:4  },
-  { id:'dun_dun',  icon:'🎭', name:'DUN DUN',
-    url:'https://www.youtube.com/watch?v=5cCDoSKmPFo', startSec:0,  durSec:3  },
-  { id:'victory',  icon:'🏆', name:'Victory!',
-    url:'https://www.youtube.com/watch?v=lgOxGHBFyNo', startSec:0,  durSec:5  },
-];
-
-function ytIdFromUrl(url){
-  if(!url) return null;
-  try{
-    const u = new URL(url);
-    if(u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0];
-    return u.searchParams.get('v') || null;
-  }catch(e){
-    const m = (url || '').match(/[a-zA-Z0-9_-]{11}/);
-    return m ? m[0] : null;
-  }
-}
-
-function loadSbClips(){
-  try{
-    const saved = JSON.parse(localStorage.getItem('zc_sb_clips') || '{}');
-    return SB_DEFAULTS.map(s => {
-      if(!(s.id in saved)) return { ...s };
-      const ov = { ...saved[s.id] };
-      // Don't let a stored null/blank URL override the built-in default
-      if(!ov.url) delete ov.url;
-      return { ...s, ...ov };
-    });
-  }catch(e){ return SB_DEFAULTS.map(s=>({...s})); }
-}
-function saveSbClips(clips){
-  const map = {};
-  clips.forEach(c => { map[c.id] = { url:c.url, startSec:c.startSec, durSec:c.durSec }; });
-  localStorage.setItem('zc_sb_clips', JSON.stringify(map));
-}
-
-let SB_SOUNDS      = loadSbClips();
-let _stopClipTimer = null;
-let _ytPlayer      = null;
-let _ytReady       = false;
-
-// ─────────────────────────────────────────────────────────────
-//  YOUTUBE NOTIFICATION SOUND
-//  Video: https://www.youtube.com/watch?v=USe_6igPcXU
-//  Clip:  0:14 → 0:16 (2 seconds)
-// ─────────────────────────────────────────────────────────────
-const YT_NOTIF_ID    = 'USe_6igPcXU';
-const YT_NOTIF_START = 14;   // seconds into the video
-const YT_NOTIF_DUR   = 2;    // seconds to play
-
-let _ytNotifPlayer  = null;
-let _ytNotifReady   = false;
-let _notifStopTimer = null;
-
-// Called automatically by the YouTube IFrame API after it loads
-function onYouTubeIframeAPIReady(){
-  // Guard: elements must exist in the DOM
-  if(!document.getElementById('yt-player-el') || !document.getElementById('yt-notif-el')){
-    // Retry once DOM is fully parsed
-    setTimeout(onYouTubeIframeAPIReady, 300);
-    return;
-  }
-  // ── Soundboard player (visible in DJ Board panel) ──────────
-  _ytPlayer = new YT.Player('yt-player-el', {
-    width:'178', height:'100',
-    playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, iv_load_policy:3, fs:0 },
-    events:{ onReady: (e) => { _ytReady = true; } }
-  });
-
-  // ── Notification player (hidden 1×1, pre-cued at 0:14) ─────
-  _ytNotifPlayer = new YT.Player('yt-notif-el', {
-    width:'1', height:'1',
-    playerVars:{ autoplay:0, controls:0, rel:0, modestbranding:1, playsinline:1 },
-    events:{
-      onReady: (e) => {
-        _ytNotifReady = true;
-        // Silently cue the video so it's buffered and ready to play instantly
-        e.target.cueVideoById({ videoId: YT_NOTIF_ID, startSeconds: YT_NOTIF_START });
-      }
-    }
-  });
-}
-
-// Fire the 2-second notification clip
-function _playYtNotifClip(){
-  if(!_ytNotifReady || !_ytNotifPlayer){
-    _synthNotifSound();   // fall back to synthesis if player not ready yet
-    return;
-  }
-  try{
-    _ytNotifPlayer.setVolume(62); // ~17% quieter than default 75%
-    _ytNotifPlayer.seekTo(YT_NOTIF_START, true);
-    _ytNotifPlayer.playVideo();
-    clearTimeout(_notifStopTimer);
-    _notifStopTimer = setTimeout(() => {
-      try{ _ytNotifPlayer.pauseVideo(); }catch(e){}
-    }, (YT_NOTIF_DUR + 0.15) * 1000);
-  }catch(e){
-    _synthNotifSound();
-  }
-}
-
-function ytPlay(videoId, startSec, durSec, label){
-  if(!_ytReady || !_ytPlayer || !videoId) return false;
-  try{
-    _ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
-    document.getElementById('yt-player-wrap').style.display = 'block';
-    const np = document.getElementById('yt-now-playing');
-    if(np) np.textContent = '▶ ' + (label || videoId);
-    clearTimeout(_stopClipTimer);
-    if(durSec > 0){
-      _stopClipTimer = setTimeout(() => {
-        try{ _ytPlayer.stopVideo(); }catch(e){}
-        const np2 = document.getElementById('yt-now-playing');
-        if(np2) np2.textContent = '';
-      }, (durSec + 0.3) * 1000);
-    }
-    return true;
-  }catch(e){ return false; }
-}
-
-function isDJUser(){ return me && me.name.toLowerCase().includes('dj'); }
-
-function checkDJPrivilege(){
-  // Desktop soundboard button
-  const btn = document.getElementById('sb-btn');
-  if(btn) btn.style.display = isDJUser() ? 'flex' : 'none';
-  // Mobile bottom nav soundboard button
-  const mbnBtn = document.getElementById('mbn-sb-btn');
-  if(mbnBtn) mbnBtn.style.display = isDJUser() ? 'flex' : 'none';
-}
-
-function buildSoundboard(){
-  const grid = document.getElementById('sb-sounds');
-  if(!grid) return;
-  SB_SOUNDS = loadSbClips();
-  grid.innerHTML = SB_SOUNDS.map(s =>
-    `<button class="sb-sound-btn" id="sbbtn-${s.id}"
-       onclick="broadcastSound('${s.id}')" title="${s.name}">
-      <span class="sb-sound-ico">${s.icon}</span>
-      <span class="sb-sound-name">${s.name}</span>
-    </button>`
-  ).join('');
-}
-
-function toggleSoundboard(){
-  _sbPanelOpen = !_sbPanelOpen;
-  document.getElementById('sb-panel')?.classList.toggle('open', _sbPanelOpen);
-  document.getElementById('sb-btn')?.classList.toggle('open', _sbPanelOpen);
-  document.getElementById('chat-screen')?.classList.toggle('sb-open', _sbPanelOpen);
-  const ep = document.getElementById('sb-edit-panel');
-  if(!_sbPanelOpen && ep) ep.style.display = 'none';
-}
-
-function toggleSbMute(){
-  sbMuted = !sbMuted;
-  localStorage.setItem('zc_sbmute', sbMuted ? '1' : '0');
-  const btn = document.getElementById('sb-mute-btn');
-  if(btn){ btn.textContent = sbMuted ? 'Unmute' : 'Mute'; btn.classList.toggle('muted', sbMuted); }
-  if(_ytPlayer     && _ytReady)      { try{ sbMuted ? _ytPlayer.mute()     : _ytPlayer.unMute(); }catch(e){} }
-  if(_ytNotifPlayer && _ytNotifReady){ try{ sbMuted ? _ytNotifPlayer.mute() : _ytNotifPlayer.unMute(); }catch(e){} }
-}
-
-function toggleSbEdit(){
-  const ep  = document.getElementById('sb-edit-panel');
-  const btn = document.getElementById('sb-edit-btn');
-  if(ep.style.display === 'none' || !ep.style.display){
-    renderEditPanel();
-    ep.style.display = 'block';
-    btn.textContent = '✕ Close';
-  } else {
-    ep.style.display = 'none';
-    btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit Clips';
-  }
-}
-
-function renderEditPanel(){
-  const ep = document.getElementById('sb-edit-panel');
-  let html = `<div style="padding:8px 10px 4px;font-size:0.65rem;color:var(--text-muted);font-family:'DM Mono',monospace;line-height:1.6;">
-    Paste a YouTube URL + start time for each sound.<br>
-    <span style="color:var(--orange-text);">Tip:</span> right-click any YouTube timestamp → "Copy link" to get the exact start time.
-  </div>`;
-  SB_SOUNDS.forEach(s => {
-    html += `<div class="sb-url-row">
-      <span class="sb-url-label">${s.icon} ${s.name}</span>
-      <input class="sb-url-input" data-id="${s.id}" data-field="url"
-        value="${xss(s.url||'')}" placeholder="https://youtube.com/watch?v=…">
-      <div style="display:flex;gap:5px;margin-top:3px;align-items:center;">
-        <input class="sb-url-input" data-id="${s.id}" data-field="startSec"
-          value="${s.startSec||0}" type="number" min="0"
-          style="width:64px;" title="Start second">
-        <span class="sb-url-label" style="margin:0;">s</span>
-        <input class="sb-url-input" data-id="${s.id}" data-field="durSec"
-          value="${s.durSec||3}" type="number" min="1" max="30"
-          style="width:56px;" title="Duration seconds">
-        <span class="sb-url-label" style="margin:0;">dur</span>
-      </div>
-    </div>`;
-  });
-  html += `<div style="padding:8px 10px;display:flex;gap:7px;">
-    <button onclick="saveSbEdit()" style="flex:1;background:var(--orange);border:none;border-radius:7px;color:#000;font-weight:700;font-size:0.78rem;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;">Save All</button>
-    <button onclick="resetSbClips()" style="background:none;border:1px solid var(--border);border-radius:7px;color:var(--text-muted);font-size:0.78rem;padding:8px 10px;cursor:pointer;" title="Reset to defaults">↺</button>
-  </div>`;
-  ep.innerHTML = html;
-}
-
-function saveSbEdit(){
-  document.querySelectorAll('.sb-url-input').forEach(inp => {
-    const s = SB_SOUNDS.find(x => x.id === inp.dataset.id);
-    if(!s) return;
-    if(inp.dataset.field === 'url')      s.url      = inp.value.trim() || null;
-    if(inp.dataset.field === 'startSec') s.startSec = Math.max(0, parseInt(inp.value)||0);
-    if(inp.dataset.field === 'durSec')   s.durSec   = Math.max(1, Math.min(30, parseInt(inp.value)||3));
-  });
-  saveSbClips(SB_SOUNDS);
-  buildSoundboard();
-  toggleSbEdit();
-}
-
-function resetSbClips(){
-  localStorage.removeItem('zc_sb_clips');
-  SB_SOUNDS = loadSbClips();
-  buildSoundboard();
-  renderEditPanel();
-}
-
-function broadcastSound(soundId){
-  const clip = SB_SOUNDS.find(s => s.id === soundId);
-  if(!clip) return;
-  const vid = ytIdFromUrl(clip.url);
-  _playClipLocally(vid, clip.startSec||0, clip.durSec||3, clip.name, true);
-  const btn = document.getElementById('sbbtn-' + soundId);
-  if(btn){ btn.classList.add('playing'); setTimeout(()=>btn.classList.remove('playing'), 800); }
-  db.ref(cfg.path + '/soundboard').push({
-    sound: soundId, ytId: vid||null,
-    startSec: clip.startSec||0, durSec: clip.durSec||3,
-    name: clip.name, dj: me.name, ts: Date.now()
-  });
-}
-
-function listenSoundboard(){
-  if(_sbListenRef){ _sbListenRef.off(); _sbListenRef = null; }
-  const loadTime = Date.now();
-  _sbListenRef = db.ref(cfg.path + '/soundboard').orderByChild('ts').limitToLast(1);
-  _sbListenRef.on('child_added', snap => {
-    const d = snap.val();
-    if(!d || d.ts < loadTime) return;
-    if(d.dj === me?.name) return;
-    if(sbMuted) return;
-    _playClipLocally(d.ytId, d.startSec||0, d.durSec||3, d.name||d.sound, false);
-  });
-}
-
-function _playClipLocally(videoId, startSec, durSec, label, isDJ){
-  if(sbMuted && !isDJ) return;
-  if(!videoId) return; // no URL configured
-  if(_ytReady && _ytPlayer){
-    ytPlay(videoId, startSec, durSec, label);
-  } else {
-    setTimeout(() => {
-      if(_ytReady && _ytPlayer) ytPlay(videoId, startSec, durSec, label);
-    }, 1800);
-  }
-}
-
-
-// ─────────────────────────────────────────────────────────────
-//  PLUS MENU (mobile attach menu / desktop emoji toggle)
-// ─────────────────────────────────────────────────────────────
-function togglePlusMenu(){
-  const isMobile = window.innerWidth <= 600;
-  if(isMobile){
-    const menu = document.getElementById('attach-menu');
-    const isOpen = menu.style.display !== 'none' && menu.style.display !== '';
-    closeAttachMenu();
-    if(!isOpen){
-      menu.style.display = 'grid';
-      document.getElementById('plus-btn').classList.add('open');
-    }
-  } else {
-    // Desktop: toggle emoji panel
-    toggleEmojiPanel();
-  }
-}
-
-function closeAttachMenu(){
-  document.getElementById('attach-menu').style.display = 'none';
-  document.getElementById('plus-btn').classList.remove('open');
-}
-
 // ─────────────────────────────────────────────────────────────
 //  GLOBAL CLICK HANDLER  (registered once at module level)
 // ─────────────────────────────────────────────────────────────
@@ -4998,11 +2972,6 @@ document.addEventListener('click', e => {
     document.getElementById('emoji-panel').style.display='none';
   if(!e.target.closest('.gif-panel') && !e.target.closest('.gif-label'))
     document.getElementById('gif-panel').style.display='none';
-  // Close attach menu on outside click
-  if(!e.target.closest('.attach-menu') && !e.target.closest('#plus-btn')) closeAttachMenu();
-  // Close poll/hottake modals on overlay click
-  if(e.target.id === 'ht-modal-overlay') closeHotTakeModal();
-  if(e.target.id === 'poll-modal-overlay') closePollModal();
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -5012,92 +2981,6 @@ rerollAvatar();
 document.getElementById('inp-pw').addEventListener('keydown',   e => { if(e.key==='Enter') doLogin(); });
 document.getElementById('inp-name').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 </script>
-
-
-  <!-- Soundboard panel (DJ users only — appears outside of chat-screen) -->
-  <!-- Soundboard panel (DJ users only) — YouTube-powered -->
-  <div class="sb-panel" id="sb-panel">
-    <div class="sb-panel-hdr">
-      <span class="sb-panel-title">🎵 Soundboard</span>
-      <button class="sb-mute-btn" id="sb-mute-btn" onclick="toggleSbMute()" title="Mute soundboard for you only">Mute</button>
-    </div>
-    <!-- Visible YouTube player — lights up when a sound fires -->
-    <div id="yt-player-wrap" style="display:none;padding:8px 10px 0;">
-      <div id="yt-player-el"></div>
-      <div id="yt-now-playing" style="font-size:0.67rem;color:var(--text-muted);font-family:'DM Mono',monospace;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
-    </div>
-    <div class="sb-sounds" id="sb-sounds"></div>
-    <div id="sb-edit-panel" style="display:none;border-top:1px solid var(--border-soft);overflow-y:auto;max-height:300px;"></div>
-    <div class="sb-footer-btns">
-      <button class="sb-edit-btn" id="sb-edit-btn" onclick="toggleSbEdit()">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Edit Clips
-      </button>
-      <span class="sb-footer-note">All users hear this</span>
-    </div>
-  </div>
-  <!-- Hidden 1×1 YouTube player for notification sounds -->
-  <div id="yt-notif-el" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;"></div>
-
-
-  <!-- Notification sound settings modal -->
-  <div class="snd-modal-overlay" id="snd-modal-overlay" onclick="if(event.target===this)closeSoundSettings()">
-    <div class="snd-modal">
-      <div class="snd-modal-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-        Notification Sound
-      </div>
-      <div class="snd-field-label" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span>Current default</span>
-        <span style="background:var(--orange-glow);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--orange-text);">
-          youtube.com/watch?v=USe_6igPcXU — 0:14 for 2s
-        </span>
-      </div>
-      <div class="snd-field-label" style="margin-bottom:5px;margin-top:10px;">Override with a direct audio URL (optional)</div>
-      <input class="snd-url-input" id="snd-url-input" type="url"
-        placeholder="Leave blank to keep the YouTube clip">
-      <div class="snd-hint">
-        Paste a direct .mp3/.wav link to replace the YouTube clip.<br>
-        Free sources: <a href="https://pixabay.com/sound-effects/search/hockey/" target="_blank" rel="noopener">pixabay.com</a> ·
-        <a href="https://mixkit.co/free-sound-effects/hockey/" target="_blank" rel="noopener">mixkit.co</a> ·
-        <a href="https://freesound.org/search/?q=goal+horn" target="_blank" rel="noopener">freesound.org</a>
-      </div>
-      <div class="snd-btn-row">
-        <button class="snd-cancel-btn" onclick="closeSoundSettings()">Cancel</button>
-        <button class="snd-test-btn" onclick="testNotifSound()">▶ Test</button>
-        <button class="snd-save-btn" onclick="saveNotifSound()">Save</button>
-      </div>
-      <button class="snd-reset" onclick="resetNotifSound()">Reset to built-in sound</button>
-    </div>
-  </div>
-
-  <!-- Mobile bottom nav: Scores + Users (hidden on desktop) -->
-  <div class="mobile-bottom-nav" id="mobile-bottom-nav">
-    <button class="mbn-btn" onclick="toggleScoresPanel()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/>
-        <line x1="8" y1="21" x2="16" y2="21"/>
-        <line x1="12" y1="17" x2="12" y2="21"/>
-        <line x1="7" y1="8" x2="7" y2="12"/>
-        <line x1="12" y1="6" x2="12" y2="12"/>
-        <line x1="17" y1="9" x2="17" y2="12"/>
-      </svg>
-      <span>Scores</span>
-    </button>
-    <button class="mbn-btn" onclick="toggleUsers()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-      <span>Online <span id="mobile-online-cnt" class="mbn-count">0</span></span>
-    </button>
-    <button class="mbn-btn" id="mbn-sb-btn" style="display:none" onclick="toggleSoundboard()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-      <span>Soundboard</span>
-    </button>
-  </div>
 
 </body>
 </html>
