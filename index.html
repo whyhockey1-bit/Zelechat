@@ -645,7 +645,7 @@ body{
 .scores-dropdown{
   display:none;position:absolute;top:calc(100% + 8px);right:0;
   width:290px;background:var(--bg1);border:1px solid var(--border);
-  border-radius:var(--radius);z-index:100;box-shadow:var(--shadow);
+  border-radius:var(--radius);z-index:200;box-shadow:var(--shadow);
   animation:fadeSlide 0.15s ease;overflow:hidden;
 }
 .scores-dropdown.open{display:block;}
@@ -843,7 +843,32 @@ body{
 @media(max-width:520px){
   .msg-wrap{max-width:92%;}
   .login-card{padding:24px 18px 20px;}
-  .scores-dropdown{width:calc(100vw - 28px);right:-14px;}
+  .scores-dropdown{width:calc(100vw - 20px);right:-10px;left:auto;}
+  .users-dropdown{width:calc(100vw - 20px);right:-10px;}
+  /* Tighten header on mobile */
+  .chat-header{padding:8px 10px;}
+  .header-right{gap:5px;}
+  .header-title{font-size:1.1rem;}
+  /* Scores + users buttons: icon-only on small screens */
+  .scores-btn .scores-btn-label,
+  .users-btn .users-btn-label{display:none;}
+  .scores-btn{padding:6px 9px;gap:4px;}
+  .users-btn{padding:6px 9px;gap:4px;}
+  .users-btn .count{display:none;}
+  /* Util buttons slightly smaller */
+  .util-btn{width:28px;height:28px;}
+  /* Purge button: icon only */
+  .purge-text{display:none;}
+  #purge-btn{padding:6px 9px;}
+  /* DJ Board text: hide label */
+  .sb-btn .sb-btn-label{display:none;}
+  .sb-btn{padding:6px 9px;}
+}
+
+/* Extra small — hide scores btn text "Scores", keep icon */
+@media(max-width:380px){
+  .header-title{font-size:1rem;}
+  .header-logo{width:26px;height:26px;}
 } — Florida Panthers dark palette
    Overrides only color variables; layout is shared
 ===================================================== */
@@ -1878,7 +1903,7 @@ body{
       <!-- Soundboard button — only for DJ usernames -->
       <button class="sb-btn" id="sb-btn" onclick="toggleSoundboard()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        DJ Board
+        <span class="sb-btn-label">DJ Board</span>
       </button>
 
       <!-- Purge button — only rendered for username xxxPurge -->
@@ -1889,7 +1914,7 @@ body{
           <path d="M10 11v6"/><path d="M14 11v6"/>
           <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
         </svg>
-        Purge Chat
+        <span class="purge-text">Purge Chat</span>
       </button>
 
       <!-- Utility buttons: sound / theme / notifications -->
@@ -1924,7 +1949,7 @@ body{
             <line x1="12" y1="6" x2="12" y2="12"/>
             <line x1="17" y1="9" x2="17" y2="12"/>
           </svg>
-          Scores
+          <span class="scores-btn-label">Scores</span>
         </button>
         <div class="scores-dropdown" id="scores-dd">
           <div class="scores-hdr">
@@ -1954,7 +1979,7 @@ body{
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        Online <span class="count" id="online-cnt">0</span>
+        <span class="users-btn-label">Online</span> <span class="count" id="online-cnt">0</span>
       </button>
       <div class="users-dropdown" id="users-dd">
         <div class="users-header">Who's here</div>
@@ -2319,7 +2344,14 @@ function doLogin(){
   _loginPending = true;
   const btn = document.querySelector('.btn-enter');
   if(btn){ btn.disabled = true; btn.textContent = 'Entering\u2026'; }
-  const uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+  // Use a session-stable uid so page refreshes don't create a new presence record.
+  // sessionStorage persists uid for the browser tab's lifetime — a new tab or
+  // a deliberate logout gets a fresh uid.
+  let uid = sessionStorage.getItem('zc_session_uid');
+  if(!uid){
+    uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+    sessionStorage.setItem('zc_session_uid', uid);
+  }
   me = { uid, name, avId: pickAvId };
   // Mark ALL rooms as accessible once the user is logged in with any valid password.
   // The toggle button should never prompt for a password mid-session.
@@ -2359,8 +2391,23 @@ function enterChat(){
   initTheme();
   initNotifications();
   initScrollFAB();
-  updateRoomSwitchBtn(); // set up the room-toggle button
-  checkPurgePrivilege(); // show purge button only for xxxPurge
+  updateRoomSwitchBtn();
+  checkPurgePrivilege();
+
+  // One-shot sweep: remove any stale/blank presence records immediately on join.
+  // This clears zombies left by crashed tabs or failed onDisconnect events.
+  (function sweepStaleUsers(){
+    const STALE = Date.now() - 70000;
+    db.ref(cfg.path + '/users').once('value', snap => {
+      const data = snap.val() || {};
+      Object.entries(data).forEach(([uid, u]) => {
+        if(!u || !u.name || !u.avId || (u.ts || 0) < STALE){
+          db.ref(cfg.path + '/users/' + uid).remove();
+        }
+      });
+    });
+  })();
+
   checkReset();
   listenMessages();
   listenUsers();
@@ -2438,11 +2485,17 @@ function listenMessages(){
 
   ref.on('child_added', snap => {
     const msg = snap.val();
+    if(!msg) return; // guard against null snapshots
     msgCache[snap.key] = msg;
     if(!rendered[snap.key]){
       rendered[snap.key] = true;
-      appendMsg(snap.key, msg);
-      scrollBottom();
+      try{
+        appendMsg(snap.key, msg);
+        scrollBottom();
+      }catch(e){
+        console.error('appendMsg failed for', snap.key, e);
+        // Don't re-throw — keep the listener alive for subsequent messages
+      }
     }
   });
 
@@ -2450,20 +2503,25 @@ function listenMessages(){
   _msgRef.once('value', () => { _initialLoadDone = true; scrollBottom(true); });
 
   ref.on('child_changed', snap => {
-    const msg = snap.val();
-    msgCache[snap.key] = msg;
-    patchMsg(snap.key, msg);
+    try{
+      const msg = snap.val();
+      if(!msg) return;
+      msgCache[snap.key] = msg;
+      patchMsg(snap.key, msg);
+    }catch(e){ console.error('child_changed error:', e); }
   });
 
   ref.on('child_removed', snap => {
-    delete msgCache[snap.key];
-    delete rendered[snap.key];
-    const el = document.getElementById('m-' + snap.key);
-    if(el){
-      el.style.transition = 'opacity 0.25s';
-      el.style.opacity    = '0';
-      setTimeout(() => el.remove(), 260);
-    }
+    try{
+      delete msgCache[snap.key];
+      delete rendered[snap.key];
+      const el = document.getElementById('m-' + snap.key);
+      if(el){
+        el.style.transition = 'opacity 0.25s';
+        el.style.opacity    = '0';
+        setTimeout(() => el.remove(), 260);
+      }
+    }catch(e){ console.error('child_removed error:', e); }
   });
 }
 
@@ -2676,27 +2734,65 @@ async function sendMsg(){
     isImg: replyCtx.isImg || false
   } : null;
 
+  // Clear UI optimistically before the async write completes
+  const sentText = text;
+  ta.value = ''; autoResize(); cancelReply();
+  clearTypingStatus();
+  document.getElementById('at-hint').style.display = 'none';
+  scrollUnread = 0; updateScrollBadge();
+  document.getElementById('scroll-fab')?.classList.remove('show');
+
+  // Await the push so we can catch Firebase permission errors.
+  // try-catch alone won't work here — push() returns a Promise.
+  let encText;
+  try { encText = enc(sentText); }
+  catch(e){ showSendError('Encryption error — room not loaded yet. Please refresh.'); ta.value = sentText; return; }
+
   try{
-    db.ref(cfg.path+'/messages').push({
+    await db.ref(cfg.path+'/messages').push({
       uid:   me.uid,
       name:  me.name,
       avId:  me.avId,
-      text:  enc(text),
+      text:  encText,
       ts:    Date.now(),
       isImg: false,
       edited:false,
       rply
     });
   }catch(err){
-    console.error('Send failed:', err);
-    return; // leave text in box so user can retry
+    console.error('Firebase send failed:', err.code || err.message);
+    // Restore text so user doesn't lose their message
+    ta.value = sentText;
+    autoResize();
+    if(err.code === 'PERMISSION_DENIED'){
+      showSendError('Permission denied — check Firebase database rules. The rule for "' + cfg.path + '" must allow write.');
+    } else {
+      showSendError('Send failed: ' + (err.message || err.code || 'unknown error'));
+    }
   }
+}
 
-  ta.value = ''; autoResize(); cancelReply();
-  clearTypingStatus();
-  document.getElementById('at-hint').style.display = 'none';
-  scrollUnread = 0; updateScrollBadge();
-  document.getElementById('scroll-fab')?.classList.remove('show');
+// ─────────────────────────────────────────────────────────────
+//  SEND ERROR TOAST
+// ─────────────────────────────────────────────────────────────
+function showSendError(msg){
+  let toast = document.getElementById('send-error-toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'send-error-toast';
+    toast.style.cssText = [
+      'position:fixed','bottom:90px','left:50%','transform:translateX(-50%)',
+      'background:#ff4444','color:#fff','padding:10px 18px','border-radius:10px',
+      'font-family:DM Sans,sans-serif','font-size:0.85rem','z-index:9999',
+      'box-shadow:0 4px 16px rgba(0,0,0,0.5)','max-width:90vw','text-align:center',
+      'line-height:1.4'
+    ].join(';');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 7000);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2745,18 +2841,25 @@ function processAndSend(file){
   reader.readAsDataURL(file);
 }
 
-function dispatchImageMsg(dataURL){
-  // Correctly preserve quoted text when replying to a text msg with an image
+async function dispatchImageMsg(dataURL){
   const rply = replyCtx ? {
     name:  replyCtx.name,
     text:  replyCtx.isImg ? null : replyCtx.encText,
     isImg: replyCtx.isImg || false
   } : null;
-  db.ref(cfg.path+'/messages').push({
-    uid: me.uid, name: me.name, avId: me.avId,
-    text: dataURL, ts: Date.now(), isImg: true, edited: false, rply
-  });
-  cancelReply();
+  try{
+    await db.ref(cfg.path+'/messages').push({
+      uid: me.uid, name: me.name, avId: me.avId,
+      text: dataURL, ts: Date.now(), isImg: true, edited: false, rply
+    });
+    cancelReply();
+  }catch(err){
+    console.error('Image send failed:', err.code || err.message);
+    if(err.code === 'PERMISSION_DENIED')
+      showSendError('Permission denied — check Firebase rules for "' + cfg.path + '".');
+    else
+      showSendError('Image send failed: ' + (err.message || err.code));
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2812,7 +2915,20 @@ function listenUsers(){
   _usersRef = db.ref(cfg.path+'/users');
   _usersRef.on('value', snap => {
     const users = snap.val() || {};
-    const list  = Object.entries(users);
+    const now   = Date.now();
+    // STALE FILTER: heartbeat runs every 25s; drop any record not updated in 70s.
+    // This removes zombies from crashed tabs, forced closes, and failed onDisconnect.
+    // BLANK FILTER: skip records with empty/missing name or avId (corrupted entries).
+    const STALE_MS = 70000;
+    const list = Object.entries(users).filter(([uid, u]) => {
+      if(!u || !u.name || !u.avId) return false;          // blank / corrupted
+      if((now - (u.ts || 0)) > STALE_MS) {
+        // Quietly remove the stale record from Firebase so it doesn't linger
+        db.ref(cfg.path + '/users/' + uid).remove();
+        return false;
+      }
+      return true;
+    });
 
     document.getElementById('online-cnt').textContent = list.length;
 
@@ -2822,10 +2938,10 @@ function listenUsers(){
     // Sort current user to top
     const sorted = [...list].sort(([a],[b]) => (a===me.uid?-1:b===me.uid?1:0));
     sorted.forEach(([uid, u]) => {
-      const row      = document.createElement('div');
-      const isMe     = uid === me.uid;
-      row.className  = 'user-row' + (isMe ? ' me-row' : '');
-      row.innerHTML  = `<img src="${spriteUrl(u.avId)}" alt=""><span class="uname">${xss(u.name)}</span>`;
+      const row     = document.createElement('div');
+      const isMe    = uid === me.uid;
+      row.className = 'user-row' + (isMe ? ' me-row' : '');
+      row.innerHTML = `<img src="${spriteUrl(u.avId)}" alt=""><span class="uname">${xss(u.name)}</span>`;
       ul.appendChild(row);
     });
   });
@@ -2953,10 +3069,11 @@ async function cmdNHL(args){
   if(!sub || sub === 'scores' || sub === 'score'){
     postBot('NHL Bot','⏳ Fetching today\'s scores…', BOT_AV_NHL);
     try{
-      const d = await nhlFetch('/v1/score/now');
+      const hockeyDate = getHockeyDate();
+      const d = await nhlFetch('/v1/score/' + hockeyDate);
       const games = d.games || [];
       if(!games.length){ postBot('NHL Bot','🏒 No NHL games scheduled today.', BOT_AV_NHL); return; }
-      const dateLabel = d.currentDate || (games[0]?.gameDate) || 'Today';
+      const dateLabel = d.currentDate || hockeyDate;
       let out = `🏒 NHL Scores — ${dateLabel}\n${'─'.repeat(26)}\n`;
       for(const g of games){
         const away = g.awayTeam, home = g.homeTeam;
@@ -3328,19 +3445,55 @@ function toggleScoresPanel(){
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+//  SCORES DATE LOGIC
+//  The NHL API endpoint /v1/score/now uses NHL's own internal
+//  day cutover, which often keeps showing yesterday's games
+//  well into the next morning.
+//
+//  Instead we calculate the correct "hockey date" ourselves:
+//    • If it is currently before 3:00 AM New York time,
+//      we are still on "last night's hockey day" — show
+//      the previous calendar date's games.
+//    • At or after 3:00 AM New York time, show today's games.
+//
+//  We then fetch the date-specific endpoint /v1/score/YYYY-MM-DD,
+//  which always returns exactly the games for the requested date.
+// ─────────────────────────────────────────────────────────────
+
+function getHockeyDate(){
+  // Get the current wall-clock date in New York (handles EST/EDT automatically)
+  const nyStr = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+  const nyNow = new Date(nyStr);
+
+  // Before 3 AM → still "last night's" hockey day → use yesterday
+  if(nyNow.getHours() < 3){
+    nyNow.setDate(nyNow.getDate() - 1);
+  }
+
+  // Format as YYYY-MM-DD for the NHL API
+  const y = nyNow.getFullYear();
+  const m = String(nyNow.getMonth() + 1).padStart(2, '0');
+  const d = String(nyNow.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 async function fetchAndRenderScores(showSpinner){
   const listEl = document.getElementById('scores-list');
   if(showSpinner || !scoresData)
     listEl.innerHTML = '<div class="scores-loading">⏳ Loading scores…</div>';
 
   try{
-    scoresData = await nhlFetch('/v1/score/now');
+    const hockeyDate = getHockeyDate();
+    // Use the date-specific endpoint so we always get the right day
+    scoresData = await nhlFetch('/v1/score/' + hockeyDate);
+    // Inject the date in case the API response omits it
+    if(!scoresData.currentDate) scoresData.currentDate = hockeyDate;
     renderScoresList();
     const now = new Date();
     document.getElementById('scores-updated-ts').textContent =
       now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    const footer = document.getElementById('scores-footer');
-    footer.style.display = '';
+    document.getElementById('scores-footer').style.display = '';
   }catch(e){
     document.getElementById('scores-list').innerHTML =
       '<div class="scores-loading">⚠️ Could not load scores.<br>Check connection and try again.</div>';
@@ -3352,17 +3505,32 @@ function renderScoresList(){
   const games  = scoresData.games || [];
   const date   = scoresData.currentDate || scoresData.gameDate || '';
 
-  // Pretty date label
+  // Pretty date label — show "Yesterday" or "Today" when applicable
   if(date){
     const [y,m,d] = date.split('-');
-    const dt = new Date(+y,+m-1,+d);
-    document.getElementById('scores-date').textContent =
-      dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const gameDay = new Date(+y, +m-1, +d);
+    const nyStr   = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+    const nyNow   = new Date(nyStr);
+    const todayNY = new Date(nyNow.getFullYear(), nyNow.getMonth(), nyNow.getDate());
+    const diffDays = Math.round((todayNY - gameDay) / 86400000);
+
+    let label;
+    if(diffDays === 0)      label = 'Today';
+    else if(diffDays === 1) label = 'Yesterday';
+    else                    label = gameDay.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+
+    document.getElementById('scores-date').textContent = label;
   }
 
   if(!games.length){
+    // Determine whether we're showing today or yesterday so the message makes sense
+    const nyStr = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+    const nyHour = new Date(nyStr).getHours();
+    const msg = nyHour < 3
+      ? 'No games last night 🏒'
+      : 'No NHL games scheduled today 🏒';
     document.getElementById('scores-list').innerHTML =
-      '<div class="scores-loading">No NHL games today 🏒</div>';
+      `<div class="scores-loading">${msg}</div>`;
     return;
   }
 
@@ -3588,7 +3756,7 @@ function _triggerHockeySound(fullHorn){
 function _playAudioUrl(url, loop){
   try{
     const a = new Audio(url);
-    a.volume = 0.75;
+    a.volume = 0.62; // ~17% quieter
     a.loop   = !!loop;
     const p  = a.play();
     if(p && p.catch) p.catch(() => _synthNotifSound()); // fallback if URL fails
@@ -3620,8 +3788,8 @@ function _synthNotifSound(){
     // Very short gain envelope: 8ms attack, 380ms sustain, 80ms release
     const env = ctx.createGain();
     env.gain.setValueAtTime(0, t0);
-    env.gain.linearRampToValueAtTime(0.42, t0 + 0.008);
-    env.gain.setValueAtTime(0.42, t0 + 0.38);
+    env.gain.linearRampToValueAtTime(0.35, t0 + 0.008); // ~17% quieter
+    env.gain.setValueAtTime(0.35, t0 + 0.38);
     env.gain.exponentialRampToValueAtTime(0.001, t0 + 0.46);
 
     // Three partials: fundamental 480 Hz + 2nd + 3rd harmonic
@@ -3733,7 +3901,7 @@ function toggleSound(){
   document.getElementById('sound-icon-on').style.display  = soundEnabled ? '' : 'none';
   document.getElementById('sound-icon-off').style.display = soundEnabled ? 'none' : '';
   document.getElementById('sound-btn').classList.toggle('muted', !soundEnabled);
-  if(soundEnabled) playHockeySound();
+  // No confirmation ping — toggling sound should be silent
 }
 
 function initSound(){
@@ -4042,6 +4210,19 @@ function performRoomSwitch(targetRoomId){
   if(_htListenRef)   { _htListenRef.off();   _htListenRef   = null; }
   if(_pollListenRef) { _pollListenRef.off();  _pollListenRef = null; }
   if(_sbListenRef)   { _sbListenRef.off();    _sbListenRef   = null; }
+
+  // Sweep stale presence records in the new room before starting listeners
+  (function sweepStaleUsers(){
+    const STALE = Date.now() - 70000;
+    db.ref(cfg.path + '/users').once('value', snap => {
+      const data = snap.val() || {};
+      Object.entries(data).forEach(([uid, u]) => {
+        if(!u || !u.name || !u.avId || (u.ts || 0) < STALE){
+          db.ref(cfg.path + '/users/' + uid).remove();
+        }
+      });
+    });
+  })();
 
   // 12. Start all listeners for new room (each one only once)
   checkReset();
@@ -4439,6 +4620,7 @@ function _playYtNotifClip(){
     return;
   }
   try{
+    _ytNotifPlayer.setVolume(62); // ~17% quieter than default 75%
     _ytNotifPlayer.seekTo(YT_NOTIF_START, true);
     _ytNotifPlayer.playVideo();
     clearTimeout(_notifStopTimer);
