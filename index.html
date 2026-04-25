@@ -12,8 +12,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script src="https://www.youtube.com/iframe_api"></script>
-
 <style>
 /* =====================================================
    VARIABLES
@@ -111,7 +109,6 @@ body{
   line-height:1;
 }
 
-/* 3. Updated Tagline */
 .login-tagline{
   text-align:center;font-size:0.82rem;
   color:var(--text-muted);letter-spacing:0.08em;
@@ -2154,6 +2151,7 @@ body{
 
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 // ─────────────────────────────────────────────────────────────
 //  FIREBASE CONFIG
@@ -2678,21 +2676,25 @@ async function sendMsg(){
     isImg: replyCtx.isImg || false
   } : null;
 
-  db.ref(cfg.path+'/messages').push({
-    uid:   me.uid,
-    name:  me.name,
-    avId:  me.avId,
-    text:  enc(text),
-    ts:    Date.now(),
-    isImg: false,
-    edited:false,
-    rply
-  });
+  try{
+    db.ref(cfg.path+'/messages').push({
+      uid:   me.uid,
+      name:  me.name,
+      avId:  me.avId,
+      text:  enc(text),
+      ts:    Date.now(),
+      isImg: false,
+      edited:false,
+      rply
+    });
+  }catch(err){
+    console.error('Send failed:', err);
+    return; // leave text in box so user can retry
+  }
 
   ta.value = ''; autoResize(); cancelReply();
   clearTypingStatus();
   document.getElementById('at-hint').style.display = 'none';
-  // Sending a message implies user is at bottom — clear scroll badge
   scrollUnread = 0; updateScrollBadge();
   document.getElementById('scroll-fab')?.classList.remove('show');
 }
@@ -2904,12 +2906,14 @@ function resolveTeam(q){
 }
 
 function postBot(botName, text, avId){
-  db.ref(cfg.path+'/messages').push({
-    uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
-    name:botName, avId,
-    text:enc(text), ts:Date.now(),
-    isImg:false, edited:false, rply:null, isBot:true
-  });
+  try{
+    db.ref(cfg.path+'/messages').push({
+      uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
+      name:botName, avId,
+      text:enc(text), ts:Date.now(),
+      isImg:false, edited:false, rply:null, isBot:true
+    });
+  }catch(e){ console.error('postBot failed:', e); }
 }
 
 // Fetch wrapper — tries direct NHL API, falls back to corsproxy.io on any failure
@@ -3236,6 +3240,8 @@ function toggleEmojiPanel(){
 // ─────────────────────────────────────────────────────────────
 //  GIF SEARCH  (Tenor v1 with public demo key)
 // ─────────────────────────────────────────────────────────────
+// NOTE: 'LIVDSRZULELA' is Tenor's public demo key.
+// For production / high-volume use, get a free key at https://developers.google.com/tenor
 const TENOR_KEY = 'LIVDSRZULELA';
 
 function toggleGifPanel(){
@@ -3305,6 +3311,7 @@ function toggleScoresPanel(){
   scoresOpen = !scoresOpen;
   const dd  = document.getElementById('scores-dd');
   const btn = document.getElementById('scores-btn');
+  if(!dd || !btn) return;
   dd.classList.toggle('open', scoresOpen);
   btn.classList.toggle('active', scoresOpen);
 
@@ -3315,6 +3322,9 @@ function toggleScoresPanel(){
     clearInterval(scoresAutoTimer);
     scoresAutoTimer = null;
     stopCountdownTick();
+    // Clear reveal timers so they don't fire against closed panel
+    for(const {hideTimer} of revealedGames.values()) clearTimeout(hideTimer);
+    revealedGames.clear();
   }
 }
 
@@ -3440,7 +3450,7 @@ function buildGameCard(g){
       scoreHtml = `
         <div class="game-score-row">
           <span class="team-abbr">${awayA}</span>
-          <button class="reveal-btn" onclick="revealScore(${id})">
+          <button class="reveal-btn" onclick="revealScore(${id}); event.stopPropagation();">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             Reveal
           </button>
@@ -4019,7 +4029,21 @@ function performRoomSwitch(targetRoomId){
   pRef.onDisconnect().remove();
   window._presenceInterval = setInterval(() => pRef.update({ ts: Date.now() }), 25000);
 
-  // 10. Start all listeners for new room
+  // 10. Clear transient UI state from old room
+  hideHotTake();
+  hidePoll();
+  stopCountdownTick();                  // stop scores countdown tick
+  clearInterval(_pollCountdown);        // stop poll countdown
+  for(const {hideTimer} of revealedGames.values()) clearTimeout(hideTimer);
+  revealedGames.clear();
+  if(scoresOpen){ toggleScoresPanel(); } // close scores panel if open
+
+  // 11. Detach hot-take / poll / soundboard listeners for old room
+  if(_htListenRef)   { _htListenRef.off();   _htListenRef   = null; }
+  if(_pollListenRef) { _pollListenRef.off();  _pollListenRef = null; }
+  if(_sbListenRef)   { _sbListenRef.off();    _sbListenRef   = null; }
+
+  // 12. Start all listeners for new room (each one only once)
   checkReset();
   listenMessages();
   listenUsers();
@@ -4028,14 +4052,8 @@ function performRoomSwitch(targetRoomId){
   listenPolls();
   listenSoundboard();
   checkDJPrivilege();
-  hideHotTake();
-  hidePoll();
-  listenHotTake();
-  listenPolls();
-  listenSoundboard();
-  checkDJPrivilege();
   buildSoundboard();
-  // Init soundboard mute from localStorage
+  // Restore soundboard mute state
   sbMuted = localStorage.getItem("zc_sbmute") === "1";
   const sbMuteBtn = document.getElementById("sb-mute-btn");
   if(sbMuteBtn){ sbMuteBtn.textContent = sbMuted?"Unmute":"Mute"; sbMuteBtn.classList.toggle("muted",sbMuted); }
@@ -4247,7 +4265,9 @@ function renderPoll(pollId, poll, ended){
     const voteCount = Object.values(votes).filter(v => v === i).length;
     const pct = totalVotes > 0 ? voteCount / totalVotes : 0;
     const cls = ended ? 'ended' : (myVote !== undefined ? 'voted' : '');
-    html += `<div class="poll-opt ${cls}" style="--pct:${pct}" onclick="${ended||myVote!==undefined?'':"castVote('" + pollId + "',' + i + ')"}>
+    // Build onclick safely — avoids template-literal-in-template-literal escaping issues
+    const voteCall = (ended || myVote !== undefined) ? '' : ('castVote(' + JSON.stringify(pollId) + ',' + i + '); event.stopPropagation()');
+    html += `<div class="poll-opt ${cls}" style="--pct:${pct}" onclick="${voteCall}">
       <div class="poll-opt-fill"></div>
       <span class="poll-opt-text">${xss(opt)}</span>
       <span class="poll-opt-pct">${Math.round(pct*100)}%</span>
@@ -4255,13 +4275,17 @@ function renderPoll(pollId, poll, ended){
   });
   html += '</div>';
   if(ended){
-    // Show top result
-    const winIdx = opts.reduce((best,_,i) => {
-      const c = Object.values(votes).filter(v=>v===i).length;
-      const bc= Object.values(votes).filter(v=>v===best).length;
-      return c > bc ? i : best;
-    }, 0);
-    html += `<div class="poll-results-row">Total votes: ${totalVotes} · Winner: ${xss(dec(poll.options[winIdx]))}</div>`;
+    if(totalVotes === 0){
+      html += `<div class="poll-results-row">Poll ended · No votes cast</div>`;
+    } else {
+      const winIdx = opts.reduce((best,_,i) => {
+        const c  = Object.values(votes).filter(v => v === i).length;
+        const bc = Object.values(votes).filter(v => v === best).length;
+        return c > bc ? i : best;
+      }, 0);
+      const winCount = Object.values(votes).filter(v => v === winIdx).length;
+      html += `<div class="poll-results-row">Total votes: ${totalVotes} · 🏆 ${xss(opts[winIdx])} (${winCount})</div>`;
+    }
   }
 
   bar.innerHTML = html;
@@ -4287,7 +4311,8 @@ function hidePoll(){
 }
 
 function castVote(pollId, optIdx){
-  db.ref(cfg.path+'/polls/'+pollId+'/votes/'+me.uid).set(optIdx);
+  if(!me || !cfg) return;
+  db.ref(cfg.path+'/polls/'+pollId+'/votes/'+me.uid).set(Number(optIdx));
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -4345,7 +4370,13 @@ function ytIdFromUrl(url){
 function loadSbClips(){
   try{
     const saved = JSON.parse(localStorage.getItem('zc_sb_clips') || '{}');
-    return SB_DEFAULTS.map(s => s.id in saved ? { ...s, ...saved[s.id] } : { ...s });
+    return SB_DEFAULTS.map(s => {
+      if(!(s.id in saved)) return { ...s };
+      const ov = { ...saved[s.id] };
+      // Don't let a stored null/blank URL override the built-in default
+      if(!ov.url) delete ov.url;
+      return { ...s, ...ov };
+    });
   }catch(e){ return SB_DEFAULTS.map(s=>({...s})); }
 }
 function saveSbClips(clips){
@@ -4374,11 +4405,17 @@ let _notifStopTimer = null;
 
 // Called automatically by the YouTube IFrame API after it loads
 function onYouTubeIframeAPIReady(){
+  // Guard: elements must exist in the DOM
+  if(!document.getElementById('yt-player-el') || !document.getElementById('yt-notif-el')){
+    // Retry once DOM is fully parsed
+    setTimeout(onYouTubeIframeAPIReady, 300);
+    return;
+  }
   // ── Soundboard player (visible in DJ Board panel) ──────────
   _ytPlayer = new YT.Player('yt-player-el', {
     width:'178', height:'100',
     playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, iv_load_policy:3, fs:0 },
-    events:{ onReady: () => { _ytReady = true; } }
+    events:{ onReady: (e) => { _ytReady = true; } }
   });
 
   // ── Notification player (hidden 1×1, pre-cued at 0:14) ─────
@@ -4414,7 +4451,7 @@ function _playYtNotifClip(){
 }
 
 function ytPlay(videoId, startSec, durSec, label){
-  if(!_ytReady || !_ytPlayer) return false;
+  if(!_ytReady || !_ytPlayer || !videoId) return false;
   try{
     _ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
     document.getElementById('yt-player-wrap').style.display = 'block';
@@ -4454,10 +4491,11 @@ function buildSoundboard(){
 
 function toggleSoundboard(){
   _sbPanelOpen = !_sbPanelOpen;
-  document.getElementById('sb-panel').classList.toggle('open', _sbPanelOpen);
-  document.getElementById('sb-btn').classList.toggle('open', _sbPanelOpen);
-  document.getElementById('chat-screen').classList.toggle('sb-open', _sbPanelOpen);
-  if(!_sbPanelOpen) document.getElementById('sb-edit-panel').style.display = 'none';
+  document.getElementById('sb-panel')?.classList.toggle('open', _sbPanelOpen);
+  document.getElementById('sb-btn')?.classList.toggle('open', _sbPanelOpen);
+  document.getElementById('chat-screen')?.classList.toggle('sb-open', _sbPanelOpen);
+  const ep = document.getElementById('sb-edit-panel');
+  if(!_sbPanelOpen && ep) ep.style.display = 'none';
 }
 
 function toggleSbMute(){
@@ -4465,7 +4503,8 @@ function toggleSbMute(){
   localStorage.setItem('zc_sbmute', sbMuted ? '1' : '0');
   const btn = document.getElementById('sb-mute-btn');
   if(btn){ btn.textContent = sbMuted ? 'Unmute' : 'Mute'; btn.classList.toggle('muted', sbMuted); }
-  if(_ytPlayer && _ytReady){ try{ sbMuted ? _ytPlayer.mute() : _ytPlayer.unMute(); }catch(e){} }
+  if(_ytPlayer     && _ytReady)      { try{ sbMuted ? _ytPlayer.mute()     : _ytPlayer.unMute(); }catch(e){} }
+  if(_ytNotifPlayer && _ytNotifReady){ try{ sbMuted ? _ytNotifPlayer.mute() : _ytNotifPlayer.unMute(); }catch(e){} }
 }
 
 function toggleSbEdit(){
