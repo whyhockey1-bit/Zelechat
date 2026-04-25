@@ -840,38 +840,113 @@ body{
 }
 
 /* Responsive */
-@media(max-width:520px){
-  .msg-wrap{max-width:92%;}
-  .login-card{padding:24px 18px 20px;}
-  .scores-dropdown{width:calc(100vw - 20px);right:-10px;left:auto;}
-  .users-dropdown{width:calc(100vw - 20px);right:-10px;}
-  /* Tighten header on mobile */
-  .chat-header{padding:8px 10px;}
-  .header-right{gap:5px;}
-  .header-title{font-size:1.1rem;}
-  /* Scores + users buttons: icon-only on small screens */
-  .scores-btn .scores-btn-label,
-  .users-btn .users-btn-label{display:none;}
-  .scores-btn{padding:6px 9px;gap:4px;}
-  .users-btn{padding:6px 9px;gap:4px;}
-  .users-btn .count{display:none;}
-  /* Util buttons slightly smaller */
-  .util-btn{width:28px;height:28px;}
-  /* Purge button: icon only */
-  .purge-text{display:none;}
-  #purge-btn{padding:6px 9px;}
-  /* DJ Board text: hide label */
-  .sb-btn .sb-btn-label{display:none;}
-  .sb-btn{padding:6px 9px;}
-}
+
 
 /* Extra small — hide scores btn text "Scores", keep icon */
-@media(max-width:380px){
-  .header-title{font-size:1rem;}
-  .header-logo{width:26px;height:26px;}
-} — Florida Panthers dark palette
+ — Florida Panthers dark palette
    Overrides only color variables; layout is shared
 ===================================================== */
+
+/* =====================================================
+   MOBILE-FIRST INPUT LAYOUT
+===================================================== */
+.input-row{display:flex;align-items:flex-end;gap:8px;width:100%;}
+.input-zone{
+  background:var(--bg1);border-top:1px solid var(--border);
+  padding:8px 12px;flex-shrink:0;
+  display:flex;flex-direction:column;gap:0;position:relative;
+}
+.plus-btn{
+  width:38px;height:38px;flex-shrink:0;
+  background:var(--bg2);border:1px solid var(--border-soft);
+  border-radius:50%;color:var(--text-muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.plus-btn:hover,.plus-btn.open{color:var(--orange);border-color:var(--orange);background:var(--orange-glow);}
+.plus-btn.open svg{transform:rotate(45deg);}
+.plus-btn svg{transition:transform 0.2s;}
+.attach-menu{
+  position:absolute;bottom:calc(100% + 4px);left:0;right:0;
+  background:var(--bg1);border:1px solid var(--border);
+  border-radius:14px;padding:10px 8px;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+  z-index:300;box-shadow:var(--shadow);animation:fadeSlide 0.2s ease;
+}
+.attach-menu-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:var(--bg2);border:1px solid var(--border-soft);
+  border-radius:10px;padding:9px 4px;cursor:pointer;
+  font-size:0.7rem;font-family:'DM Sans',sans-serif;color:var(--text-soft);
+  transition:all 0.18s;
+}
+.attach-menu-item:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-glow);}
+.desktop-only{display:flex;}
+
+/* =====================================================
+   MOBILE BOTTOM NAV
+===================================================== */
+.mobile-bottom-nav{
+  display:none;
+  background:var(--bg1);border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.mbn-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;cursor:pointer;
+  color:var(--text-soft);font-size:0.7rem;font-family:'DM Sans',sans-serif;
+  padding:7px 4px;border-radius:8px;transition:color 0.18s;
+}
+.mbn-btn:hover,.mbn-btn.active{color:var(--orange);}
+.mbn-count{
+  display:inline-block;background:var(--orange);color:#000;
+  border-radius:8px;padding:0 5px;font-size:0.65rem;font-weight:700;margin-left:2px;
+}
+
+/* =====================================================
+   MOBILE ≤ 600px
+===================================================== */
+@media(max-width:600px){
+  .desktop-only{display:none !important;}
+  #send-btn{display:flex !important;}
+  .mobile-bottom-nav{
+    display:flex;
+    position:fixed;bottom:0;left:0;right:0;z-index:150;
+    padding:4px 0 max(6px,env(safe-area-inset-bottom,6px));
+  }
+  #chat-screen{padding-bottom:54px;}
+  .input-zone{padding:6px 8px;}
+  .input-row{gap:6px;}
+  .send-btn{width:40px;height:40px;flex-shrink:0;}
+  .plus-btn{width:36px;height:36px;}
+  .chat-header{padding:7px 10px;}
+  .header-right{gap:4px;}
+  .header-title{font-size:1.05rem;}
+  .scores-btn,.users-btn{display:none;}
+  .util-btn{width:28px;height:28px;}
+  .purge-text,.sb-btn-label{display:none;}
+  #purge-btn{padding:6px 8px;}
+  .sb-btn{display:none !important;}
+  .scores-dropdown,.users-dropdown{
+    position:fixed;bottom:54px;left:0;right:0;top:auto;
+    width:100%;max-height:60vh;overflow-y:auto;
+    border-radius:16px 16px 0 0;
+  }
+  .attach-menu{
+    position:fixed;bottom:54px;left:0;right:0;
+    border-radius:16px 16px 0 0;
+    grid-template-columns:repeat(5,1fr);
+    padding:14px 10px 10px;
+  }
+  .msg-wrap{max-width:90%;}
+  .login-card{padding:22px 14px 18px;}
+}
+@media(max-width:380px){
+  .attach-menu{grid-template-columns:repeat(4,1fr);}
+  .header-title{font-size:0.95rem;}
+}
+
+
 [data-theme="whyhockey"] {
   /* ── Reverse Retro Panthers: deep ocean + sky blue + Panthers red + gold ── */
   --bg0:         #030d1c;
@@ -2050,11 +2125,11 @@ body{
   <!-- Typing indicator -->
   <div class="typing-bar" id="typing-bar"></div>
 
-  <div class="input-zone" style="position:relative;">
+  <div class="input-zone" id="input-zone">
     <!-- @ command hint -->
     <div id="at-hint" class="at-hint" style="display:none;">@NHL · @NHL standings · @NHL [team] · @HockeyDB [player name]</div>
 
-    <!-- Emoji panel -->
+    <!-- Emoji panel (opens above input) -->
     <div id="emoji-panel" class="emoji-panel" style="display:none;">
       <div class="emoji-panel-cats" id="emoji-cats"></div>
       <div class="emoji-grid" id="emoji-grid"></div>
@@ -2072,44 +2147,77 @@ body{
       <div class="gif-grid" id="gif-grid"><div class="gif-loading">Search for a GIF above ↑</div></div>
     </div>
 
-    <div class="input-pill">
-      <textarea id="msg-input" placeholder="Message…" rows="1"></textarea>
-      <!-- Emoji -->
-      <button class="attach-btn" onclick="toggleEmojiPanel()" id="emoji-btn" title="Emoji">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-          <line x1="9" y1="9" x2="9.01" y2="9"/>
-          <line x1="15" y1="9" x2="15.01" y2="9"/>
-        </svg>
+    <!-- Attach menu — slides up on mobile when "+" is tapped -->
+    <div id="attach-menu" class="attach-menu" style="display:none;">
+      <button class="attach-menu-item" onclick="toggleEmojiPanel();closeAttachMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        Emoji
       </button>
-      <!-- GIF -->
-      <button class="gif-label" onclick="toggleGifPanel()" title="Search GIFs">GIF</button>
-      <!-- Poll -->
-      <button class="poll-btn" onclick="openPollModal()" title="Create a Poll">POLL</button>
-      <!-- Hot Take -->
-      <button class="hot-take-btn" onclick="openHotTakeModal()" title="Post a Hot Take (60s pin)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="17" x2="12" y2="22"/>
-          <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
-        </svg>
+      <button class="attach-menu-item" onclick="toggleGifPanel();closeAttachMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><text x="5" y="16" font-size="9" fill="currentColor" stroke="none" font-family="monospace" font-weight="bold">GIF</text></svg>
+        GIF
       </button>
-      <!-- Image upload -->
-      <button class="attach-btn" onclick="document.getElementById('img-file').click()" title="Send image">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
+      <button class="attach-menu-item" onclick="document.getElementById('img-file').click();closeAttachMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Photo
+      </button>
+      <button class="attach-menu-item" onclick="openPollModal();closeAttachMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="6" rx="2"/><rect x="3" y="13" width="12" height="6" rx="2"/></svg>
+        Poll
+      </button>
+      <button class="attach-menu-item" onclick="openHotTakeModal();closeAttachMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+        Hot Take
+      </button>
+    </div>
+
+    <div class="input-row">
+      <!-- "+" button: on desktop opens emoji; on mobile opens attach-menu -->
+      <button class="plus-btn" id="plus-btn" onclick="togglePlusMenu()" title="Attach">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+
+      <div class="input-pill">
+        <!-- enterkeyhint="send" tells mobile keyboard to show Send/Go instead of Return -->
+        <textarea id="msg-input" placeholder="Message…" rows="1"
+          enterkeyhint="send"
+          inputmode="text"></textarea>
+        <!-- Emoji button inside pill — desktop only via CSS -->
+        <button class="attach-btn desktop-only" onclick="toggleEmojiPanel()" id="emoji-btn" title="Emoji">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/>
+            <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </button>
+        <!-- GIF, POLL, Pin — desktop only -->
+        <button class="gif-label desktop-only" onclick="toggleGifPanel()" title="Search GIFs">GIF</button>
+        <button class="poll-btn desktop-only" onclick="openPollModal()" title="Create a Poll">POLL</button>
+        <button class="hot-take-btn desktop-only" onclick="openHotTakeModal()" title="Post a Hot Take (60s pin)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="17" x2="12" y2="22"/>
+            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+          </svg>
+        </button>
+        <button class="attach-btn desktop-only" onclick="document.getElementById('img-file').click()" title="Send image">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </button>
+      </div>
+      <input type="file" id="img-file" accept="image/*" onchange="handleImg(event)">
+
+      <!-- Send button — ALWAYS visible -->
+      <button class="send-btn" id="send-btn" onclick="sendMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
       </button>
     </div>
-    <input type="file" id="img-file" accept="image/*" onchange="handleImg(event)">
-    <button class="send-btn" onclick="sendMsg()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    </button>
   </div>
 
 
@@ -2423,10 +2531,15 @@ function enterChat(){
   if(sbMuteBtn){ sbMuteBtn.textContent = sbMuted?"Unmute":"Mute"; sbMuteBtn.classList.toggle("muted",sbMuted); }
 
   const ta = document.getElementById('msg-input');
+  // keydown handles desktop Enter
   ta.addEventListener('keydown', e => {
     if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); return; }
     if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); return; }
     setTyping();
+  });
+  // keypress backup for iOS Safari and Android keyboards
+  ta.addEventListener('keypress', e => {
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
   });
   ta.addEventListener('input', () => {
     autoResize();
@@ -2931,6 +3044,8 @@ function listenUsers(){
     });
 
     document.getElementById('online-cnt').textContent = list.length;
+    const mc = document.getElementById('mobile-online-cnt');
+    if(mc) mc.textContent = list.length;
 
     const ul = document.getElementById('users-list');
     ul.innerHTML = '';
@@ -4654,8 +4769,12 @@ function ytPlay(videoId, startSec, durSec, label){
 function isDJUser(){ return me && me.name.toLowerCase().includes('dj'); }
 
 function checkDJPrivilege(){
+  // Desktop DJ Board button
   const btn = document.getElementById('sb-btn');
   if(btn) btn.style.display = isDJUser() ? 'flex' : 'none';
+  // Mobile bottom nav DJ button
+  const mbnBtn = document.getElementById('mbn-sb-btn');
+  if(mbnBtn) mbnBtn.style.display = isDJUser() ? 'flex' : 'none';
 }
 
 function buildSoundboard(){
@@ -4791,6 +4910,31 @@ function _playClipLocally(videoId, startSec, durSec, label, isDJ){
   }
 }
 
+
+// ─────────────────────────────────────────────────────────────
+//  PLUS MENU (mobile attach menu / desktop emoji toggle)
+// ─────────────────────────────────────────────────────────────
+function togglePlusMenu(){
+  const isMobile = window.innerWidth <= 600;
+  if(isMobile){
+    const menu = document.getElementById('attach-menu');
+    const isOpen = menu.style.display !== 'none' && menu.style.display !== '';
+    closeAttachMenu();
+    if(!isOpen){
+      menu.style.display = 'grid';
+      document.getElementById('plus-btn').classList.add('open');
+    }
+  } else {
+    // Desktop: toggle emoji panel
+    toggleEmojiPanel();
+  }
+}
+
+function closeAttachMenu(){
+  document.getElementById('attach-menu').style.display = 'none';
+  document.getElementById('plus-btn').classList.remove('open');
+}
+
 // ─────────────────────────────────────────────────────────────
 //  GLOBAL CLICK HANDLER  (registered once at module level)
 // ─────────────────────────────────────────────────────────────
@@ -4819,6 +4963,8 @@ document.addEventListener('click', e => {
     document.getElementById('emoji-panel').style.display='none';
   if(!e.target.closest('.gif-panel') && !e.target.closest('.gif-label'))
     document.getElementById('gif-panel').style.display='none';
+  // Close attach menu on outside click
+  if(!e.target.closest('.attach-menu') && !e.target.closest('#plus-btn')) closeAttachMenu();
   // Close poll/hottake modals on overlay click
   if(e.target.id === 'ht-modal-overlay') closeHotTakeModal();
   if(e.target.id === 'poll-modal-overlay') closePollModal();
@@ -4888,6 +5034,34 @@ document.getElementById('inp-name').addEventListener('keydown', e => { if(e.key=
       </div>
       <button class="snd-reset" onclick="resetNotifSound()">Reset to built-in sound</button>
     </div>
+  </div>
+
+  <!-- Mobile bottom nav: Scores + Users (hidden on desktop) -->
+  <div class="mobile-bottom-nav" id="mobile-bottom-nav">
+    <button class="mbn-btn" onclick="toggleScoresPanel()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+        <line x1="7" y1="8" x2="7" y2="12"/>
+        <line x1="12" y1="6" x2="12" y2="12"/>
+        <line x1="17" y1="9" x2="17" y2="12"/>
+      </svg>
+      <span>Scores</span>
+    </button>
+    <button class="mbn-btn" onclick="toggleUsers()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      <span>Online <span id="mobile-online-cnt" class="mbn-count">0</span></span>
+    </button>
+    <button class="mbn-btn" id="mbn-sb-btn" style="display:none" onclick="toggleSoundboard()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      <span>DJ Board</span>
+    </button>
   </div>
 
 </body>
