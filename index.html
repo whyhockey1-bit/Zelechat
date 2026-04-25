@@ -999,7 +999,26 @@ body{
 }
 
 
-/* ── Utility icon buttons (sound / theme / bell) ── */
+/* ── Purge button (xxxPurge privilege only) ── */
+#purge-btn{
+  display:none; /* shown only for xxxPurge username */
+  align-items:center;gap:6px;
+  background:rgba(255,55,55,0.12);
+  border:1px solid rgba(255,55,55,0.35);
+  border-radius:20px;
+  color:#ff5555;
+  padding:7px 13px;
+  cursor:pointer;
+  font-size:0.82rem;font-family:'DM Sans',sans-serif;font-weight:600;
+  transition:background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  white-space:nowrap;flex-shrink:0;
+}
+#purge-btn:hover{
+  background:rgba(255,55,55,0.22);
+  border-color:rgba(255,55,55,0.7);
+  box-shadow:0 0 14px rgba(255,55,55,0.25);
+}
+#purge-btn:active{ transform:scale(0.96); }
 .util-btn{
   background:none;border:none;cursor:pointer;
   color:var(--text-muted);
@@ -1195,6 +1214,17 @@ body{
       <div class="header-title" id="chat-room-name">Zelechat</div>
     </div>
     <div class="header-right">
+      <!-- Purge button — only rendered for username xxxPurge -->
+      <button id="purge-btn" onclick="purgeChat()" title="Clear all chat history">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6"/><path d="M14 11v6"/>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+        Purge Chat
+      </button>
+
       <!-- Utility buttons: sound / theme / notifications -->
       <button class="util-btn" id="sound-btn" onclick="toggleSound()" title="Toggle message sound">
         <svg id="sound-icon-on" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
@@ -1562,6 +1592,7 @@ function enterChat(){
   initTheme();
   initNotifications();
   initScrollFAB();
+  checkPurgePrivilege(); // show purge button only for xxxPurge
   checkReset();
   listenMessages();
   listenUsers();
@@ -2859,7 +2890,7 @@ function requestNotifications(){
       document.getElementById('notif-btn').classList.add('active-state');
       // Confirm with a test notification
       new Notification('Notifications enabled!', {
-        body: 'You'll be notified of new messages.',
+        body: "You'll be notified of new messages.",
         icon: cfg ? cfg.favicon : ''
       });
     }
@@ -2942,6 +2973,41 @@ function trackScrollUnread(msg){
     scrollUnread++;
     updateScrollBadge();
   }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  PURGE PRIVILEGE  (username: xxxPurge only)
+// ─────────────────────────────────────────────────────────────
+const PURGE_USER = 'xxxPurge';
+
+function checkPurgePrivilege(){
+  if(me?.name === PURGE_USER){
+    document.getElementById('purge-btn').style.display = 'flex';
+  }
+}
+
+function purgeChat(){
+  // Double confirmation — destructive action affects everyone
+  if(!confirm(`⚠️ Clear ALL messages in ${cfg.name} for everyone?\n\nThis cannot be undone.`)) return;
+  if(!confirm(`Are you sure? This will permanently delete the entire chat history.`)) return;
+
+  const now = Date.now();
+  // Remove all messages
+  db.ref(cfg.path + '/messages').remove();
+  // Update lastReset so the 3 AM auto-reset doesn't double-fire
+  db.ref(cfg.path + '/meta/lastReset').set(now);
+  // Post a system-style notice so others know what happened
+  db.ref(cfg.path + '/messages').push({
+    uid:    'system',
+    name:   'System',
+    avId:   132,          // Ditto — fitting for a shapeshifter
+    text:   enc(`Chat history was cleared by ${me.name}.`),
+    ts:     now + 1,
+    isImg:  false,
+    edited: false,
+    rply:   null,
+    isBot:  true
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
