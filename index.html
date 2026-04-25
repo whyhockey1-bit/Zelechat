@@ -12,6 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <style>
 /* =====================================================
@@ -850,84 +851,268 @@ body{
    Overrides only color variables; layout is shared
 ===================================================== */
 [data-theme="whyhockey"] {
-  /* Reverse Retro: sky blue primary, Panthers red accent, gold trim */
-  --bg0:         #020c18;   /* deep tropical night ocean             */
-  --bg1:         #051525;   /* dark water                            */
-  --bg2:         #091f38;   /* ocean depth                           */
-  --bg3:         #0d2a4a;   /* lighter wave                          */
-  --orange:      #00c2f5;   /* Reverse Retro sky blue                */
+  /* ── Reverse Retro Panthers: deep ocean + sky blue + Panthers red + gold ── */
+  --bg0:         #030d1c;
+  --bg1:         #061828;
+  --bg2:         #0a2238;
+  --bg3:         #0e2e4e;
+  --orange:      #00c2f5;       /* sky blue — primary action color    */
   --orange-dim:  #009dc8;
-  --orange-glow: rgba(0,194,245,0.18);
+  --orange-glow: rgba(0,194,245,0.22);
   --orange-text: #6de5ff;
-  --purple:      #CC0033;   /* Panthers red                          */
-  --purple-dim:  rgba(204,0,51,0.16);
-  --grey:        #507088;
-  --grey-dim:    #1e3448;
-  --text:        #e8f4fa;
+  --purple:      #CC0033;       /* Panthers red                        */
+  --purple-dim:  rgba(204,0,51,0.18);
+  --grey:        #4e7a98;
+  --grey-dim:    #1a3550;
+  --text:        #ddf0fa;
   --text-soft:   #6ea4c0;
-  --text-muted:  #2e5068;
-  --border:      rgba(0,194,245,0.2);
-  --border-soft: rgba(255,255,255,0.07);
+  --text-muted:  #2c4e68;
+  --border:      rgba(0,194,245,0.28);
+  --border-soft: rgba(0,194,245,0.10);
   --red:         #ff3355;
   --green:       #00dba0;
-  --shadow:      0 8px 32px rgba(0,0,0,0.8);
-  /* Gold trim variable */
+  --shadow:      0 8px 32px rgba(0,0,0,0.82);
   --gold:        #FFB81C;
 }
 
-/* ── Login: animated sun + waves gradient ── */
-[data-theme="whyhockey"] #login-screen{
+/* ══════════════════════════════════════════════════════
+   PANTHERS: element-level overrides — makes every
+   surface visually DIFFERENT from Zelechat
+══════════════════════════════════════════════════════ */
+
+/* Body: deep ocean gradient from bottom */
+[data-theme="whyhockey"] body {
   background:
-    radial-gradient(ellipse 55% 40% at 50% 105%,  rgba(0,194,245,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 30% 25% at 15% 70%,   rgba(255,184,28,0.07) 0%, transparent 50%),
-    radial-gradient(ellipse 30% 25% at 85% 70%,   rgba(204,0,51,0.07) 0%, transparent 50%),
-    var(--bg0);
+    radial-gradient(ellipse 110% 55% at 50% 115%,
+      rgba(0, 120, 200, 0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 10% 80%,
+      rgba(0, 100, 160, 0.10) 0%, transparent 55%),
+    #030d1c;
 }
 
-/* ── Animated wave line across the reset-notice bar ── */
-[data-theme="whyhockey"] .reset-notice{
-  background: linear-gradient(90deg, var(--bg2) 0%, rgba(0,194,245,0.12) 50%, var(--bg2) 100%);
-  background-size:200% 100%;
-  animation: waveSlide 6s linear infinite;
-}
-@keyframes waveSlide{
-  0%{background-position:200% 0;}
-  100%{background-position:-200% 0;}
+/* Chat header: blue-tinted with teal border + gold bottom line */
+[data-theme="whyhockey"] .chat-header {
+  background: linear-gradient(180deg, #081f38 0%, #061828 100%);
+  border-bottom: 1px solid rgba(0,194,245,0.30);
+  box-shadow: 0 2px 0 rgba(255,184,28,0.18), 0 3px 16px rgba(0,0,0,0.5);
 }
 
-/* ── Login card: ocean glow border ── */
-[data-theme="whyhockey"] .login-card{
-  box-shadow: 0 0 0 1px rgba(0,194,245,0.25),
-              0 0 60px rgba(0,194,245,0.08),
-              var(--shadow);
+/* Header title: sky blue glow */
+[data-theme="whyhockey"] .header-title {
+  color: #00c2f5;
+  text-shadow:
+    0 0 12px rgba(0,194,245,0.6),
+    0 0 30px rgba(0,194,245,0.25);
 }
 
-/* ── Mine bubble: sky blue with white text ── */
-[data-theme="whyhockey"] .msg-wrap.mine .msg-bubble{
+/* Messages area: ocean depth gradient */
+[data-theme="whyhockey"] .messages-area {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%,
+      rgba(0, 80, 140, 0.10) 0%, transparent 70%),
+    transparent;
+}
+
+/* Input zone: deeper blue tint */
+[data-theme="whyhockey"] .input-zone {
+  background: linear-gradient(0deg, #071524 0%, #061828 100%);
+  border-top: 1px solid rgba(0,194,245,0.22);
+}
+
+/* Input pill: ocean blue border */
+[data-theme="whyhockey"] .input-pill {
+  background: rgba(8, 30, 55, 0.8);
+  border-color: rgba(0,194,245,0.15);
+}
+[data-theme="whyhockey"] .input-pill:focus-within {
+  border-color: #00c2f5;
+}
+
+/* Send button: sky blue */
+[data-theme="whyhockey"] .send-btn {
+  background: #00c2f5;
+  box-shadow: 0 3px 12px rgba(0,194,245,0.45);
+}
+[data-theme="whyhockey"] .send-btn:hover {
+  background: #30d4ff;
+  box-shadow: 0 4px 18px rgba(0,194,245,0.6);
+}
+
+/* Scores / users buttons: blue border on hover */
+[data-theme="whyhockey"] .scores-btn,
+[data-theme="whyhockey"] .users-btn {
+  background: rgba(8, 28, 50, 0.8);
+  border-color: rgba(0,194,245,0.22);
+}
+[data-theme="whyhockey"] .scores-btn:hover,
+[data-theme="whyhockey"] .users-btn:hover {
+  border-color: #00c2f5;
+}
+
+/* Dropdowns */
+[data-theme="whyhockey"] .users-dropdown,
+[data-theme="whyhockey"] .scores-dropdown {
+  background: #071828;
+  border-color: rgba(0,194,245,0.28);
+}
+
+/* Context bars (reply/edit) */
+[data-theme="whyhockey"] .context-bar {
+  background: #071828;
+  border-top-color: rgba(0,194,245,0.22);
+}
+
+/* Typing bar */
+[data-theme="whyhockey"] .typing-bar {
+  background: linear-gradient(0deg, #071524 0%, #061828 100%);
+}
+
+/* Reset notice: animated teal wave */
+[data-theme="whyhockey"] .reset-notice {
+  background: linear-gradient(
+    90deg,
+    rgba(6,24,40,1) 0%,
+    rgba(0,194,245,0.10) 50%,
+    rgba(6,24,40,1) 100%
+  );
+  background-size: 200% 100%;
+  border-bottom-color: rgba(0,194,245,0.18);
+  animation: waveSlide 5s linear infinite;
+  color: rgba(0,194,245,0.55);
+}
+@keyframes waveSlide {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Login screen: ocean sunset */
+[data-theme="whyhockey"] #login-screen {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 108%,
+      rgba(0,130,210,0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 20% 75%,
+      rgba(255,184,28,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 80% 75%,
+      rgba(204,0,51,0.07) 0%, transparent 55%),
+    #030d1c;
+}
+
+/* Login card: teal glow border */
+[data-theme="whyhockey"] .login-card {
+  background: #071828;
+  border-color: rgba(0,194,245,0.22);
+  box-shadow:
+    0 0 0 1px rgba(0,194,245,0.15),
+    0 0 50px rgba(0,120,200,0.12),
+    0 24px 48px rgba(0,0,0,0.6);
+}
+
+/* Login logo text: sky blue */
+[data-theme="whyhockey"] .login-logo-text {
+  color: #00c2f5;
+  text-shadow: 0 0 24px rgba(0,194,245,0.5);
+}
+
+/* Login tagline: gold */
+[data-theme="whyhockey"] .login-tagline {
+  color: #FFB81C;
+  opacity: 0.8;
+}
+
+/* Enter button: sky blue */
+[data-theme="whyhockey"] .btn-enter {
+  background: #00c2f5;
+  box-shadow: 0 4px 16px rgba(0,194,245,0.40);
+  color: #03080f;
+}
+[data-theme="whyhockey"] .btn-enter:hover {
+  background: #30d4ff;
+}
+
+/* Avatar ring: teal */
+[data-theme="whyhockey"] .avatar-ring {
+  border-color: #00c2f5;
+  box-shadow: 0 0 20px rgba(0,194,245,0.3), inset 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* Input fields on login: teal focus */
+[data-theme="whyhockey"] .field input:focus {
+  border-color: #00c2f5;
+  box-shadow: 0 0 0 3px rgba(0,194,245,0.18);
+}
+
+/* Mine bubbles: sky blue gradient */
+[data-theme="whyhockey"] .msg-wrap.mine .msg-bubble {
   background: linear-gradient(135deg, #00c2f5 0%, #0098d4 100%);
-  color: #fff;
+  color: #03080f;
   border-color: transparent;
 }
-[data-theme="whyhockey"] .msg-wrap.mine .rq{
+[data-theme="whyhockey"] .msg-wrap.mine .rq {
   border-left-color: rgba(255,255,255,0.4);
   background: rgba(255,255,255,0.12);
 }
 
-/* ── Gold accent on header title in Panthers room ── */
-[data-theme="whyhockey"] .header-title{
-  text-shadow: 0 0 20px rgba(0,194,245,0.5), 0 0 40px rgba(0,194,245,0.2);
+/* Their bubbles: ocean depth */
+[data-theme="whyhockey"] .msg-wrap.theirs .msg-bubble {
+  background: rgba(8, 30, 55, 0.9);
+  border-color: rgba(0,194,245,0.12);
 }
 
-/* ── Tagline on login card: gold in Panthers room ── */
-[data-theme="whyhockey"] .login-tagline{
-  color: var(--gold);
-  opacity: 0.75;
-  letter-spacing: 0.12em;
+/* Reply/edit bar: purple = Panthers red */
+[data-theme="whyhockey"] .cbar-name { color: #00c2f5; }
+
+/* Scrollbar: teal */
+[data-theme="whyhockey"] ::-webkit-scrollbar-thumb {
+  background: rgba(0,194,245,0.25);
 }
 
-/* ── Selector card for Panthers: teal glow ── */
-[data-theme="whyhockey"] .selector-card{
-  box-shadow: 0 0 60px rgba(0,194,245,0.1), var(--shadow);
+/* Reactions: teal active */
+[data-theme="whyhockey"] .rx-btn.mine-rx {
+  background: rgba(0,194,245,0.2);
+  border-color: rgba(0,194,245,0.4);
+  color: #00c2f5;
+}
+
+/* Bot badge: teal */
+[data-theme="whyhockey"] .bot-badge {
+  background: #00c2f5;
+  color: #03080f;
+}
+
+/* Emoji panel / GIF panel */
+[data-theme="whyhockey"] .emoji-panel,
+[data-theme="whyhockey"] .gif-panel {
+  background: #071828;
+  border-color: rgba(0,194,245,0.25);
+}
+
+/* Hot take bar: teal glow */
+[data-theme="whyhockey"] .hot-take-bar {
+  background: linear-gradient(90deg,
+    rgba(0,50,100,0.25) 0%,
+    rgba(0,194,245,0.10) 100%);
+  border-top-color: rgba(0,194,245,0.3);
+  border-bottom-color: rgba(0,194,245,0.3);
+}
+
+/* Light mode override for Panthers */
+[data-theme="whyhockey"].light {
+  --bg0: #e8f6fc;
+  --bg1: #ffffff;
+  --bg2: #d4eef8;
+  --bg3: #bee5f3;
+  --text: #051525;
+  --text-soft: #1a5070;
+  --text-muted: #4a90b0;
+}
+[data-theme="whyhockey"].light body {
+  background:
+    radial-gradient(ellipse 100% 50% at 50% 100%,
+      rgba(0,150,220,0.10) 0%, transparent 70%),
+    #e8f6fc;
+}
+[data-theme="whyhockey"].light .chat-header {
+  background: linear-gradient(180deg, #d4eef8 0%, #ffffff 100%);
 }
 
 /* =====================================================
@@ -1529,6 +1714,55 @@ body{
 /* Shift chat layout when soundboard open */
 #chat-screen.sb-open{margin-right:200px;}
 
+
+/* ── Notification sound settings modal ── */
+.snd-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.72);
+  z-index:600;display:none;align-items:center;justify-content:center;padding:16px;
+}
+.snd-modal-overlay.show{display:flex;}
+.snd-modal{
+  background:var(--bg1);border:1px solid var(--border);
+  border-radius:18px;padding:22px 20px 18px;
+  width:100%;max-width:400px;box-shadow:var(--shadow);
+}
+.snd-modal-title{
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.snd-field-label{
+  font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--text-muted);margin-bottom:5px;
+}
+.snd-url-input{
+  width:100%;background:var(--bg2);border:1px solid var(--border-soft);
+  border-radius:9px;color:var(--text);padding:10px 12px;
+  font-size:0.88rem;font-family:'DM Mono',monospace;outline:none;
+  transition:border-color 0.2s;margin-bottom:6px;
+}
+.snd-url-input:focus{border-color:var(--orange);}
+.snd-hint{
+  font-size:0.7rem;color:var(--text-muted);line-height:1.55;margin-bottom:14px;
+}
+.snd-hint a{color:var(--orange-text);text-decoration:none;}
+.snd-hint a:hover{text-decoration:underline;}
+.snd-btn-row{display:flex;gap:8px;}
+.snd-test-btn,.snd-save-btn,.snd-cancel-btn{
+  border-radius:9px;padding:9px 16px;cursor:pointer;
+  font-size:0.86rem;font-family:'DM Sans',sans-serif;font-weight:600;
+  border:1px solid var(--border);background:var(--bg2);color:var(--text-soft);
+  transition:all 0.18s;
+}
+.snd-save-btn{background:var(--orange);color:#000;border-color:transparent;flex:1;}
+.snd-save-btn:hover{opacity:0.88;}
+.snd-test-btn:hover,.snd-cancel-btn:hover{border-color:var(--orange);}
+.snd-reset{
+  background:none;border:none;cursor:pointer;color:var(--text-muted);
+  font-size:0.72rem;text-decoration:underline;padding:0;margin-top:8px;
+  display:block;font-family:'DM Sans',sans-serif;
+}
+.snd-reset:hover{color:var(--orange);}
+
 </style>
 </head>
 <body>
@@ -1662,7 +1896,7 @@ body{
       </button>
 
       <!-- Utility buttons: sound / theme / notifications -->
-      <button class="util-btn" id="sound-btn" onclick="toggleSound()" title="Toggle message sound">
+      <button class="util-btn" id="sound-btn" onclick="toggleSound()" ondblclick="openSoundSettings();event.preventDefault()" title="Click to toggle · Double-click to change sound">
         <svg id="sound-icon-on" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         <svg id="sound-icon-off" style="display:none" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
       </button>
@@ -1686,7 +1920,12 @@ body{
       <div class="scores-panel" id="scores-panel">
         <button class="scores-btn" id="scores-btn" onclick="toggleScoresPanel()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <line x1="7" y1="8" x2="7" y2="12"/>
+            <line x1="12" y1="6" x2="12" y2="12"/>
+            <line x1="17" y1="9" x2="17" y2="12"/>
           </svg>
           Scores
         </button>
@@ -1828,13 +2067,9 @@ body{
       <button class="poll-btn" onclick="openPollModal()" title="Create a Poll">POLL</button>
       <!-- Hot Take -->
       <button class="hot-take-btn" onclick="openHotTakeModal()" title="Post a Hot Take (60s pin)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10"/>
-          <path d="M12 2c2.5 4 4 7 4 10" fill="none"/>
-          <line x1="12" y1="2" x2="12" y2="12"/>
-          <circle cx="12" cy="12" r="2" fill="currentColor"/>
-          <path d="M17 12h5"/>
-          <path d="M19 10l3 2-3 2"/>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="17" x2="12" y2="22"/>
+          <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
         </svg>
       </button>
       <!-- Image upload -->
@@ -2088,7 +2323,9 @@ function doLogin(){
   if(btn){ btn.disabled = true; btn.textContent = 'Entering\u2026'; }
   const uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
   me = { uid, name, avId: pickAvId };
-  authenticatedRooms.add(cfg.id); // mark this room as authenticated
+  // Mark ALL rooms as accessible once the user is logged in with any valid password.
+  // The toggle button should never prompt for a password mid-session.
+  Object.keys(ROOMS).forEach(id => authenticatedRooms.add(id));
   enterChat();
 }
 
@@ -3310,13 +3547,49 @@ let soundEnabled = true;
 // Three-oscillator air-horn (fundamental + 2nd + 5th partial),
 // run through a WaveShaper for that brassy NHL goal-horn timbre,
 // shaped by an ADSR-style gain envelope.  ~1.1 s duration.
+// ─────────────────────────────────────────────────────────────
+//  NOTIFICATION SOUND
+//  • Plays a URL-based audio file if the user has set one
+//  • Falls back to improved Web Audio synthesis otherwise
+//  • Double-click the speaker button to open sound settings
+// ─────────────────────────────────────────────────────────────
+
 function playHockeySound(){
   if(!soundEnabled) return;
-  _triggerHockeySound(false);
+  // 1. User-overridden URL takes highest priority
+  const url = localStorage.getItem('zc_notif_sound_url');
+  if(url){ _playAudioUrl(url, false); return; }
+  // 2. YouTube clip (USe_6igPcXU @0:14 for 2s) — default
+  _playYtNotifClip();
 }
 
-// core synthesiser — also called by soundboard with fullHorn=true
+// Used by the soundboard goal horn (full, sustained version)
 function _triggerHockeySound(fullHorn){
+  if(!fullHorn){
+    // Notification ping — use YouTube clip
+    playHockeySound();
+  } else {
+    // Full goal horn for soundboard — synthesised blast + crowd
+    _synthHorn(true);
+  }
+}
+
+// Play any direct audio URL
+function _playAudioUrl(url, loop){
+  try{
+    const a = new Audio(url);
+    a.volume = 0.75;
+    a.loop   = !!loop;
+    const p  = a.play();
+    if(p && p.catch) p.catch(() => _synthNotifSound()); // fallback if URL fails
+  }catch(e){ _synthNotifSound(); }
+}
+
+// ── Improved synthesis: short bright "ding-horn" ping ────────
+// Closer to the brief horn stab heard between whistles in a real arena —
+// a narrow fundamental around 480 Hz with two harmonics, heavy soft-clip
+// for that pressurized-air timbre, sharp attack and very quick decay.
+function _synthNotifSound(){
   try{
     const Ctor = window.AudioContext || window.webkitAudioContext;
     if(!Ctor) return;
@@ -3324,55 +3597,124 @@ function _triggerHockeySound(fullHorn){
     if(ctx.state === 'suspended') ctx.resume();
     const t0 = ctx.currentTime;
 
-    // ── Buzzer / foghorn core ────────────────────────────────
-    // Classic arena period-end buzzer: two detuned square oscillators
-    // driven through aggressive soft-clip, filtered to 800 Hz band.
-    const drive = ctx.createWaveShaper();
-    const N = 256; const c = new Float32Array(N);
-    for(let i=0;i<N;i++){ const x=(i*2/N)-1; c[i]=Math.tanh(4*x); }
-    drive.curve = c;
+    // Waveshaper: aggressive tanh clip for compressed-air character
+    const ws = ctx.createWaveShaper();
+    const N = 512; const c = new Float32Array(N);
+    for(let i=0;i<N;i++){ const x=(i*2/N)-1; c[i]=Math.tanh(6*x); }
+    ws.curve = c;
+
+    // Resonant bandpass centred on the fundamental's 2nd harmonic
+    const bpf = ctx.createBiquadFilter();
+    bpf.type = 'bandpass'; bpf.frequency.value = 960; bpf.Q.value = 2.2;
+
+    // Very short gain envelope: 8ms attack, 380ms sustain, 80ms release
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0, t0);
+    env.gain.linearRampToValueAtTime(0.42, t0 + 0.008);
+    env.gain.setValueAtTime(0.42, t0 + 0.38);
+    env.gain.exponentialRampToValueAtTime(0.001, t0 + 0.46);
+
+    // Three partials: fundamental 480 Hz + 2nd + 3rd harmonic
+    // Sawtooth gives richer harmonic content than square for a horn
+    [[480, 1.0], [960, 0.55], [1440, 0.22]].forEach(([f, a]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type  = 'sawtooth';
+      o.frequency.setValueAtTime(f, t0);
+      // Characteristic pitch droop of a pressurised-air horn
+      o.frequency.exponentialRampToValueAtTime(f * 0.978, t0 + 0.06);
+      g.gain.value = a;
+      o.connect(g); g.connect(ws);
+      o.start(t0); o.stop(t0 + 0.5);
+    });
+
+    ws.connect(bpf); bpf.connect(env); env.connect(ctx.destination);
+    setTimeout(() => { try{ ctx.close(); }catch(e){} }, 800);
+  }catch(e){}
+}
+
+// ── Full sustain horn (used by soundboard Goal Horn button) ──
+function _synthHorn(fullHorn){
+  try{
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if(!Ctor) return;
+    const ctx = new Ctor();
+    if(ctx.state === 'suspended') ctx.resume();
+    const t0   = ctx.currentTime;
+    const dur  = fullHorn ? 2.0 : 0.46;
+    const peak = fullHorn ? 0.55 : 0.42;
+
+    const ws = ctx.createWaveShaper();
+    const N = 512; const c = new Float32Array(N);
+    for(let i=0;i<N;i++){ const x=(i*2/N)-1; c[i]=Math.tanh(6*x); }
+    ws.curve = c;
 
     const bpf = ctx.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = 820; bpf.Q.value = 1.6;
-
-    const dur  = fullHorn ? 1.8 : 0.55;
-    const peak = fullHorn ? 0.6 : 0.38;
+    bpf.type = 'bandpass'; bpf.frequency.value = 960; bpf.Q.value = 2.2;
 
     const env = ctx.createGain();
     env.gain.setValueAtTime(0, t0);
-    env.gain.linearRampToValueAtTime(peak, t0 + 0.01);   // instant crack
-    env.gain.setValueAtTime(peak, t0 + dur * 0.72);
+    env.gain.linearRampToValueAtTime(peak, t0 + 0.008);
+    env.gain.setValueAtTime(peak, t0 + dur * 0.78);
     env.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
 
-    [[155, 1.0],[160.5, 0.7],[310, 0.3]].forEach(([f,a]) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'square';
+    [[480, 1.0],[960, 0.55],[1440, 0.22]].forEach(([f, a]) => {
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type  = 'sawtooth';
       o.frequency.setValueAtTime(f, t0);
-      o.frequency.linearRampToValueAtTime(f * 0.985, t0 + 0.05); // pitch droop
+      o.frequency.exponentialRampToValueAtTime(f * 0.978, t0 + 0.06);
       g.gain.value = a;
-      o.connect(g); g.connect(drive);
+      o.connect(g); g.connect(ws);
       o.start(t0); o.stop(t0 + dur + 0.05);
     });
 
-    drive.connect(bpf); bpf.connect(env); env.connect(ctx.destination);
+    ws.connect(bpf); bpf.connect(env); env.connect(ctx.destination);
 
     if(fullHorn){
-      // ── Crowd cheer burst (noise + resonant comb) ──────────
-      const bufLen = Math.floor(ctx.sampleRate * 1.2);
-      const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for(let i=0;i<bufLen;i++) d[i] = (Math.random()*2-1) * Math.exp(-i/(ctx.sampleRate*0.9));
-      const ns = ctx.createBufferSource(); ns.buffer = buf;
-      const nGain = ctx.createGain();
-      nGain.gain.setValueAtTime(0.18, t0 + 0.08);
-      nGain.gain.exponentialRampToValueAtTime(0.001, t0 + 1.4);
-      ns.connect(nGain); nGain.connect(ctx.destination);
-      ns.start(t0 + 0.06);
+      // Crowd noise burst
+      const bLen = Math.floor(ctx.sampleRate * 1.4);
+      const buf  = ctx.createBuffer(1, bLen, ctx.sampleRate);
+      const d    = buf.getChannelData(0);
+      for(let i=0;i<bLen;i++) d[i] = (Math.random()*2-1) * Math.exp(-i/(ctx.sampleRate*1.1));
+      const ns  = ctx.createBufferSource(); ns.buffer = buf;
+      const ng  = ctx.createGain();
+      ng.gain.setValueAtTime(0.22, t0+0.06);
+      ng.gain.exponentialRampToValueAtTime(0.001, t0+1.6);
+      ns.connect(ng); ng.connect(ctx.destination); ns.start(t0+0.05);
     }
 
-    setTimeout(() => { try{ ctx.close(); }catch(e){} }, (dur + 0.5) * 1000);
+    setTimeout(() => { try{ ctx.close(); }catch(e){} }, (dur + 0.8) * 1000);
   }catch(e){}
+}
+
+// ── Sound settings modal ─────────────────────────────────────
+function openSoundSettings(){
+  const saved = localStorage.getItem('zc_notif_sound_url') || '';
+  document.getElementById('snd-url-input').value = saved;
+  document.getElementById('snd-modal-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('snd-url-input').focus(), 80);
+}
+function closeSoundSettings(){
+  document.getElementById('snd-modal-overlay').classList.remove('show');
+}
+function testNotifSound(){
+  const url = document.getElementById('snd-url-input').value.trim();
+  if(url){ _playAudioUrl(url, false); return; }
+  // Test the YouTube clip
+  _playYtNotifClip();
+}
+function saveNotifSound(){
+  const url = document.getElementById('snd-url-input').value.trim();
+  if(url){ localStorage.setItem('zc_notif_sound_url', url); }
+  else   { localStorage.removeItem('zc_notif_sound_url'); }
+  closeSoundSettings();
+  playHockeySound(); // quick confirmation play
+}
+function resetNotifSound(){
+  localStorage.removeItem('zc_notif_sound_url');
+  document.getElementById('snd-url-input').value = '';
+  // Play the YouTube clip as confirmation
+  _playYtNotifClip();
 }
 
 function toggleSound(){
@@ -3381,12 +3723,10 @@ function toggleSound(){
   document.getElementById('sound-icon-on').style.display  = soundEnabled ? '' : 'none';
   document.getElementById('sound-icon-off').style.display = soundEnabled ? 'none' : '';
   document.getElementById('sound-btn').classList.toggle('muted', !soundEnabled);
-  // Play a quick confirmation ping when enabling
   if(soundEnabled) playHockeySound();
 }
 
 function initSound(){
-  // Read stored preference and apply silently (no AudioContext, no ping)
   const stored = localStorage.getItem('zc_sound');
   soundEnabled = (stored !== '0');
   document.getElementById('sound-icon-on').style.display  = soundEnabled ? '' : 'none';
@@ -3951,25 +4291,146 @@ function castVote(pollId, optIdx){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  SOUNDBOARD  (DJ users only for playback control;
-//               all users can hear and mute)
+//  SOUNDBOARD  — YouTube IFrame API powered
+//
+//  Each button maps to a YouTube URL + start time (seconds).
+//  The DJ clicks → everyone's embedded YouTube player fires the
+//  same clip simultaneously via Firebase broadcast.
+//
+//  ADDING YOUR OWN SOUNDS:
+//    1. Find any video on YouTube with the sound you want
+//    2. Click "Edit Clips" in the DJ Board panel
+//    3. Paste the full YouTube URL + set start time in seconds
+//    4. Hit Save — done, all users hear it next time it's played
+//
+//  SPOTIFY: Not possible — Spotify embeds have no JS control API
+//           so playback can't be triggered programmatically.
 // ─────────────────────────────────────────────────────────────
-let sbMuted      = false;
-let _sbListenRef = null;
-let _sbPanelOpen = false;
 
-const SB_SOUNDS = [
-  { id:'goal',      icon:'🚨', name:'Goal Horn'    },
-  { id:'whistle',   icon:'🎵', name:'Whistle'      },
-  { id:'charge',    icon:'⚡', name:'Charge!'      },
-  { id:'crowd',     icon:'👥', name:'Crowd Cheer'  },
-  { id:'airhorn',   icon:'📣', name:'Air Horn'     },
-  { id:'slapshot',  icon:'🏒', name:'Slapshot'     },
-  { id:'penalty',   icon:'⛔', name:'Penalty'      },
-  { id:'drumroll',  icon:'🥁', name:'Drum Roll'    },
-  { id:'dun_dun',   icon:'🎭', name:'DUN DUN'      },
-  { id:'victory',   icon:'🏆', name:'Victory!'     },
+const SB_DEFAULTS = [
+  { id:'goal',     icon:'🚨', name:'Goal Horn',
+    url:'https://www.youtube.com/watch?v=SYVLj6zeETg', startSec:0,  durSec:5  },
+  { id:'lets_go',  icon:'📢', name:"Let's Go!",
+    url:'https://www.youtube.com/watch?v=FRrFutjRDAI', startSec:0,  durSec:4  },
+  { id:'crowd',    icon:'👥', name:'Crowd Cheer',
+    url:'https://www.youtube.com/watch?v=7eoQb9avYds', startSec:0,  durSec:4  },
+  { id:'airhorn',  icon:'📣', name:'Air Horn',
+    url:'https://www.youtube.com/watch?v=FTQbiNvZqaY', startSec:0,  durSec:3  },
+  { id:'whistle',  icon:'🎵', name:'Whistle',
+    url:'https://www.youtube.com/watch?v=4bQlFRObUrU', startSec:0,  durSec:2  },
+  { id:'slapshot', icon:'🏒', name:'Slapshot',
+    url:'https://www.youtube.com/watch?v=yNQaB3dBYhk', startSec:0,  durSec:2  },
+  { id:'penalty',  icon:'⛔', name:'Penalty',
+    url:'https://www.youtube.com/watch?v=8ybW48rKBME', startSec:0,  durSec:3  },
+  { id:'charge',   icon:'⚡', name:'Charge!',
+    url:'https://www.youtube.com/watch?v=bRZPmjJCdtY', startSec:0,  durSec:4  },
+  { id:'dun_dun',  icon:'🎭', name:'DUN DUN',
+    url:'https://www.youtube.com/watch?v=5cCDoSKmPFo', startSec:0,  durSec:3  },
+  { id:'victory',  icon:'🏆', name:'Victory!',
+    url:'https://www.youtube.com/watch?v=lgOxGHBFyNo', startSec:0,  durSec:5  },
 ];
+
+function ytIdFromUrl(url){
+  if(!url) return null;
+  try{
+    const u = new URL(url);
+    if(u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0];
+    return u.searchParams.get('v') || null;
+  }catch(e){
+    const m = (url || '').match(/[a-zA-Z0-9_-]{11}/);
+    return m ? m[0] : null;
+  }
+}
+
+function loadSbClips(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('zc_sb_clips') || '{}');
+    return SB_DEFAULTS.map(s => s.id in saved ? { ...s, ...saved[s.id] } : { ...s });
+  }catch(e){ return SB_DEFAULTS.map(s=>({...s})); }
+}
+function saveSbClips(clips){
+  const map = {};
+  clips.forEach(c => { map[c.id] = { url:c.url, startSec:c.startSec, durSec:c.durSec }; });
+  localStorage.setItem('zc_sb_clips', JSON.stringify(map));
+}
+
+let SB_SOUNDS      = loadSbClips();
+let _stopClipTimer = null;
+let _ytPlayer      = null;
+let _ytReady       = false;
+
+// ─────────────────────────────────────────────────────────────
+//  YOUTUBE NOTIFICATION SOUND
+//  Video: https://www.youtube.com/watch?v=USe_6igPcXU
+//  Clip:  0:14 → 0:16 (2 seconds)
+// ─────────────────────────────────────────────────────────────
+const YT_NOTIF_ID    = 'USe_6igPcXU';
+const YT_NOTIF_START = 14;   // seconds into the video
+const YT_NOTIF_DUR   = 2;    // seconds to play
+
+let _ytNotifPlayer  = null;
+let _ytNotifReady   = false;
+let _notifStopTimer = null;
+
+// Called automatically by the YouTube IFrame API after it loads
+function onYouTubeIframeAPIReady(){
+  // ── Soundboard player (visible in DJ Board panel) ──────────
+  _ytPlayer = new YT.Player('yt-player-el', {
+    width:'178', height:'100',
+    playerVars:{ autoplay:0, controls:1, rel:0, modestbranding:1, iv_load_policy:3, fs:0 },
+    events:{ onReady: () => { _ytReady = true; } }
+  });
+
+  // ── Notification player (hidden 1×1, pre-cued at 0:14) ─────
+  _ytNotifPlayer = new YT.Player('yt-notif-el', {
+    width:'1', height:'1',
+    playerVars:{ autoplay:0, controls:0, rel:0, modestbranding:1, playsinline:1 },
+    events:{
+      onReady: (e) => {
+        _ytNotifReady = true;
+        // Silently cue the video so it's buffered and ready to play instantly
+        e.target.cueVideoById({ videoId: YT_NOTIF_ID, startSeconds: YT_NOTIF_START });
+      }
+    }
+  });
+}
+
+// Fire the 2-second notification clip
+function _playYtNotifClip(){
+  if(!_ytNotifReady || !_ytNotifPlayer){
+    _synthNotifSound();   // fall back to synthesis if player not ready yet
+    return;
+  }
+  try{
+    _ytNotifPlayer.seekTo(YT_NOTIF_START, true);
+    _ytNotifPlayer.playVideo();
+    clearTimeout(_notifStopTimer);
+    _notifStopTimer = setTimeout(() => {
+      try{ _ytNotifPlayer.pauseVideo(); }catch(e){}
+    }, (YT_NOTIF_DUR + 0.15) * 1000);
+  }catch(e){
+    _synthNotifSound();
+  }
+}
+
+function ytPlay(videoId, startSec, durSec, label){
+  if(!_ytReady || !_ytPlayer) return false;
+  try{
+    _ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
+    document.getElementById('yt-player-wrap').style.display = 'block';
+    const np = document.getElementById('yt-now-playing');
+    if(np) np.textContent = '▶ ' + (label || videoId);
+    clearTimeout(_stopClipTimer);
+    if(durSec > 0){
+      _stopClipTimer = setTimeout(() => {
+        try{ _ytPlayer.stopVideo(); }catch(e){}
+        const np2 = document.getElementById('yt-now-playing');
+        if(np2) np2.textContent = '';
+      }, (durSec + 0.3) * 1000);
+    }
+    return true;
+  }catch(e){ return false; }
+}
 
 function isDJUser(){ return me && me.name.toLowerCase().includes('dj'); }
 
@@ -3981,8 +4442,10 @@ function checkDJPrivilege(){
 function buildSoundboard(){
   const grid = document.getElementById('sb-sounds');
   if(!grid) return;
+  SB_SOUNDS = loadSbClips();
   grid.innerHTML = SB_SOUNDS.map(s =>
-    `<button class="sb-sound-btn" id="sbbtn-${s.id}" onclick="broadcastSound('${s.id}')">
+    `<button class="sb-sound-btn" id="sbbtn-${s.id}"
+       onclick="broadcastSound('${s.id}')" title="${s.name}">
       <span class="sb-sound-ico">${s.icon}</span>
       <span class="sb-sound-name">${s.name}</span>
     </button>`
@@ -3991,12 +4454,10 @@ function buildSoundboard(){
 
 function toggleSoundboard(){
   _sbPanelOpen = !_sbPanelOpen;
-  const panel = document.getElementById('sb-panel');
-  const btn   = document.getElementById('sb-btn');
-  const chat  = document.getElementById('chat-screen');
-  panel.classList.toggle('open', _sbPanelOpen);
-  btn.classList.toggle('open', _sbPanelOpen);
-  chat.classList.toggle('sb-open', _sbPanelOpen);
+  document.getElementById('sb-panel').classList.toggle('open', _sbPanelOpen);
+  document.getElementById('sb-btn').classList.toggle('open', _sbPanelOpen);
+  document.getElementById('chat-screen').classList.toggle('sb-open', _sbPanelOpen);
+  if(!_sbPanelOpen) document.getElementById('sb-edit-panel').style.display = 'none';
 }
 
 function toggleSbMute(){
@@ -4004,20 +4465,84 @@ function toggleSbMute(){
   localStorage.setItem('zc_sbmute', sbMuted ? '1' : '0');
   const btn = document.getElementById('sb-mute-btn');
   if(btn){ btn.textContent = sbMuted ? 'Unmute' : 'Mute'; btn.classList.toggle('muted', sbMuted); }
+  if(_ytPlayer && _ytReady){ try{ sbMuted ? _ytPlayer.mute() : _ytPlayer.unMute(); }catch(e){} }
+}
+
+function toggleSbEdit(){
+  const ep  = document.getElementById('sb-edit-panel');
+  const btn = document.getElementById('sb-edit-btn');
+  if(ep.style.display === 'none' || !ep.style.display){
+    renderEditPanel();
+    ep.style.display = 'block';
+    btn.textContent = '✕ Close';
+  } else {
+    ep.style.display = 'none';
+    btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit Clips';
+  }
+}
+
+function renderEditPanel(){
+  const ep = document.getElementById('sb-edit-panel');
+  let html = `<div style="padding:8px 10px 4px;font-size:0.65rem;color:var(--text-muted);font-family:'DM Mono',monospace;line-height:1.6;">
+    Paste a YouTube URL + start time for each sound.<br>
+    <span style="color:var(--orange-text);">Tip:</span> right-click any YouTube timestamp → "Copy link" to get the exact start time.
+  </div>`;
+  SB_SOUNDS.forEach(s => {
+    html += `<div class="sb-url-row">
+      <span class="sb-url-label">${s.icon} ${s.name}</span>
+      <input class="sb-url-input" data-id="${s.id}" data-field="url"
+        value="${xss(s.url||'')}" placeholder="https://youtube.com/watch?v=…">
+      <div style="display:flex;gap:5px;margin-top:3px;align-items:center;">
+        <input class="sb-url-input" data-id="${s.id}" data-field="startSec"
+          value="${s.startSec||0}" type="number" min="0"
+          style="width:64px;" title="Start second">
+        <span class="sb-url-label" style="margin:0;">s</span>
+        <input class="sb-url-input" data-id="${s.id}" data-field="durSec"
+          value="${s.durSec||3}" type="number" min="1" max="30"
+          style="width:56px;" title="Duration seconds">
+        <span class="sb-url-label" style="margin:0;">dur</span>
+      </div>
+    </div>`;
+  });
+  html += `<div style="padding:8px 10px;display:flex;gap:7px;">
+    <button onclick="saveSbEdit()" style="flex:1;background:var(--orange);border:none;border-radius:7px;color:#000;font-weight:700;font-size:0.78rem;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;">Save All</button>
+    <button onclick="resetSbClips()" style="background:none;border:1px solid var(--border);border-radius:7px;color:var(--text-muted);font-size:0.78rem;padding:8px 10px;cursor:pointer;" title="Reset to defaults">↺</button>
+  </div>`;
+  ep.innerHTML = html;
+}
+
+function saveSbEdit(){
+  document.querySelectorAll('.sb-url-input').forEach(inp => {
+    const s = SB_SOUNDS.find(x => x.id === inp.dataset.id);
+    if(!s) return;
+    if(inp.dataset.field === 'url')      s.url      = inp.value.trim() || null;
+    if(inp.dataset.field === 'startSec') s.startSec = Math.max(0, parseInt(inp.value)||0);
+    if(inp.dataset.field === 'durSec')   s.durSec   = Math.max(1, Math.min(30, parseInt(inp.value)||3));
+  });
+  saveSbClips(SB_SOUNDS);
+  buildSoundboard();
+  toggleSbEdit();
+}
+
+function resetSbClips(){
+  localStorage.removeItem('zc_sb_clips');
+  SB_SOUNDS = loadSbClips();
+  buildSoundboard();
+  renderEditPanel();
 }
 
 function broadcastSound(soundId){
-  // Play locally immediately
-  playSbSound(soundId, true);
-  // Broadcast to all users via Firebase (key = timestamp prevents re-play on load)
-  db.ref(cfg.path + '/soundboard').push({
-    sound: soundId,
-    dj:    me.name,
-    ts:    Date.now()
-  });
-  // Visual feedback on button
+  const clip = SB_SOUNDS.find(s => s.id === soundId);
+  if(!clip) return;
+  const vid = ytIdFromUrl(clip.url);
+  _playClipLocally(vid, clip.startSec||0, clip.durSec||3, clip.name, true);
   const btn = document.getElementById('sbbtn-' + soundId);
-  if(btn){ btn.classList.add('playing'); setTimeout(()=>btn.classList.remove('playing'),600); }
+  if(btn){ btn.classList.add('playing'); setTimeout(()=>btn.classList.remove('playing'), 800); }
+  db.ref(cfg.path + '/soundboard').push({
+    sound: soundId, ytId: vid||null,
+    startSec: clip.startSec||0, durSec: clip.durSec||3,
+    name: clip.name, dj: me.name, ts: Date.now()
+  });
 }
 
 function listenSoundboard(){
@@ -4026,149 +4551,23 @@ function listenSoundboard(){
   _sbListenRef = db.ref(cfg.path + '/soundboard').orderByChild('ts').limitToLast(1);
   _sbListenRef.on('child_added', snap => {
     const d = snap.val();
-    // Only play sounds that happen AFTER we joined (avoid replaying history)
     if(!d || d.ts < loadTime) return;
-    // Don't double-play if we're the DJ (already played locally)
     if(d.dj === me?.name) return;
-    playSbSound(d.sound, false);
+    if(sbMuted) return;
+    _playClipLocally(d.ytId, d.startSec||0, d.durSec||3, d.name||d.sound, false);
   });
 }
 
-function playSbSound(soundId, isDJ){
+function _playClipLocally(videoId, startSec, durSec, label, isDJ){
   if(sbMuted && !isDJ) return;
-  try{
-    const Ctor = window.AudioContext || window.webkitAudioContext;
-    if(!Ctor) return;
-    const ctx = new Ctor();
-    if(ctx.state==='suspended') ctx.resume();
-    const t0 = ctx.currentTime;
-
-    const sounds = {
-      goal:     () => _triggerHockeySound(true),  // full horn + crowd
-      whistle:  () => _sbWhistle(ctx, t0),
-      charge:   () => _sbCharge(ctx, t0),
-      crowd:    () => _sbCrowd(ctx, t0),
-      airhorn:  () => _sbAirhorn(ctx, t0),
-      slapshot: () => _sbSlapshot(ctx, t0),
-      penalty:  () => _sbPenalty(ctx, t0),
-      drumroll: () => _sbDrumroll(ctx, t0),
-      dun_dun:  () => _sbDunDun(ctx, t0),
-      victory:  () => _sbVictory(ctx, t0),
-    };
-
-    if(soundId === 'goal'){ ctx.close(); _triggerHockeySound(true); return; }
-    if(sounds[soundId]) sounds[soundId]();
-    else { ctx.close(); return; }
-
-    setTimeout(() => { try{ctx.close();}catch(e){} }, 3000);
-  }catch(e){}
-}
-
-// ── Individual sound synthesisers ─────────────────────────────
-function _sbWhistle(ctx, t0){
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-  o.type = 'sine'; o.frequency.value = 2800;
-  o.frequency.setValueAtTime(2800, t0);
-  o.frequency.linearRampToValueAtTime(3200, t0+0.06);
-  o.frequency.linearRampToValueAtTime(2600, t0+0.22);
-  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.55,t0+0.02);
-  g.gain.exponentialRampToValueAtTime(0.001,t0+0.28);
-  o.connect(g); g.connect(ctx.destination);
-  o.start(t0); o.stop(t0+0.3);
-}
-
-function _sbCharge(ctx, t0){
-  // Classic charge fanfare: G-C-E-G pattern (391-523-659-784 Hz)
-  [[0, 391],[0.12, 523],[0.24, 659],[0.36, 784]].forEach(([delay, freq]) => {
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = 'square'; o.frequency.value = freq;
-    g.gain.setValueAtTime(0, t0+delay);
-    g.gain.linearRampToValueAtTime(0.3, t0+delay+0.02);
-    g.gain.exponentialRampToValueAtTime(0.001, t0+delay+0.1);
-    o.connect(g); g.connect(ctx.destination);
-    o.start(t0+delay); o.stop(t0+delay+0.12);
-  });
-}
-
-function _sbCrowd(ctx, t0){
-  const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*1.5), ctx.sampleRate);
-  const d = buf.getChannelData(0);
-  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*1.0));
-  const bpf = ctx.createBiquadFilter(); bpf.type='bandpass'; bpf.frequency.value=800; bpf.Q.value=0.5;
-  const g = ctx.createGain();
-  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.4,t0+0.1);
-  g.gain.exponentialRampToValueAtTime(0.001,t0+1.4);
-  const src = ctx.createBufferSource(); src.buffer=buf;
-  src.connect(bpf); bpf.connect(g); g.connect(ctx.destination);
-  src.start(t0);
-}
-
-function _sbAirhorn(ctx, t0){
-  const g = ctx.createGain();
-  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.5,t0+0.008);
-  g.gain.setValueAtTime(0.5,t0+0.4); g.gain.exponentialRampToValueAtTime(0.001,t0+0.7);
-  [480,640,960].forEach((f,i)=>{
-    const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
-    const og=ctx.createGain(); og.gain.value=[1,0.5,0.25][i];
-    o.connect(og); og.connect(g); o.start(t0); o.stop(t0+0.72);
-  });
-  g.connect(ctx.destination);
-}
-
-function _sbSlapshot(ctx, t0){
-  // Impact thump + stick crack
-  const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*0.18), ctx.sampleRate);
-  const d = buf.getChannelData(0);
-  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.06));
-  const g = ctx.createGain(); g.gain.value=0.9;
-  const src = ctx.createBufferSource(); src.buffer=buf;
-  const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=200;
-  src.connect(hp); hp.connect(g); g.connect(ctx.destination); src.start(t0);
-}
-
-function _sbPenalty(ctx, t0){
-  // Harsh buzzer - descending
-  const o = ctx.createOscillator(); const g = ctx.createGain();
-  o.type='square'; o.frequency.setValueAtTime(880,t0);
-  o.frequency.linearRampToValueAtTime(220,t0+0.5);
-  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.45,t0+0.01);
-  g.gain.exponentialRampToValueAtTime(0.001,t0+0.55);
-  o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+0.58);
-}
-
-function _sbDrumroll(ctx, t0){
-  for(let i=0;i<20;i++){
-    const delay = i*0.04;
-    const buf = ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.05),ctx.sampleRate);
-    const d = buf.getChannelData(0);
-    for(let j=0;j<d.length;j++) d[j]=(Math.random()*2-1)*Math.exp(-j/(ctx.sampleRate*0.02));
-    const src = ctx.createBufferSource(); src.buffer=buf;
-    const g = ctx.createGain(); g.gain.value = 0.1 + (i/20)*0.4;
-    src.connect(g); g.connect(ctx.destination); src.start(t0+delay);
+  if(!videoId) return; // no URL configured
+  if(_ytReady && _ytPlayer){
+    ytPlay(videoId, startSec, durSec, label);
+  } else {
+    setTimeout(() => {
+      if(_ytReady && _ytPlayer) ytPlay(videoId, startSec, durSec, label);
+    }, 1800);
   }
-}
-
-function _sbDunDun(ctx, t0){
-  [[0,110,0.5],[0.45,73,0.6]].forEach(([delay,freq,vol])=>{
-    const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type='sawtooth'; o.frequency.value=freq;
-    g.gain.setValueAtTime(0,t0+delay); g.gain.linearRampToValueAtTime(vol,t0+delay+0.02);
-    g.gain.exponentialRampToValueAtTime(0.001,t0+delay+0.55);
-    o.connect(g); g.connect(ctx.destination); o.start(t0+delay); o.stop(t0+delay+0.6);
-  });
-}
-
-function _sbVictory(ctx, t0){
-  // Rising triumphant arpeggio: C-E-G-C
-  [[0,262],[0.15,330],[0.3,392],[0.45,524]].forEach(([delay,f])=>{
-    const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type='sawtooth'; o.frequency.value=f;
-    g.gain.setValueAtTime(0,t0+delay); g.gain.linearRampToValueAtTime(0.32,t0+delay+0.02);
-    g.gain.exponentialRampToValueAtTime(0.001,t0+delay+0.35);
-    o.connect(g); g.connect(ctx.destination); o.start(t0+delay); o.stop(t0+delay+0.38);
-  });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -4214,13 +4613,60 @@ document.getElementById('inp-name').addEventListener('keydown', e => { if(e.key=
 
 
   <!-- Soundboard panel (DJ users only — appears outside of chat-screen) -->
+  <!-- Soundboard panel (DJ users only) — YouTube-powered -->
   <div class="sb-panel" id="sb-panel">
     <div class="sb-panel-hdr">
-      <span class="sb-panel-title">🎵 Soundboard</span>
-      <button class="sb-mute-btn" id="sb-mute-btn" onclick="toggleSbMute()">Mute</button>
+      <span class="sb-panel-title">🎵 DJ Board</span>
+      <button class="sb-mute-btn" id="sb-mute-btn" onclick="toggleSbMute()" title="Mute soundboard for you only">Mute</button>
+    </div>
+    <!-- Visible YouTube player — lights up when a sound fires -->
+    <div id="yt-player-wrap" style="display:none;padding:8px 10px 0;">
+      <div id="yt-player-el"></div>
+      <div id="yt-now-playing" style="font-size:0.67rem;color:var(--text-muted);font-family:'DM Mono',monospace;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
     </div>
     <div class="sb-sounds" id="sb-sounds"></div>
-    <div class="sb-footer">All users hear the sounds</div>
+    <div id="sb-edit-panel" style="display:none;border-top:1px solid var(--border-soft);overflow-y:auto;max-height:300px;"></div>
+    <div class="sb-footer-btns">
+      <button class="sb-edit-btn" id="sb-edit-btn" onclick="toggleSbEdit()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit Clips
+      </button>
+      <span class="sb-footer-note">All users hear this</span>
+    </div>
+  </div>
+  <!-- Hidden 1×1 YouTube player for notification sounds -->
+  <div id="yt-notif-el" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;"></div>
+
+
+  <!-- Notification sound settings modal -->
+  <div class="snd-modal-overlay" id="snd-modal-overlay" onclick="if(event.target===this)closeSoundSettings()">
+    <div class="snd-modal">
+      <div class="snd-modal-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        Notification Sound
+      </div>
+      <div class="snd-field-label" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span>Current default</span>
+        <span style="background:var(--orange-glow);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--orange-text);">
+          youtube.com/watch?v=USe_6igPcXU — 0:14 for 2s
+        </span>
+      </div>
+      <div class="snd-field-label" style="margin-bottom:5px;margin-top:10px;">Override with a direct audio URL (optional)</div>
+      <input class="snd-url-input" id="snd-url-input" type="url"
+        placeholder="Leave blank to keep the YouTube clip">
+      <div class="snd-hint">
+        Paste a direct .mp3/.wav link to replace the YouTube clip.<br>
+        Free sources: <a href="https://pixabay.com/sound-effects/search/hockey/" target="_blank" rel="noopener">pixabay.com</a> ·
+        <a href="https://mixkit.co/free-sound-effects/hockey/" target="_blank" rel="noopener">mixkit.co</a> ·
+        <a href="https://freesound.org/search/?q=goal+horn" target="_blank" rel="noopener">freesound.org</a>
+      </div>
+      <div class="snd-btn-row">
+        <button class="snd-cancel-btn" onclick="closeSoundSettings()">Cancel</button>
+        <button class="snd-test-btn" onclick="testNotifSound()">▶ Test</button>
+        <button class="snd-save-btn" onclick="saveNotifSound()">Save</button>
+      </div>
+      <button class="snd-reset" onclick="resetNotifSound()">Reset to built-in sound</button>
+    </div>
   </div>
 
 </body>
