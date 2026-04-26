@@ -1282,6 +1282,99 @@ html.light .msg-wrap.mine .msg-bubble { background: var(--orange); color: #fff; 
 html.light .users-btn, html.light .scores-btn { background: var(--bg2); }
 html.light .chat-header  { background: var(--bg1); }
 
+
+/* ─────────────────────────────────────────────────────────────
+   INLINE SCORE CARD  (@NHL scores bot message)
+   Replicates the widget experience directly in chat.
+───────────────────────────────────────────────────────────── */
+.isc-wrap {
+  display: flex; flex-direction: column;
+  min-width: 230px; max-width: 320px;
+  gap: 0;
+}
+.isc-header {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-soft);
+  padding-bottom: 7px; margin-bottom: 2px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 6px;
+}
+.isc-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 0; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.isc-card:last-child { border-bottom: none; padding-bottom: 2px; }
+.isc-live-card { position: relative; }
+.isc-live-card::before {
+  content: '';
+  position: absolute; left: -14px; top: 0; bottom: 0; width: 2px;
+  background: #ff6060; border-radius: 1px;
+  box-shadow: 0 0 6px rgba(255,96,96,0.6);
+}
+.isc-teams {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.88rem; font-weight: 600; color: var(--text);
+  flex: 1; white-space: nowrap;
+}
+.isc-right {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 3px; flex-shrink: 0;
+}
+.isc-time {
+  font-family: 'DM Mono', monospace; font-size: 0.74rem;
+  color: var(--text-soft); white-space: nowrap;
+}
+.isc-live-badge {
+  font-family: 'DM Mono', monospace; font-size: 0.64rem;
+  color: #ff6060; letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 3px;
+  animation: iscLivePulse 1.4s infinite;
+}
+.isc-live-badge::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: #ff6060; display: inline-block;
+  box-shadow: 0 0 4px rgba(255,96,96,0.8);
+}
+@keyframes iscLivePulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.isc-final-tag {
+  font-family: 'DM Mono', monospace; font-size: 0.7rem;
+  color: var(--text-muted); letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.isc-score {
+  font-family: 'DM Mono', monospace; font-size: 1rem;
+  font-weight: 700; color: var(--text); letter-spacing: 0.04em;
+}
+.isc-period {
+  font-family: 'DM Mono', monospace; font-size: 0.66rem;
+  color: #ff6060; letter-spacing: 0.04em;
+}
+.isc-reveal-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text-soft);
+  font-size: 0.72rem; font-family: 'DM Sans', sans-serif;
+  padding: 3px 10px; cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  white-space: nowrap;
+}
+.isc-reveal-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-glow); }
+.isc-revealed { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.isc-empty { font-size: 0.82rem; color: var(--text-muted); padding: 4px 0; }
+
+/* Mine bubble scores card — invert colors for readability */
+.msg-wrap.mine .isc-header     { color: rgba(0,0,0,0.55); border-bottom-color: rgba(0,0,0,0.12); }
+.msg-wrap.mine .isc-teams      { color: rgba(0,0,0,0.85); }
+.msg-wrap.mine .isc-time       { color: rgba(0,0,0,0.55); }
+.msg-wrap.mine .isc-score      { color: rgba(0,0,0,0.9); }
+.msg-wrap.mine .isc-final-tag  { color: rgba(0,0,0,0.45); }
+.msg-wrap.mine .isc-live-badge { color: rgba(0,0,0,0.65); }
+.msg-wrap.mine .isc-period     { color: rgba(0,0,0,0.6); }
+.msg-wrap.mine .isc-reveal-btn {
+  background: rgba(0,0,0,0.1); border-color: rgba(0,0,0,0.2); color: rgba(0,0,0,0.7);
+}
+.msg-wrap.mine .isc-reveal-btn:hover { background: rgba(0,0,0,0.2); border-color: rgba(0,0,0,0.5); }
+.msg-wrap.mine .isc-live-card::before { background: rgba(0,0,0,0.35); box-shadow: none; }
 </style>
 </head>
 <body>
@@ -1711,8 +1804,10 @@ function spriteUrl(id){
 
 function rerollAvatar(){
   pickAvId = Math.floor(Math.random() * MAX_POKEMON) + 1;
-  document.getElementById('av-img').src   = spriteUrl(pickAvId);
-  document.getElementById('av-name').textContent = `#${pickAvId} ${POKEMON[pickAvId-1]}`;
+  const img  = document.getElementById('av-img');
+  const name = document.getElementById('av-name');
+  if(img)  img.src = spriteUrl(pickAvId);
+  if(name) name.textContent = `#${pickAvId} ${POKEMON[pickAvId-1]}`;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1798,26 +1893,39 @@ function enterChat(){
   listenTyping();
 
   const ta = document.getElementById('msg-input');
-  ta.addEventListener('keydown', e => {
-    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); return; }
-    if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); return; }
-    setTyping();
-  });
-  ta.addEventListener('input', () => {
-    autoResize();
-    const v = ta.value;
-    document.getElementById('at-hint').style.display = v.startsWith('@') ? 'block' : 'none';
-    if(v) setTyping();
-  });
-  ta.addEventListener('blur', () => {
-    // Small delay so panel clicks don't immediately hide
-    setTimeout(() => {
-      document.getElementById('at-hint').style.display = 'none';
-    }, 150);
-  });
-  ta.addEventListener('paste', handlePaste);
+  // Remove any previously attached listeners before re-adding.
+  // This prevents duplicate listeners when enterChat() is called
+  // again after a room switch, which would cause sendMsg() to fire
+  // multiple times per keypress.
+  ta.removeEventListener('keydown',  _onMsgKeydown);
+  ta.removeEventListener('input',    _onMsgInput);
+  ta.removeEventListener('blur',     _onMsgBlur);
+  ta.removeEventListener('paste',    handlePaste);
+  ta.addEventListener('keydown',  _onMsgKeydown);
+  ta.addEventListener('input',    _onMsgInput);
+  ta.addEventListener('blur',     _onMsgBlur);
+  ta.addEventListener('paste',    handlePaste);
 
   // (global click handler registered at module level below)
+}
+
+// Named input handler functions — declared outside enterChat() so
+// removeEventListener() can reference the exact same function object.
+function _onMsgKeydown(e){
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); return; }
+  if(e.key === 'Escape'){ if(editCtx) cancelEdit(); else cancelReply(); return; }
+  setTyping();
+}
+function _onMsgInput(){
+  autoResize();
+  const v = document.getElementById('msg-input').value;
+  document.getElementById('at-hint').style.display = v.startsWith('@') ? 'block' : 'none';
+  if(v) setTyping();
+}
+function _onMsgBlur(){
+  setTimeout(() => {
+    document.getElementById('at-hint').style.display = 'none';
+  }, 150);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1951,7 +2059,8 @@ const IC_TRASH = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" st
 function appendMsg(id, msg){
   const area = document.getElementById('msgs');
   const mine = msg.uid === me.uid;
-  const text = msg.isImg ? null : dec(msg.text);
+  // Defer decryption for isScores (done inside buildInlineScoreCard) and isImg
+  const text = (msg.isImg || msg.isScores) ? null : dec(msg.text);
 
   const d       = new Date(msg.ts);
   const timeStr = d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
@@ -1966,7 +2075,15 @@ function appendMsg(id, msg){
   }
 
   let body;
-  if(msg.isImg){
+  if(msg.isScores){
+    // Interactive score card — decrypt the JSON payload and render the card
+    try {
+      const data = JSON.parse(dec(msg.text));
+      body = buildInlineScoreCard(data);
+    } catch(e) {
+      body = '<span style="opacity:0.5;font-size:0.82rem;">⏳ Loading scores…</span>';
+    }
+  } else if(msg.isImg){
     const safeSrc = safeImgUrl(msg.text);
     body = safeSrc
       ? `<img class="chat-img" src="${xss(safeSrc)}" alt="image" data-imgsrc="${xss(safeSrc)}" onclick="openImg(this)">`
@@ -2035,6 +2152,23 @@ function appendMsg(id, msg){
 }
 
 function patchMsg(id, msg){
+  // isScores messages need a full re-render because the interactive card
+  // structure is completely different from a plain text .btext span.
+  if(msg.isScores){
+    const area     = document.getElementById('msgs');
+    const existing = document.getElementById('m-' + id);
+    // Capture the next sibling before removing so we can restore position
+    const nextSib  = existing ? existing.nextSibling : null;
+    if(existing) existing.remove();
+    appendMsg(id, msg);        // appends to area bottom
+    // Move back to original position in the message list
+    const newEl = document.getElementById('m-' + id);
+    if(newEl && nextSib && area.contains(nextSib)){
+      area.insertBefore(newEl, nextSib);
+    }
+    return;
+  }
+
   const bub = document.getElementById('b-' + id);
   if(!bub) return;
   const bt = bub.querySelector('.btext');
@@ -2083,10 +2217,13 @@ async function sendMsg(){
 
   if(!text) return;
 
-  // Bot command? Handle and skip the normal message send
+  // Bot command? Detect first, then clear input immediately before async work
   if(text.startsWith('@')){
-    const handled = await handleBotCommand(text);
-    if(handled){
+    const botResult = await (async () => {
+      const handled = await handleBotCommand(text);
+      return handled;
+    })();
+    if(botResult){
       ta.value = ''; autoResize();
       document.getElementById('at-hint').style.display = 'none';
       clearTypingStatus(); cancelReply(); return;
@@ -2329,6 +2466,22 @@ function resolveTeam(q){
   return null;
 }
 
+// Post a bot "thinking" placeholder, then call updateBot() with the result.
+// This way there is always exactly ONE message per bot command.
+async function thinkBot(botName, avId){
+  const ref = db.ref(cfg.path+'/messages').push();
+  await ref.set({
+    uid: 'bot_' + botName.replace(/\s/g,'_').toLowerCase(),
+    name: botName, avId,
+    text: enc('⏳ ' + botName + ' is looking that up…'),
+    ts: Date.now(), isImg: false, edited: false, rply: null, isBot: true
+  });
+  return ref.key;
+}
+async function resolveBot(key, text){
+  await db.ref(cfg.path+'/messages/'+key).update({ text: enc(text) });
+}
+// Legacy direct post (used for simple help/usage messages that need no loading state)
 function postBot(botName, text, avId){
   db.ref(cfg.path+'/messages').push({
     uid:'bot_'+botName.replace(/\s/g,'_').toLowerCase(),
@@ -2336,6 +2489,40 @@ function postBot(botName, text, avId){
     text:enc(text), ts:Date.now(),
     isImg:false, edited:false, rply:null, isBot:true
   });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  NHL SEASON HELPER
+//  Returns the current NHL season ID (e.g. "20252026").
+//  The season runs Oct–June: if month >= 10 it's year/year+1,
+//  otherwise it's (year-1)/year.
+// ─────────────────────────────────────────────────────────────
+function getCurrentNHLSeason(){
+  const now = new Date();
+  const y   = now.getFullYear();
+  const m   = now.getMonth() + 1; // 1-12
+  return m >= 10 ? `${y}${y+1}` : `${y-1}${y}`;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  HOCKEY GAME DATE  (ET-aware)
+//  The NHL "game day" starts at 3:00 AM Eastern Time.
+//  Before 3 AM ET → return yesterday's date (games still in progress).
+//  From 3 AM ET onward → return today's date.
+//  This matches exactly: Apr 26 3:00 AM ET → Apr 27 2:59 AM ET = Apr 26 games.
+// ─────────────────────────────────────────────────────────────
+function getHockeyDateET(){
+  const now  = new Date();
+  const etStr = now.toLocaleString('en-US', { timeZone: 'America/New_York' });
+  const nyNow = new Date(etStr);
+  if(nyNow.getHours() < 3){
+    // Before 3 AM ET — still showing the previous game day
+    nyNow.setDate(nyNow.getDate() - 1);
+  }
+  const y  = nyNow.getFullYear();
+  const m  = String(nyNow.getMonth() + 1).padStart(2,'0');
+  const d  = String(nyNow.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
 }
 
 // Fetch wrapper — tries direct NHL API, falls back to corsproxy.io on any failure
@@ -2351,14 +2538,25 @@ async function nhlFetch(path){
   const direct = 'https://api-web.nhle.com' + path;
   const proxy  = 'https://corsproxy.io/?' + encodeURIComponent(direct);
   let r;
+  // Try direct first (NHL API has CORS headers on most endpoints)
   try {
     r = await fetchTimeout(direct, 7000);
     if(r.ok) return await r.json();
-  } catch(e){}
-  // Fallback via CORS proxy
-  r = await fetchTimeout(proxy, 10000);
-  if(!r.ok) throw new Error('HTTP ' + r.status + ' for ' + path);
-  return await r.json();
+    // Got a response but non-200: don't try proxy (proxy won't fix a 400/404)
+    if(r.status === 400 || r.status === 404 || r.status === 422){
+      throw new Error(`HTTP ${r.status} from NHL API: ${path}`);
+    }
+  } catch(e){
+    if(e.message.includes('HTTP 4')) throw e; // don't proxy a bad request
+  }
+  // Fallback via CORS proxy (for CORS blocks / network errors only)
+  try {
+    r = await fetchTimeout(proxy, 10000);
+    if(r.ok) return await r.json();
+    throw new Error(`HTTP ${r.status} from proxy for: ${path}`);
+  } catch(e){
+    throw new Error(`NHL API unreachable: ${path} — ${e.message}`);
+  }
 }
 
 async function handleBotCommand(rawText){
@@ -2368,45 +2566,133 @@ async function handleBotCommand(rawText){
   return false;
 }
 
+// ─────────────────────────────────────────────────────────────
+//  INLINE SCORE CARD  (rendered in chat, mirrors the widget)
+// ─────────────────────────────────────────────────────────────
+function buildInlineScoreCard(data){
+  if(!data || !data.games || !data.games.length){
+    return '<div class="isc-wrap"><div class="isc-empty">No NHL games today 🏒</div></div>';
+  }
+
+  const dateLabel = data.date
+    ? (() => {
+        const [y,m,d] = data.date.split('-');
+        return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{month:'short',day:'numeric',weekday:'short'});
+      })()
+    : 'Today';
+
+  // Sort: Live first, then Final, then Scheduled
+  const order = s => (s==='LIVE'||s==='CRIT'||s==='IN_PROGRESS') ? 0
+                    : (s==='OFF'||s==='FINAL')                    ? 1 : 2;
+  const sorted = [...data.games].sort((a,b) => order(a.state) - order(b.state));
+
+  const cards = sorted.map(g => {
+    const isLive = g.state === 'LIVE' || g.state === 'CRIT' || g.state === 'IN_PROGRESS';
+    const isFin  = g.state === 'OFF'  || g.state === 'FINAL';
+    const gid    = 'isc-' + g.id;
+
+    const per = !g.period ? '' :
+                g.periodType === 'OT' ? 'OT' :
+                g.periodType === 'SO' ? 'SO' : `P${g.period}`;
+    const clk = g.clock || '';
+
+    let rightHtml = '';
+    if(isLive){
+      const perClk = [per, clk].filter(Boolean).join(' ');
+      rightHtml = `
+        <div class="isc-right">
+          <span class="isc-live-badge">LIVE ${perClk}</span>
+          <div id="${gid}-hidden">
+            <button class="isc-reveal-btn" onclick="iscReveal('${gid}','${xss(g.away.abbrev||'?')}','${g.away.score??0}','${xss(g.home.abbrev||'?')}','${g.home.score??0}','${xss(per)}','${xss(clk)}')">👁 Reveal</button>
+          </div>
+          <div id="${gid}-shown" style="display:none" class="isc-revealed">
+            <span class="isc-score">${g.away.score??0} – ${g.home.score??0}</span>
+            <span class="isc-period">${perClk}</span>
+          </div>
+        </div>`;
+    } else if(isFin){
+      const ot = g.periodType === 'OT' ? ' OT' : g.periodType === 'SO' ? ' SO' : '';
+      rightHtml = `
+        <div class="isc-right">
+          <span class="isc-score">${g.away.score??0} – ${g.home.score??0}</span>
+          <span class="isc-final-tag">Final${ot}</span>
+        </div>`;
+    } else {
+      const timeStr = g.startTimeUTC ? formatGameTime(g.startTimeUTC) : 'TBD';
+      rightHtml = `<div class="isc-right"><span class="isc-time">${timeStr}</span></div>`;
+    }
+
+    return `<div class="isc-card${isLive ? ' isc-live-card' : ''}">
+      <span class="isc-teams">${xss(g.away.abbrev||'?')} @ ${xss(g.home.abbrev||'?')}</span>
+      ${rightHtml}
+    </div>`;
+  }).join('');
+
+  return `<div class="isc-wrap">
+    <div class="isc-header">🏒 NHL — ${xss(dateLabel)}</div>
+    ${cards}
+  </div>`;
+}
+
+// Reveal a hidden live score for 60 seconds, then re-hide.
+// Each user controls their own reveal independently — not stored in Firebase.
+window.iscReveal = function(gid, awayAbbr, awayScore, homeAbbr, homeScore, per, clk){
+  const hiddenEl  = document.getElementById(gid + '-hidden');
+  const shownEl   = document.getElementById(gid + '-shown');
+  if(!hiddenEl || !shownEl) return;
+  hiddenEl.style.display = 'none';
+  shownEl.style.display  = 'flex';
+  // Auto-hide after 60 seconds
+  clearTimeout(window['_iscTimer_' + gid]);
+  window['_iscTimer_' + gid] = setTimeout(() => {
+    hiddenEl.style.display = '';
+    shownEl.style.display  = 'none';
+  }, 60000);
+};
+
 /* ── @NHL ── */
 async function cmdNHL(args){
   const sub = args.toLowerCase().trim();
 
   if(!sub || sub === 'scores' || sub === 'score'){
-    postBot('NHL Bot','⏳ Fetching today\'s scores…', BOT_AV_NHL);
+    const k = await thinkBot('NHL Bot', BOT_AV_NHL);
     try{
-      const d = await nhlFetch('/v1/score/now');
-      const games = d.games || [];
-      if(!games.length){ postBot('NHL Bot','🏒 No NHL games scheduled today.', BOT_AV_NHL); return; }
-      const dateLabel = d.currentDate || (games[0]?.gameDate) || 'Today';
-      let out = `🏒 NHL Scores — ${dateLabel}\n${'─'.repeat(26)}\n`;
-      for(const g of games){
-        const away = g.awayTeam, home = g.homeTeam;
-        const st   = g.gameState || g.gameScheduleState || '';
-        const isFut = st === 'FUT' || st === 'PRE' || st === 'SCHEDULED';
-        const isFin = st === 'OFF' || st === 'FINAL';
-        const isLive = st === 'LIVE' || st === 'CRIT' || st === 'IN_PROGRESS';
-        const awayAbbr = away.abbrev || away.triCode || '???';
-        const homeAbbr = home.abbrev || home.triCode || '???';
-        const scoreStr = isFut
-          ? formatGameTime(g.startTimeUTC || g.gameDate)
-          : `${away.score ?? 0} – ${home.score ?? 0}`;
-        const tag = isLive ? ' 🔴 LIVE' : isFin ? ' ✓ Final' : '';
-        out += `${awayAbbr} @ ${homeAbbr}  ${scoreStr}${tag}\n`;
+      const d    = await nhlFetch('/v1/score/' + getHockeyDateET());
+      const date = getHockeyDateET();
+      const games = (d.games || []).map(g => ({
+        id:          g.id || Math.random(),
+        away:        { abbrev: g.awayTeam?.abbrev || g.awayTeam?.triCode || '?', score: g.awayTeam?.score ?? null },
+        home:        { abbrev: g.homeTeam?.abbrev || g.homeTeam?.triCode || '?', score: g.homeTeam?.score ?? null },
+        state:       g.gameState || g.gameScheduleState || 'FUT',
+        period:      g.periodDescriptor?.number ?? g.period ?? null,
+        periodType:  g.periodDescriptor?.periodType || 'REG',
+        clock:       g.clock?.timeRemaining || '',
+        startTimeUTC: g.startTimeUTC || g.gameDate || null
+      }));
+
+      if(!games.length){
+        await resolveBot(k, '🏒 No NHL games today.');
+        return;
       }
-      postBot('NHL Bot', out.trim(), BOT_AV_NHL);
+
+      // Store compact JSON; patchMsg detects isScores and renders the interactive card
+      const scoresPayload = JSON.stringify({ date, games });
+      await db.ref(cfg.path + '/messages/' + k).update({
+        text:     enc(scoresPayload),
+        isScores: true
+      });
     }catch(e){
-      postBot('NHL Bot','❌ Could not reach the NHL API right now. Try again in a moment.\n('+e.message+')', BOT_AV_NHL);
+      await resolveBot(k, '❌ Could not reach the NHL API.\n' + e.message);
     }
     return;
   }
 
   if(sub === 'standings' || sub === 'stand' || sub === 'standing'){
-    postBot('NHL Bot','⏳ Fetching standings…', BOT_AV_NHL);
+    const k = await thinkBot('NHL Bot', BOT_AV_NHL);
     try{
       const d = await nhlFetch('/v1/standings/now');
       const teams = d.standings || [];
-      if(!teams.length){ postBot('NHL Bot','❌ No standings data returned.', BOT_AV_NHL); return; }
+      if(!teams.length){ await resolveBot(k,'❌ No standings data returned.'); return; }
       const east = teams.filter(t=>t.conferenceAbbrev==='E').sort((a,b)=>a.conferenceSequence-b.conferenceSequence).slice(0,8);
       const west = teams.filter(t=>t.conferenceAbbrev==='W').sort((a,b)=>a.conferenceSequence-b.conferenceSequence).slice(0,8);
       const fmt = arr => arr.map((t,i)=>{
@@ -2415,19 +2701,23 @@ async function cmdNHL(args){
         const w=t.wins??'?', l=t.losses??'?', ot=t.otLosses??'?';
         return `${i+1}. ${abbr}  ${pts}pts  (${w}-${l}-${ot})`;
       }).join('\n');
-      postBot('NHL Bot', `🏒 NHL Standings\n${'─'.repeat(28)}\n🔵 EASTERN\n${fmt(east)}\n\n🔴 WESTERN\n${fmt(west)}`, BOT_AV_NHL);
+      await resolveBot(k, `🏒 NHL Standings\n${'─'.repeat(28)}\n🔵 EASTERN\n${fmt(east)}\n\n🔴 WESTERN\n${fmt(west)}`);
     }catch(e){
-      postBot('NHL Bot','❌ Could not fetch standings. ('+e.message+')', BOT_AV_NHL);
+      await resolveBot(k,'❌ Could not fetch standings. ('+e.message+')');
     }
     return;
   }
 
   if(sub === 'stats' || sub === 'stat' || sub === 'leaders'){
-    postBot('NHL Bot','⏳ Fetching stat leaders…', BOT_AV_NHL);
+    const k = await thinkBot('NHL Bot', BOT_AV_NHL);
     try{
+      // Season/gameType format: /{season}/{gameType}
+      // gameType 2 = regular season, 3 = playoffs
+      // "current" is NOT a valid season ID — causes HTTP 400
+      const season = getCurrentNHLSeason();
       const [skData, gkData] = await Promise.all([
-        nhlFetch('/v1/skater-stats-leaders/current?categories=goals,assists,points&limit=10'),
-        nhlFetch('/v1/goalie-stats-leaders/current?categories=savePctg,goalsAgainstAvg&limit=10')
+        nhlFetch(`/v1/skater-stats-leaders/${season}/2?categories=goals,assists,points&limit=10`),
+        nhlFetch(`/v1/goalie-stats-leaders/${season}/2?categories=wins,savePctg,goalsAgainstAverage&limit=10`)
       ]);
 
       const fmtSkaters = (leaders, label, key) => {
@@ -2461,27 +2751,29 @@ async function cmdNHL(args){
       out += fmtSkaters(skData?.points?.leaders,  'POINTS',  'points');
       // Goalie stats — try both key names the API has used
       const svLeaders  = gkData?.savePctg?.leaders || gkData?.savePct?.leaders || [];
-      const gaaLeaders = gkData?.goalsAgainstAvg?.leaders || gkData?.goalsAgainstAverage?.leaders || [];
-      out += fmtGoalies(svLeaders,  'SAVE PERCENTAGE', 'savePctg',       'pct');
-      out += fmtGoalies(gaaLeaders, 'GOALS AGAINST AVG', 'goalsAgainstAvg', true);
+      const gaaLeaders = gkData?.goalsAgainstAverage?.leaders || gkData?.goalsAgainstAvg?.leaders || [];
+      out += fmtGoalies(svLeaders,  'SAVE PERCENTAGE',  'savePctg',            'pct');
+      out += fmtGoalies(gaaLeaders, 'GOALS AGAINST AVG','goalsAgainstAverage', true);
 
-      postBot('NHL Bot', out.trim(), BOT_AV_NHL);
+      await resolveBot(k, out.trim());
     }catch(e){
-      postBot('NHL Bot','❌ Could not fetch stat leaders. ('+e.message+')', BOT_AV_NHL);
+      await resolveBot(k,'❌ Could not fetch stat leaders. ('+e.message+')');
     }
     return;
   }
 
   const abbrev = resolveTeam(sub);
   if(abbrev){
-    postBot('NHL Bot',`⏳ Looking up ${abbrev} schedule…`, BOT_AV_NHL);
+    const k = await thinkBot('NHL Bot', BOT_AV_NHL);
     try{
-      const d = await nhlFetch(`/v1/club-schedule-season/${abbrev}/now`);
-      const all = d.games || [];
+      // /club-schedule-season/{abbrev}/now → 404 ("now" isn't a season ID)
+      // /club-schedule/{abbrev}/week/now  → correct: "now" is valid for week endpoint
+      const d = await nhlFetch(`/v1/club-schedule/${abbrev}/week/now`);
+      const all = d.games || d.gameWeek?.[0]?.games || [];
       // Show last 2 results + next 3 upcoming
-      const now = Date.now();
-      const past = all.filter(g=> new Date(g.startTimeUTC||g.gameDate).getTime() < now).slice(-2);
-      const upcoming = all.filter(g=> new Date(g.startTimeUTC||g.gameDate).getTime() >= now).slice(0,3);
+      const nowMs = Date.now();
+      const past     = all.filter(g => new Date(g.startTimeUTC||g.gameDate||g.easternStartTime||0).getTime() < nowMs).slice(-2);
+      const upcoming = all.filter(g => new Date(g.startTimeUTC||g.gameDate||g.easternStartTime||0).getTime() >= nowMs).slice(0,3);
       const shown = [...past, ...upcoming];
       if(!shown.length){ postBot('NHL Bot',`No games found for ${abbrev}.`, BOT_AV_NHL); return; }
       let out = `🏒 ${abbrev} Schedule\n${'─'.repeat(24)}\n`;
@@ -2499,9 +2791,9 @@ async function cmdNHL(args){
           : '';
         out += `${label}  ${abbrev} ${where} ${opp}${score}\n`;
       }
-      postBot('NHL Bot', out.trim(), BOT_AV_NHL);
+      await resolveBot(k, out.trim());
     }catch(e){
-      postBot('NHL Bot',`❌ Could not find schedule for ${abbrev}. (${e.message})`, BOT_AV_NHL);
+      await resolveBot(k,`❌ Could not find schedule for ${abbrev}. (${e.message})`);
     }
     return;
   }
@@ -2516,46 +2808,67 @@ async function cmdHockeyDB(query){
     postBot('HockeyDB','🗄️ Usage: @HockeyDB [player name]\nExample: @HockeyDB Ovechkin', BOT_AV_HOCKEYDB);
     return;
   }
-  postBot('HockeyDB',`⏳ Searching for "${query}"…`, BOT_AV_HOCKEYDB);
+  const k = await thinkBot('HockeyDB', BOT_AV_HOCKEYDB);
 
   try{
-    // ── Step 1: Player search via NHL search API ─────────────
-    // The search API is on a different domain than api-web.nhle.com
-    const searchUrl = `https://search.d3.nhle.com/api/v1/search?q=${encodeURIComponent(query)}&culture=en-us&limit=10&type=player`;
-    let searchData;
+    // ── Step 1: Player search ────────────────────────────────
+    // Try three approaches in order, stopping at first success.
+    // Note: &type=player causes HTTP 400 on the d3 search API — omit it.
+    let playerHits = [];
+    const searchErrors = [];
+
+    // Approach A: NHL's api-web search (same domain as other calls, best CORS)
     try {
-      const r = await fetchTimeout(searchUrl, 8000);
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      searchData = await r.json();
-    } catch(e) {
-      // CORS proxy fallback
-      const r = await fetchTimeout('https://corsproxy.io/?' + encodeURIComponent(searchUrl), 10000);
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      searchData = await r.json();
+      const d = await nhlFetch(`/v1/search/player?searchString=${encodeURIComponent(query)}&culture=en-US&limit=10`);
+      const arr = Array.isArray(d) ? d : (d.players || d.data || []);
+      if(arr.length) playerHits = arr;
+    } catch(eA){ searchErrors.push('api-web: ' + eA.message); }
+
+    // Approach B: search.d3.nhle.com (no &type= filter)
+    if(!playerHits.length){
+      const d3url = `https://search.d3.nhle.com/api/v1/search?q=${encodeURIComponent(query)}&culture=en-us&limit=10`;
+      try {
+        const r = await fetchTimeout(d3url, 7000);
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        const arr = await r.json();
+        playerHits = Array.isArray(arr) ? arr : (arr.players || arr.data || []);
+      } catch(eB){
+        // CORS proxy fallback for d3 domain
+        try {
+          const r = await fetchTimeout('https://corsproxy.io/?' + encodeURIComponent(d3url), 10000);
+          if(!r.ok) throw new Error('HTTP ' + r.status);
+          const arr = await r.json();
+          playerHits = Array.isArray(arr) ? arr : (arr.players || arr.data || []);
+        } catch(eC){ searchErrors.push('d3: ' + eB.message); }
+      }
     }
 
-    // Response is a direct array of player objects
-    const players = Array.isArray(searchData) ? searchData : (searchData.players || searchData.data || []);
-    const playerHits = players.filter(p => (p.type || '').toLowerCase() === 'player' || p.playerId || p.id);
+    // Filter to players only (response may include teams, coaches, etc.)
+    playerHits = playerHits.filter(p =>
+      !p.type || p.type === 'player' || p.type === 'Player' ||
+      p.playerId || p.id
+    );
 
     if(!playerHits.length){
-      postBot('HockeyDB',
-        `❌ No players found for "${query}".\nTip: Try last name only — e.g. @HockeyDB Giroux`,
-        BOT_AV_HOCKEYDB);
+      const dbg = searchErrors.length ? `\nSearch errors: ${searchErrors.join(', ')}` : '';
+      await resolveBot(k,
+        `❌ No players found for "${query}".\nTip: Try last name only — e.g. @HockeyDB Giroux${dbg}`);
       return;
     }
 
     const p   = playerHits[0];
 
-    // Field names vary across API versions — handle both shapes
-    const pid   = p.playerId || p.id;
-    const fname = strField(p.firstName) || strField(p.name)?.split(' ')[0] || '';
-    const lname = strField(p.lastName)  || strField(p.name)?.split(' ').slice(1).join(' ') || '';
-    const pos0  = p.position || p.positionCode || '?';
-    const team0 = strField(p.teamAbbrev) || strField(p.teamAbbrevs) || '';
+    // Field names vary across NHL API versions
+    const pid   = p.playerId || p.id || p.entityId || p.playerId;
+    const fname = strField(p.firstName) || (p.name||'').split(' ')[0] || '';
+    const lname = strField(p.lastName)  || (p.name||'').split(' ').slice(1).join(' ') || '';
+    const pos0  = p.position || p.positionCode || p.positionAbbrev || '?';
+    const team0 = strField(p.teamAbbrev) || strField(p.teamAbbrevs) || strField(p.currentTeamAbbrev) || '';
 
-    if(!pid){
-      postBot('HockeyDB',`❌ Could not extract player ID from search results.`, BOT_AV_HOCKEYDB);
+    if(!pid || pid === 0){
+      await resolveBot(k,
+        `❌ Player found ("${p.name || fname + ' ' + lname}") but no ID available.\n`+
+        `Raw data: ${JSON.stringify(p).slice(0,120)}`);
       return;
     }
 
@@ -2591,14 +2904,12 @@ async function cmdHockeyDB(query){
         `Career       GP:${car.gamesPlayed??'–'}  G:${car.goals??'–'}  A:${car.assists??'–'}  PTS:${car.points??'–'}`;
     }
 
-    postBot('HockeyDB',
-      `🗄️ ${fullName}  |  ${position}  |  ${teamAbbr}\n${'─'.repeat(30)}\n${statsLine}`,
-      BOT_AV_HOCKEYDB);
+    await resolveBot(k,
+      `🗄️ ${fullName}  |  ${position}  |  ${teamAbbr}\n${'─'.repeat(30)}\n${statsLine}`);
 
   }catch(err){
-    postBot('HockeyDB',
-      `❌ HockeyDB error for "${query}":\n${err.message}\nTry again or use last name only.`,
-      BOT_AV_HOCKEYDB);
+    await resolveBot(k,
+      `❌ HockeyDB error for "${query}":\n${err.message}\nTry again or use last name only.`);
   }
 }
 
@@ -2805,6 +3116,7 @@ function toggleScoresPanel(){
   btn.classList.toggle('active', scoresOpen);
 
   if(scoresOpen){
+    clearInterval(scoresAutoTimer); // clear any stale timer before setting new one
     fetchAndRenderScores(false);
     scoresAutoTimer = setInterval(() => fetchAndRenderScores(false), 45000);
   } else {
@@ -2820,7 +3132,7 @@ async function fetchAndRenderScores(showSpinner){
     listEl.innerHTML = '<div class="scores-loading">⏳ Loading scores…</div>';
 
   try{
-    scoresData = await nhlFetch('/v1/score/now');
+    scoresData = await nhlFetch('/v1/score/' + getHockeyDateET());
     renderScoresList();
     const now = new Date();
     document.getElementById('scores-updated-ts').textContent =
@@ -2836,14 +3148,13 @@ async function fetchAndRenderScores(showSpinner){
 function renderScoresList(){
   if(!scoresData) return;
   const games  = scoresData.games || [];
-  const date   = scoresData.currentDate || scoresData.gameDate || '';
-
-  // Pretty date label
-  if(date){
-    const [y,m,d] = date.split('-');
+  // Always use our ET-aware date (API currentDate field is unreliable)
+  const dateStr = getHockeyDateET();
+  {
+    const [y,m,d] = dateStr.split('-');
     const dt = new Date(+y,+m-1,+d);
     document.getElementById('scores-date').textContent =
-      dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   }
 
   if(!games.length){
@@ -3151,23 +3462,38 @@ function updateDocTitle(){
 }
 
 function requestNotifications(){
+  const dot = document.getElementById('bell-dot');
+  const btn = document.getElementById('notif-btn');
+
   if(!('Notification' in window)){
-    alert('Your browser does not support notifications.'); return;
-  }
-  if(Notification.permission === 'granted'){
-    document.getElementById('bell-dot').classList.remove('show');
-    document.getElementById('notif-btn').classList.add('active-state');
+    alert('Notifications are not supported in this browser.');
+    dot?.classList.remove('show'); // Remove dot — user has taken action
     return;
   }
+  if(Notification.permission === 'granted'){
+    // Already granted — just update UI
+    dot?.classList.remove('show');
+    btn?.classList.add('active-state');
+    return;
+  }
+  if(Notification.permission === 'denied'){
+    alert('Notifications are blocked in your browser.\nTo enable them, update your site settings and refresh.');
+    dot?.classList.remove('show'); // Remove dot — user has taken action
+    return;
+  }
+  // Permission is 'default' — prompt the user
   Notification.requestPermission().then(perm => {
+    // Always remove the dot once the user has interacted with the prompt,
+    // regardless of whether they granted, denied, or dismissed.
+    dot?.classList.remove('show');
     if(perm === 'granted'){
-      document.getElementById('bell-dot').classList.remove('show');
-      document.getElementById('notif-btn').classList.add('active-state');
-      // Confirm with a test notification
-      new Notification('Notifications enabled!', {
-        body: "You'll be notified of new messages.",
-        icon: cfg ? cfg.favicon : ''
-      });
+      btn?.classList.add('active-state');
+      try{
+        new Notification('🏒 Notifications enabled!', {
+          body: "You'll be notified of new messages.",
+          icon: cfg ? cfg.favicon : ''
+        });
+      }catch(e){}
     }
   });
 }
@@ -3183,7 +3509,8 @@ function initNotifications(){
 function maybeSendNotification(msg){
   if(windowVisible) return;             // window is focused — no notification needed
   if(msg.uid === me?.uid) return;       // own message
-  if(msg.isBot) return;                 // bot message
+  if(msg.isBot)    return;              // bot message
+  if(msg.isScores) return;             // score card (also a bot msg, belt+suspenders)
   unreadCount++;
   updateDocTitle();
   if(Notification.permission !== 'granted') return;
@@ -3240,7 +3567,8 @@ function updateScrollBadge(){
 
 function trackScrollUnread(msg){
   if(msg.uid === me?.uid) return; // don't count own messages
-  if(msg.isBot) return;
+  if(msg.isBot)    return;
+  if(msg.isScores) return;
   const area = document.getElementById('msgs');
   if(!area) return;
   const distFromBottom = area.scrollHeight - area.scrollTop - area.clientHeight;
@@ -3419,6 +3747,11 @@ document.addEventListener('click', e => {
 rerollAvatar();
 document.getElementById('inp-pw').addEventListener('keydown',   e => { if(e.key==='Enter') doLogin(); });
 document.getElementById('inp-name').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+// Close panels when user scrolls the message area
+document.getElementById('msgs').addEventListener('scroll', () => {
+  document.getElementById('emoji-panel').style.display = 'none';
+  document.getElementById('gif-panel').style.display   = 'none';
+}, { passive: true });
 </script>
 
 </body>
