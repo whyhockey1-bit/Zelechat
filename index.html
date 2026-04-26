@@ -855,18 +855,18 @@ body{
   --bg1: #071525;
   --bg2: #0c1e38;
   --bg3: #12284d;
-  --orange:      #e8a020;
-  --orange-dim:  #b87c10;
-  --orange-glow: rgba(232,160,32,0.18);
-  --orange-text: #f5c76a;
+  --orange:      #00cfdd;
+  --orange-dim:  #009ab0;
+  --orange-glow: rgba(0,207,221,0.18);
+  --orange-text: #44e8f8;
   --purple:      #CE1126;
   --purple-dim:  rgba(206,17,38,0.18);
   --grey:        #7a8899;
   --grey-dim:    #38485a;
-  --text:        #e8dfc8;
-  --text-soft:   #9a9080;
-  --text-muted:  #4a5668;
-  --border:      rgba(232,160,32,0.22);
+  --text:        #d8f4ff;
+  --text-soft:   #7aaabb;
+  --text-muted:  #3a5668;
+  --border:      rgba(0,207,221,0.22);
   --border-soft: rgba(255,255,255,0.07);
   --red:         #ff4455;
   --green:       #00c896;
@@ -1241,18 +1241,38 @@ html.light {
 }
 /* Whyhockey light mode */
 html.light[data-theme="whyhockey"] {
-  --bg0: #f0f6ff;
+  --bg0: #f0feff;
   --bg1: #ffffff;
-  --bg2: #e8f0ff;
-  --bg3: #dde8ff;
-  --orange:      #b07800;
-  --orange-glow: rgba(176,120,0,0.14);
-  --orange-text: #8a5e00;
-  --text:        #0e1620;
-  --text-soft:   #455568;
-  --text-muted:  #8090a8;
-  --border:      rgba(176,120,0,0.18);
+  --bg2: #e0f8fc;
+  --bg3: #cceeff;
+  --orange:      #007a90;
+  --orange-glow: rgba(0,122,144,0.14);
+  --orange-text: #005577;
+  --text:        #0e1a20;
+  --text-soft:   #2a5568;
+  --text-muted:  #6090a8;
+  --border:      rgba(0,122,144,0.18);
   --border-soft: rgba(0,0,0,0.08);
+}
+
+.switch-room-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-soft);
+  padding: 6px 13px;
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.switch-room-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--orange-glow);
 }
 
 /* ── Light mode: make login screen bg lighter ── */
@@ -1362,6 +1382,13 @@ html.light .chat-header  { background: var(--bg1); }
 
   <div class="chat-header">
     <div class="header-left">
+      <button class="switch-room-btn" id="switch-room-btn" onclick="switchRoom()" title="Switch chat room">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+          <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+        </svg>
+        <span id="switch-room-label">Whyhockey</span>
+      </button>
       <span id="header-logo-wrap"><svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.12 271.24" fill="#ff7b1c" aria-label="Zelechat">
         <path d="M189.65,360.47c0-21.77,0-43.54-.05-65.31,0-3.17.61-4.73,4.27-5,37.94-2.83,75.9-5.3,114-4.76,29.08.41,58.1,1.82,87,4.59,10.68,1,10.67,1.1,10.67,11.68,0,37.39.34,74.79-.09,112.18-.45,39.69-15,73.63-43.44,101.51-16.61,16.27-34.78,30.21-56.4,39.38-5.62,2.38-10.52,2.5-16.11,0-34-15.51-61.48-38.61-80.78-70.68a133.77,133.77,0,0,1-19.06-68.2C189.46,397.36,189.65,378.91,189.65,360.47ZM297.5,292c-32.43.1-64.77,2.37-97.14,4.06-4,.21-4,2.4-4,5.27q.06,57.61,0,115.23a114.78,114.78,0,0,0,2.9,25.19c6.14,27.08,18.88,50.48,39.13,69.7,16.37,15.54,33.88,29.34,55.18,37.69a10.21,10.21,0,0,0,8.06-.1c20.32-8,37.21-21,53-35.64,26.09-24.26,41.9-54.19,43.42-89.59,1.77-41.17.53-82.46.66-123.69,0-2.69-.85-3.86-3.66-4C362.62,294.32,330.11,292.07,297.5,292Z" transform="translate(-189.58 -285.32)"/>
         <path d="M253.45,324.33h3.7l4.93,25.76h.08l5.13-25.76h4.52l5.41,25.76h.08l4.64-25.76h3.71l-6.11,30.3H275l-5.37-25.76h-.08l-5.17,25.76H259.8Z" transform="translate(-189.58 -285.32)"/>
@@ -1402,8 +1429,14 @@ html.light .chat-header  { background: var(--bg1); }
       <!-- NHL Scores Widget -->
       <div class="scores-panel" id="scores-panel">
         <button class="scores-btn" id="scores-btn" onclick="toggleScoresPanel()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="2" y1="9" x2="22" y2="9"/>
+            <line x1="8" y1="3" x2="8" y2="9"/>
+            <line x1="16" y1="3" x2="16" y2="9"/>
+            <path d="M8 14h.01M12 14h.01M16 14h.01"/>
+            <line x1="6" y1="21" x2="18" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
           </svg>
           Scores
         </button>
@@ -1493,7 +1526,7 @@ html.light .chat-header  { background: var(--bg1); }
 
   <div class="input-zone" style="position:relative;">
     <!-- @ command hint -->
-    <div id="at-hint" class="at-hint" style="display:none;">@NHL · @NHL standings · @NHL [team] · @HockeyDB [player name]</div>
+    <div id="at-hint" class="at-hint" style="display:none;">@NHL · @NHL standings · @NHL stats · @NHL [team] · @HockeyDB [player name]</div>
 
     <!-- Emoji panel -->
     <div id="emoji-panel" class="emoji-panel" style="display:none;">
@@ -1619,6 +1652,9 @@ function selectRoom(roomId) {
   unreadCount  = 0;
   scrollUnread = 0;
   _initialLoadDone = false;
+  // Update switch button to point to the other room
+  const otherId = cfg.id === 'zelechat' ? 'whyhockey' : 'zelechat';
+  document.getElementById('switch-room-label').textContent = ROOMS[otherId].name;
   // Hide selector, show login
   document.getElementById('selector-screen').style.display = 'none';
   document.getElementById('login-screen').style.display    = 'flex';
@@ -1715,6 +1751,7 @@ function doLogin(){
   if(btn){ btn.disabled = true; btn.textContent = 'Entering…'; }
   const uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
   me = { uid, name, avId: pickAvId };
+  sessionStorage.setItem('authed_' + cfg.id, '1');
   enterChat();
 }
 
@@ -2194,7 +2231,12 @@ function listenUsers(){
   _usersRef = db.ref(cfg.path+'/users');
   _usersRef.on('value', snap => {
     const users = snap.val() || {};
-    const list  = Object.entries(users);
+    // Filter stale entries: only show users whose heartbeat is < 90 seconds old.
+    // This prevents phantom users from closed tabs (onDisconnect hasn't fired yet)
+    // and avoids cross-room contamination when a path is mis-scoped.
+    const STALE_MS = 90000;
+    const now = Date.now();
+    const list = Object.entries(users).filter(([, u]) => (now - (u.ts || 0)) < STALE_MS);
 
     document.getElementById('online-cnt').textContent = list.length;
 
@@ -2380,6 +2422,56 @@ async function cmdNHL(args){
     return;
   }
 
+  if(sub === 'stats' || sub === 'stat' || sub === 'leaders'){
+    postBot('NHL Bot','⏳ Fetching stat leaders…', BOT_AV_NHL);
+    try{
+      const [skData, gkData] = await Promise.all([
+        nhlFetch('/v1/skater-stats-leaders/current?categories=goals,assists,points&limit=10'),
+        nhlFetch('/v1/goalie-stats-leaders/current?categories=savePctg,goalsAgainstAvg&limit=10')
+      ]);
+
+      const fmtSkaters = (leaders, label, key) => {
+        if(!leaders?.length) return '';
+        let s = `\n🏒 ${label}\n`;
+        leaders.forEach((p,i) => {
+          const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || p.name || '?';
+          const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
+          const val  = p[key] ?? '?';
+          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${val}\n`;
+        });
+        return s;
+      };
+
+      const fmtGoalies = (leaders, label, key, isFloat) => {
+        if(!leaders?.length) return '';
+        let s = `\n🥅 ${label}\n`;
+        leaders.forEach((p,i) => {
+          const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || p.name || '?';
+          const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
+          const raw  = p[key];
+          const val  = raw == null ? '?' : isFloat === 'pct' ? fmtPct(raw) : isFloat ? raw.toFixed(2) : raw;
+          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${val}\n`;
+        });
+        return s;
+      };
+
+      let out = `📊 NHL STAT LEADERS\n${'─'.repeat(30)}`;
+      out += fmtSkaters(skData?.goals?.leaders,   'GOALS',   'goals');
+      out += fmtSkaters(skData?.assists?.leaders, 'ASSISTS', 'assists');
+      out += fmtSkaters(skData?.points?.leaders,  'POINTS',  'points');
+      // Goalie stats — try both key names the API has used
+      const svLeaders  = gkData?.savePctg?.leaders || gkData?.savePct?.leaders || [];
+      const gaaLeaders = gkData?.goalsAgainstAvg?.leaders || gkData?.goalsAgainstAverage?.leaders || [];
+      out += fmtGoalies(svLeaders,  'SAVE PERCENTAGE', 'savePctg',       'pct');
+      out += fmtGoalies(gaaLeaders, 'GOALS AGAINST AVG', 'goalsAgainstAvg', true);
+
+      postBot('NHL Bot', out.trim(), BOT_AV_NHL);
+    }catch(e){
+      postBot('NHL Bot','❌ Could not fetch stat leaders. ('+e.message+')', BOT_AV_NHL);
+    }
+    return;
+  }
+
   const abbrev = resolveTeam(sub);
   if(abbrev){
     postBot('NHL Bot',`⏳ Looking up ${abbrev} schedule…`, BOT_AV_NHL);
@@ -2414,7 +2506,7 @@ async function cmdNHL(args){
     return;
   }
 
-  postBot('NHL Bot','🏒 NHL Bot commands:\n  @NHL               → Today\'s scores\n  @NHL standings     → Conference standings\n  @NHL Flyers        → Team schedule (name or abbrev)\n  @NHL PHI           → Same using 3-letter code\n  @HockeyDB Ovechkin → Player stats', BOT_AV_NHL);
+  postBot('NHL Bot','🏒 NHL Bot commands:\n  @NHL               → Today\'s scores\n  @NHL standings     → Conference standings\n  @NHL stats         → Top 10 stat leaders (G/A/PTS/SV%/GAA)\n  @NHL Flyers        → Team schedule (name or abbrev)\n  @NHL PHI           → Same using 3-letter code\n  @HockeyDB Ovechkin → Player stats', BOT_AV_NHL);
 }
 
 /* ── @HockeyDB ── */
@@ -2427,44 +2519,55 @@ async function cmdHockeyDB(query){
   postBot('HockeyDB',`⏳ Searching for "${query}"…`, BOT_AV_HOCKEYDB);
 
   try{
-    // ── Step 1: Find the player ──────────────────────────────
-    // nhlFetch handles CORS proxy fallback automatically
-    const searchData = await nhlFetch(
-      `/v1/player-search?name=${encodeURIComponent(query)}&culture=en-US&limit=10`
-    );
+    // ── Step 1: Player search via NHL search API ─────────────
+    // The search API is on a different domain than api-web.nhle.com
+    const searchUrl = `https://search.d3.nhle.com/api/v1/search?q=${encodeURIComponent(query)}&culture=en-us&limit=10&type=player`;
+    let searchData;
+    try {
+      const r = await fetchTimeout(searchUrl, 8000);
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      searchData = await r.json();
+    } catch(e) {
+      // CORS proxy fallback
+      const r = await fetchTimeout('https://corsproxy.io/?' + encodeURIComponent(searchUrl), 10000);
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      searchData = await r.json();
+    }
 
-    const players = searchData.players || searchData.data || [];
-    if(!players.length){
+    // Response is a direct array of player objects
+    const players = Array.isArray(searchData) ? searchData : (searchData.players || searchData.data || []);
+    const playerHits = players.filter(p => (p.type || '').toLowerCase() === 'player' || p.playerId || p.id);
+
+    if(!playerHits.length){
       postBot('HockeyDB',
         `❌ No players found for "${query}".\nTip: Try last name only — e.g. @HockeyDB Giroux`,
         BOT_AV_HOCKEYDB);
       return;
     }
 
-    const p   = players[0];
+    const p   = playerHits[0];
 
     // Field names vary across API versions — handle both shapes
     const pid   = p.playerId || p.id;
     const fname = strField(p.firstName) || strField(p.name)?.split(' ')[0] || '';
     const lname = strField(p.lastName)  || strField(p.name)?.split(' ').slice(1).join(' ') || '';
     const pos0  = p.position || p.positionCode || '?';
-    const team0 = strField(p.teamAbbrev) || '';
+    const team0 = strField(p.teamAbbrev) || strField(p.teamAbbrevs) || '';
 
     if(!pid){
       postBot('HockeyDB',`❌ Could not extract player ID from search results.`, BOT_AV_HOCKEYDB);
       return;
     }
 
-    // ── Step 2: Fetch full player card ───────────────────────
+    // ── Step 2: Fetch full player card from main API ─────────
     const sd = await nhlFetch(`/v1/player/${pid}/landing`);
 
     const fullName = `${strField(sd.firstName)||fname} ${strField(sd.lastName)||lname}`.trim();
-    const position = sd.position || pos0;
+    const position = sd.position || sd.positionCode || pos0;
     const teamAbbr = strField(sd.currentTeamAbbrev) || team0 || 'N/A';
     const isGoalie = position === 'G';
 
-    // ── Step 3: Parse stats ──────────────────────────────────
-    // Try multiple paths the API uses depending on season timing
+    // ── Step 3: Parse stats (API shape varies by season) ─────
     const cur = sd.featuredStats?.regularSeason?.subSeason
              || sd.featuredStats?.regularSeason
              || sd.currentSeasonStats
@@ -2473,10 +2576,12 @@ async function cmdHockeyDB(query){
 
     let statsLine;
     if(isGoalie){
-      const sv  = fmtPct(cur.savePctg);
-      const gaa = cur.goalsAgainstAvg != null ? cur.goalsAgainstAvg.toFixed(2) : '–';
-      const csv = fmtPct(car.savePctg);
-      const cgaa= car.goalsAgainstAvg != null ? car.goalsAgainstAvg.toFixed(2) : '–';
+      const sv   = fmtPct(cur.savePctg);
+      const gaa  = cur.goalsAgainstAvg  != null ? cur.goalsAgainstAvg.toFixed(2)
+                 : cur.goalsAgainstAverage != null ? cur.goalsAgainstAverage.toFixed(2) : '–';
+      const csv  = fmtPct(car.savePctg);
+      const cgaa = car.goalsAgainstAvg  != null ? car.goalsAgainstAvg.toFixed(2)
+                 : car.goalsAgainstAverage != null ? car.goalsAgainstAverage.toFixed(2) : '–';
       statsLine =
         `This Season  GP:${cur.gamesPlayed??'–'}  SV%:${sv}  GAA:${gaa}\n`+
         `Career       GP:${car.gamesPlayed??'–'}  SV%:${csv}  GAA:${cgaa}`;
@@ -3178,6 +3283,104 @@ function purgeChat(){
     rply:   null,
     isBot:  true
   });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ROOM SWITCHING  (zelechat ↔ whyhockey)
+//  Password remembered once per browser session via sessionStorage.
+//  On page refresh, sessionStorage is cleared and user must re-enter.
+// ─────────────────────────────────────────────────────────────
+function switchRoom(){
+  const otherId  = cfg.id === 'zelechat' ? 'whyhockey' : 'zelechat';
+  const otherCfg = ROOMS[otherId];
+
+  // ── Tear down current room ────────────────────────────────
+  // Detach Firebase listeners
+  if(_msgRef)    { _msgRef.off();    _msgRef    = null; }
+  if(_usersRef)  { _usersRef.off();  _usersRef  = null; }
+  if(_typingRef) { _typingRef.off(); _typingRef = null; }
+  if(window._presenceInterval)  { clearInterval(window._presenceInterval);  window._presenceInterval  = null; }
+  if(window._resetCheckInterval){ clearInterval(window._resetCheckInterval); window._resetCheckInterval = null; }
+  if(scoresAutoTimer)  { clearInterval(scoresAutoTimer); scoresAutoTimer = null; }
+  if(countdownTick)    { clearInterval(countdownTick);   countdownTick   = null; }
+
+  // Remove current user from old room's presence + typing
+  if(me && cfg) {
+    db.ref(cfg.path + '/users/'  + me.uid).remove();
+    db.ref(cfg.path + '/typing/' + me.uid).remove();
+  }
+
+  // Reset per-room state
+  rendered = {}; msgCache = {};
+  replyCtx = null; editCtx = null;
+  rerollAvatar(); // fresh avatar
+  document.getElementById('msgs').innerHTML = '';
+  unreadCount = 0; scrollUnread = 0;
+  _initialLoadDone = false;
+  _typingActive = false;
+  scoresOpen = false;
+  revealedGames.clear();
+
+  // Close any open scores dropdown
+  document.getElementById('scores-dd')?.classList.remove('open');
+  document.getElementById('scores-btn')?.classList.remove('active');
+  document.getElementById('users-dd')?.classList.remove('open');
+
+  // ── Apply new room config ─────────────────────────────────
+  cfg     = otherCfg;
+  ROOM_PW = cfg.password;
+  ENC_KEY = cfg.encKey;
+
+  document.documentElement.dataset.theme = cfg.theme;
+  document.getElementById('fav-icon').href  = cfg.favicon;
+  document.getElementById('fav-apple').href = cfg.favicon;
+  document.title = cfg.name;
+  document.getElementById('header-logo-wrap').innerHTML  = cfg.headerLogo;
+  document.getElementById('chat-room-name').textContent  = cfg.name;
+  document.getElementById('msg-input').placeholder = 'Message ' + cfg.name + '…';
+  document.getElementById('reset-notice-text').textContent =
+    cfg.name + ' history clears automatically every night at 3:00 AM EST';
+
+  // Update switch button to point back to the room we just left
+  const backId = otherId === 'zelechat' ? 'whyhockey' : 'zelechat';
+  document.getElementById('switch-room-label').textContent = ROOMS[backId].name;
+
+  // ── Check session auth for new room ──────────────────────
+  if(sessionStorage.getItem('authed_' + otherId)){
+    // Already authenticated this session — skip login
+    // me.uid stays the same, only room/data changes
+    const pRef = db.ref(cfg.path + '/users/' + me.uid);
+    pRef.set({ name: me.name, avId: me.avId, ts: Date.now() });
+    pRef.onDisconnect().remove();
+    window._presenceInterval = setInterval(() => pRef.update({ ts: Date.now() }), 25000);
+
+    checkPurgePrivilege();
+    checkReset();
+    window._resetCheckInterval = setInterval(checkReset, 60000);
+    listenMessages();
+    listenUsers();
+    listenTyping();
+    // Scores will reload when user opens scores panel
+    fetchAndRenderScores(false);
+  } else {
+    // Need to login — show login screen with current username pre-filled
+    document.getElementById('login-logo-wrap').innerHTML  = cfg.loginLogo;
+    document.getElementById('room-name-login').textContent = cfg.name;
+    document.getElementById('room-tagline').textContent    = cfg.tagline;
+
+    const nameIn = document.getElementById('inp-name');
+    nameIn.value = me?.name || '';  // pre-fill username
+    document.getElementById('inp-pw').value = '';
+    document.getElementById('err-name').style.display = 'none';
+    document.getElementById('err-pw').style.display   = 'none';
+    _loginPending = false;
+    const btn = document.querySelector('.btn-enter');
+    if(btn){ btn.disabled = false; btn.textContent = 'Enter ' + cfg.name; }
+
+    document.getElementById('chat-screen').style.display  = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('inp-pw').focus();
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
