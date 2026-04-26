@@ -2739,7 +2739,7 @@ async function cmdNHL(args){
         arr.forEach((p,i) => {
           const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || p.name || '?';
           const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
-          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${p[key] ?? '?'}\n`;
+          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${p.value ?? p[key] ?? '?'}\n`;
         });
         return s;
       };
@@ -2750,7 +2750,7 @@ async function cmdNHL(args){
         arr.forEach((p,i) => {
           const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || p.name || '?';
           const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
-          const raw  = p[key];
+          const raw  = p.value ?? p[key];
           const val  = raw == null ? '?' : isFloat === 'pct' ? fmtPct(raw) : Number(raw).toFixed(2);
           s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${val}\n`;
         });
