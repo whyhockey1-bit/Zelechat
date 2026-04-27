@@ -2410,13 +2410,13 @@ function openImg(el){
 
 // ─────────────────────────────────────────────────────────────
 //  BOT SYSTEM
-//  @NHL              → today's scores
-//  @NHL standings    → East + West top 8
-//  @NHL [team]       → that team's next 5 games
-//  @HockeyDB [name]  → player career stats
+//  @NHL                  → today's scores
+//  @NHL standings        → East + West top 8
+//  @NHL stats            → stat leaders (playoffs + regular season)
+//  @NHL [team]           → team schedule
+//  @NHL [First Last]     → player profile, draft info, stats
 // ─────────────────────────────────────────────────────────────
-const BOT_AV_NHL      = 6;   // Charizard
-const BOT_AV_HOCKEYDB = 59;  // Arcanine
+const BOT_AV_NHL = 6;   // Charizard
 
 const TEAM_ABBREVS = {
   'anaheim':'ANA','ducks':'ANA',
@@ -2559,8 +2559,7 @@ async function nhlFetch(path){
 
 async function handleBotCommand(rawText){
   const lower = rawText.toLowerCase().trim();
-  if(lower.startsWith('@nhl'))      { await cmdNHL(rawText.slice(4).trim());      return true; }
-  if(lower.startsWith('@hockeydb')) { await cmdHockeyDB(rawText.slice(9).trim()); return true; }
+  if(lower.startsWith('@nhl')) { await cmdNHL(rawText.slice(4).trim()); return true; }
   return false;
 }
 
@@ -2706,25 +2705,24 @@ async function cmdNHL(args){
     return;
   }
 
-  if(sub === 'stats' || sub === 'stat' || sub === 'leaders'){
+if(sub === 'stats' || sub === 'stat' || sub === 'leaders'){
     const k = await thinkBot('NHL Bot', BOT_AV_NHL);
     try{
       const season = getCurrentNHLSeason();
-      // Try regular season (2) first; fall back to playoffs (3) if empty.
-      // The NHL API returns leaders directly as arrays — NOT wrapped in .leaders.
-      // Response shape: { goals: [...players...], assists: [...], points: [...] }
-      let skData, gkData;
-      for(const gt of ['2','3']){
-        [skData, gkData] = await Promise.all([
-          nhlFetch(`/v1/skater-stats-leaders/${season}/${gt}?categories=goals,assists,points&limit=10`),
-          nhlFetch(`/v1/goalie-stats-leaders/${season}/${gt}?categories=wins,savePctg,goalsAgainstAverage&limit=10`)
-        ]);
-        // Stop at the first game type that has goals data
-        const goals = arrOf(skData, 'goals');
-        if(goals.length) break;
-      }
 
-      // Helper: extract array — handles both { goals:[...] } and { goals:{leaders:[...]} }
+      // Fetch regular season (2) and playoffs (3) simultaneously
+      const [[sk2,gk2],[sk3,gk3]] = await Promise.all([
+        Promise.all([
+          nhlFetch(`/v1/skater-stats-leaders/${season}/2?categories=goals,assists,points&limit=10`).catch(()=>null),
+          nhlFetch(`/v1/goalie-stats-leaders/${season}/2?categories=wins,savePctg,goalsAgainstAverage&limit=10`).catch(()=>null)
+        ]),
+        Promise.all([
+          nhlFetch(`/v1/skater-stats-leaders/${season}/3?categories=goals,assists,points&limit=10`).catch(()=>null),
+          nhlFetch(`/v1/goalie-stats-leaders/${season}/3?categories=wins,savePctg,goalsAgainstAverage&limit=10`).catch(()=>null)
+        ])
+      ]);
+
+      // Helper: extract leaders array from either {cat:[...]} or {cat:{leaders:[...]}}
       function arrOf(d, cat){
         if(!d) return [];
         const v = d[cat];
@@ -2733,41 +2731,68 @@ async function cmdNHL(args){
         return [];
       }
 
-      const fmtSkaters = (arr, label, key) => {
+      // Stat value lives in p.value on the NHL leaders API
+      // Fall back to the named field, then scan for first plain number
+      const getVal = (p, key, isFloat) => {
+        const raw = p.value ?? p[key]
+          ?? p[Object.keys(p).find(k => !['playerId','sweaterNumber','headshot'].includes(k) && typeof p[k]==='number')];
+        if(raw == null) return '?';
+        if(!isFloat) return raw;
+        return isFloat === 'pct' ? fmtPct(raw) : Number(raw).toFixed(2);
+      };
+
+      const fmtSk = (arr, label, key) => {
         if(!arr?.length) return '';
-        let s = `\n🏒 ${label}\n`;
+        let s = `\n  ${label}\n`;
         arr.forEach((p,i) => {
-          const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || p.name || '?';
+          const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || '?';
           const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
-          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${p.value ?? p[key] ?? '?'}\n`;
+          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${getVal(p,key,false)}\n`;
+        });
+        return s;
+      };
+      const fmtGk = (arr, label, key, isFloat) => {
+        if(!arr?.length) return '';
+        let s = `\n  ${label}\n`;
+        arr.forEach((p,i) => {
+          const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || '?';
+          const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
+          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${getVal(p,key,isFloat)}\n`;
         });
         return s;
       };
 
-      const fmtGoalies = (arr, label, key, isFloat) => {
-        if(!arr?.length) return '';
-        let s = `\n🥅 ${label}\n`;
-        arr.forEach((p,i) => {
-          const name = `${strField(p.firstName)} ${strField(p.lastName)}`.trim() || p.name || '?';
-          const team = strField(p.teamAbbrevs) || strField(p.teamAbbrev) || '?';
-          const raw  = p.value ?? p[key];
-          const val  = raw == null ? '?' : isFloat === 'pct' ? fmtPct(raw) : Number(raw).toFixed(2);
-          s += `  ${String(i+1).padStart(2)}. ${name} (${team})  ${val}\n`;
-        });
-        return s;
-      };
+      let out = `📊 NHL STAT LEADERS — ${season.slice(0,4)}-${season.slice(4)}\n${'─'.repeat(32)}`;
 
-      // ── DIAGNOSTIC: show raw first player so we can see actual field names ──
-      const goalsArr = arrOf(skData,'goals');
-      let diagOut = '🔬 STAT LEADERS DIAGNOSTIC\n';
-      diagOut += `Season: ${season} | GoalsArr length: ${goalsArr.length}\n`;
-      diagOut += `skData keys: ${Object.keys(skData||{}).join(', ')}\n`;
-      if(goalsArr.length > 0){
-        const p0 = goalsArr[0];
-        diagOut += `First player keys: ${Object.keys(p0).join(', ')}\n`;
-        diagOut += `First player raw: ${JSON.stringify(p0).slice(0, 400)}`;
+      // Playoffs first — most relevant during postseason
+      const poGoals = arrOf(sk3,'goals');
+      if(poGoals.length){
+        out += `\n🏆 PLAYOFFS`;
+        out += fmtSk(poGoals,              'Goals',   'goals');
+        out += fmtSk(arrOf(sk3,'assists'), 'Assists', 'assists');
+        out += fmtSk(arrOf(sk3,'points'),  'Points',  'points');
+        out += fmtGk(arrOf(gk3,'wins'),    'Wins',    'wins',               false);
+        out += fmtGk(arrOf(gk3,'savePctg')||arrOf(gk3,'savePct'), 'Save %','savePctg','pct');
+        out += fmtGk(arrOf(gk3,'goalsAgainstAverage')||arrOf(gk3,'goalsAgainstAvg'),'GAA','goalsAgainstAverage',true);
       }
-      await resolveBot(k, diagOut);
+
+      // Regular season
+      const rsGoals = arrOf(sk2,'goals');
+      if(rsGoals.length){
+        out += `\n${'─'.repeat(32)}\n📅 REGULAR SEASON`;
+        out += fmtSk(rsGoals,              'Goals',   'goals');
+        out += fmtSk(arrOf(sk2,'assists'), 'Assists', 'assists');
+        out += fmtSk(arrOf(sk2,'points'),  'Points',  'points');
+        out += fmtGk(arrOf(gk2,'wins'),    'Wins',    'wins',               false);
+        out += fmtGk(arrOf(gk2,'savePctg')||arrOf(gk2,'savePct'), 'Save %','savePctg','pct');
+        out += fmtGk(arrOf(gk2,'goalsAgainstAverage')||arrOf(gk2,'goalsAgainstAvg'),'GAA','goalsAgainstAverage',true);
+      }
+
+      if(!poGoals.length && !rsGoals.length){
+        await resolveBot(k, '❌ No stat leaders data available right now.');
+      } else {
+        await resolveBot(k, out.trim());
+      }
     }catch(e){
       await resolveBot(k,'❌ Could not fetch stat leaders. ('+e.message+')');
     }
@@ -2810,149 +2835,134 @@ async function cmdNHL(args){
     return;
   }
 
-  postBot('NHL Bot','🏒 NHL Bot commands:\n  @NHL               → Today\'s scores\n  @NHL standings     → Conference standings\n  @NHL stats         → Top 10 stat leaders (G/A/PTS/SV%/GAA)\n  @NHL Flyers        → Team schedule (name or abbrev)\n  @NHL PHI           → Same using 3-letter code\n  @HockeyDB Ovechkin → Player stats', BOT_AV_NHL);
-}
-
-/* ── @HockeyDB ── */
-async function cmdHockeyDB(query){
-  query = query.trim();
-  if(!query){
-    postBot('HockeyDB','🗄️ Usage: @HockeyDB [player name]\nExample: @HockeyDB Ovechkin', BOT_AV_HOCKEYDB);
+  // ── No team matched — try player name lookup ─────────────
+  if(args.trim()){
+    await cmdNHLPlayer(args.trim());
     return;
   }
-  const k = await thinkBot('HockeyDB', BOT_AV_HOCKEYDB);
 
+  postBot('NHL Bot',
+    '🏒 @NHL commands:\n'+
+    '  @NHL                  → Today\'s scores\n'+
+    '  @NHL standings        → Conference standings\n'+
+    '  @NHL stats            → Stat leaders (playoffs + reg season)\n'+
+    '  @NHL FLA              → Team schedule (abbrev or name)\n'+
+    '  @NHL Barkov           → Player profile & stats\n'+
+    '  @NHL Wayne Gretzky    → Works for any player, current or retired',
+    BOT_AV_NHL);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   @NHL [Player Name]  — bio, draft, season + career stats
+   Uses suggest.svc.nhl.com for name→ID lookup
+───────────────────────────────────────────────────────────── */
+async function cmdNHLPlayer(query){
+  const k = await thinkBot('NHL Bot', BOT_AV_NHL);
   try{
-    // ── Step 1: Find player ID via suggest.svc.nhl.com ───────
-    // /v1/search/player (api-web) and search.d3.nhle.com are both 404.
-    // suggest.svc.nhl.com is stable and returns pipe-delimited results:
-    //   "playerId|LastName, FirstName|teamAbbr|position|sweaterNumber"
+    // ── Step 1: Name → Player ID ─────────────────────────────
     const q = encodeURIComponent(query.toLowerCase());
-    let pid = null, pname = query, suggestTeam = '', suggestPos = '';
+    let pid=null, pname=query, sTeam='', sPos='';
 
-    const suggestEndpoints = [
+    for(const url of [
       `https://suggest.svc.nhl.com/svc/suggest/v1/minplayers/${q}/10`,
       `https://suggest.svc.nhl.com/svc/suggest/v1/minallplayers/${q}/10`
-    ];
-
-    for(const url of suggestEndpoints){
+    ]){
       if(pid) break;
       try{
         let r = await fetchTimeout(url, 7000);
-        if(!r.ok) r = await fetchTimeout('https://corsproxy.io/?' + encodeURIComponent(url), 10000);
+        if(!r.ok) r = await fetchTimeout('https://corsproxy.io/?'+encodeURIComponent(url), 10000);
         if(!r.ok) continue;
         const data = await r.json();
-        const suggestions = data.suggestions || [];
-        if(!suggestions.length) continue;
-
-        // Parse: "8474567|Giroux, Claude|PHI|C|28"
-        const parts = suggestions[0].split('|');
-        pid = parts[0]?.trim();
-        const rawName = parts[1]?.trim() || '';
-        // Normalize "LastName, FirstName" → "FirstName LastName"
-        pname = rawName.includes(',')
-          ? rawName.split(',').map(s => s.trim()).reverse().join(' ')
-          : rawName;
-        suggestTeam = parts[2]?.trim() || '';
-        suggestPos  = parts[3]?.trim() || '';
-      } catch(e){ /* try next */ }
+        const sugg = data.suggestions || [];
+        if(!sugg.length) continue;
+        const parts = sugg[0].split('|');
+        pid   = parts[0]?.trim();
+        const raw = parts[1]?.trim() || '';
+        pname = raw.includes(',') ? raw.split(',').map(s=>s.trim()).reverse().join(' ') : raw;
+        sTeam = parts[2]?.trim() || '';
+        sPos  = parts[3]?.trim() || '';
+      }catch(e){}
     }
 
     if(!pid){
       await resolveBot(k,
-        `❌ No players found for "${query}".\nTip: Try last name only — e.g. @HockeyDB Giroux`);
+        `❌ No player found for "${query}".\nTips:\n• Try last name only: @NHL Gretzky\n• Try full name: @NHL Wayne Gretzky`);
       return;
     }
 
-    // ── Step 2: Fetch full player card ───────────────────────
+    // ── Step 2: Full player landing page ─────────────────────
     const sd = await nhlFetch(`/v1/player/${pid}/landing`);
 
-    const fullName = [strField(sd.firstName), strField(sd.lastName)].filter(Boolean).join(' ') || pname;
-    const position = sd.position || sd.positionCode || suggestPos || '?';
-    const teamAbbr = strField(sd.currentTeamAbbrev) || suggestTeam || 'N/A';
-    const isGoalie = position === 'G';
+    const fullName = [strField(sd.firstName),strField(sd.lastName)].filter(Boolean).join(' ') || pname;
+    const position = sd.position || sd.positionCode || sPos || '?';
+    const team     = strField(sd.currentTeamAbbrev) || sTeam || 'N/A';
+    const isG      = position === 'G';
+    const div      = '─'.repeat(32);
 
-    // ── Step 3: Bio ──────────────────────────────────────────
-    const bioLines = [];
+    // ── Bio ─────────────────────────────────────────────────
+    const bio = [];
+    const htIn=sd.heightInInches, wtLb=sd.weightInPounds;
+    const htCm=sd.heightInCentimeters, wtKg=sd.weightInKilograms;
+    let phys='';
+    if(htIn){ const ft=Math.floor(htIn/12),ins=htIn%12; phys=`${ft}'${ins}"`; }
+    else if(htCm) phys=`${htCm}cm`;
+    if(wtLb) phys+=(phys?'  ':'')+`${wtLb}lbs`;
+    else if(wtKg) phys+=(phys?'  ':'')+`${wtKg}kg`;
+    if(phys) bio.push(`📐 ${phys}`);
+    const bDate=sd.birthDate||'', bCity=strField(sd.birthCity);
+    const bProv=strField(sd.birthStateProvince), bCtry=sd.birthCountry||'';
+    const hometown=[bCity,bProv,bCtry].filter(Boolean).join(', ');
+    if(bDate||hometown) bio.push(`🎂 ${[bDate,hometown].filter(Boolean).join('  ·  ')}`);
+    if(sd.nationality) bio.push(`🌐 ${sd.nationality}`);
 
-    // Height / weight
-    const htIn = sd.heightInInches;
-    const wtLb = sd.weightInPounds;
-    const htCm = sd.heightInCentimeters;
-    const wtKg = sd.weightInKilograms;
-    let physique = '';
-    if(htIn){
-      const ft = Math.floor(htIn/12), inches = htIn%12;
-      physique = `${ft}'${inches}"`;
-    } else if(htCm){ physique = `${htCm}cm`; }
-    if(wtLb)       physique += physique ? `  ${wtLb}lbs` : `${wtLb}lbs`;
-    else if(wtKg)  physique += physique ? `  ${wtKg}kg`  : `${wtKg}kg`;
-    if(physique)   bioLines.push(`📐 ${physique}`);
-
-    // Birthdate + city
-    const bDate = sd.birthDate || '';
-    const bCity = strField(sd.birthCity);
-    const bProv = strField(sd.birthStateProvince);
-    const bCtry = sd.birthCountry || '';
-    const hometown = [bCity, bProv, bCtry].filter(Boolean).join(', ');
-    if(bDate || hometown)
-      bioLines.push(`🎂 ${[bDate, hometown].filter(Boolean).join('  ·  ')}`);
-
-    // Nationality
-    if(sd.nationality) bioLines.push(`🌐 ${sd.nationality}`);
-
-    // ── Step 4: Draft info ───────────────────────────────────
-    const draft = sd.draftDetails || sd.draft || null;
-    let draftLine = '';
-    if(draft){
-      const dy   = draft.year        || draft.draftYear || '';
-      const rnd  = draft.round       || '';
-      const pick = draft.pickInRound || draft.pick      || '';
-      const ov   = draft.overallPick || draft.overall   || '';
-      const dTm  = draft.teamAbbrev  || draft.teamName  || '';
-      const parts = [];
-      if(dy)  parts.push(dy);
-      if(dTm) parts.push(`by ${dTm}`);
-      if(rnd) parts.push(`Round ${rnd}`);
-      if(pick) parts.push(`Pick ${pick}`);
-      if(ov)  parts.push(`(#${ov} overall)`);
-      if(parts.length) draftLine = `🎯 Drafted: ${parts.join('  ')}`;
+    // ── Draft ────────────────────────────────────────────────
+    const dr=sd.draftDetails||sd.draft||null;
+    let draftLine='';
+    if(dr){
+      const dp=[];
+      if(dr.year||dr.draftYear)       dp.push(dr.year||dr.draftYear);
+      if(dr.teamAbbrev||dr.teamName)  dp.push(`by ${dr.teamAbbrev||dr.teamName}`);
+      if(dr.round)                    dp.push(`Rd ${dr.round}`);
+      if(dr.pickInRound||dr.pick)     dp.push(`Pick ${dr.pickInRound||dr.pick}`);
+      if(dr.overallPick||dr.overall)  dp.push(`(#${dr.overallPick||dr.overall} overall)`);
+      if(dp.length) draftLine=`🎯 Drafted: ${dp.join('  ')}`;
     }
 
-    // ── Step 5: Stats ────────────────────────────────────────
-    const cur = sd.featuredStats?.regularSeason?.subSeason
-             || sd.featuredStats?.regularSeason
-             || sd.currentSeasonStats
-             || {};
-    const car = sd.careerTotals?.regularSeason || {};
+    // ── Stats — this season (reg + playoffs) + career ────────
+    const fs     = sd.featuredStats || {};
+    const regSz  = fs.regularSeason?.subSeason || fs.regularSeason || {};
+    const playSz = fs.playoffs?.subSeason       || fs.playoffs       || {};
+    const regCar = sd.careerTotals?.regularSeason || {};
+    const playCar= sd.careerTotals?.playoffs      || {};
 
-    let statsLine;
-    if(isGoalie){
-      const sv   = fmtPct(cur.savePctg);
-      const gaa  = (cur.goalsAgainstAvg ?? cur.goalsAgainstAverage)?.toFixed(2) ?? '–';
-      const csv  = fmtPct(car.savePctg);
-      const cgaa = (car.goalsAgainstAvg ?? car.goalsAgainstAverage)?.toFixed(2) ?? '–';
-      statsLine  =
-        `This Season  GP:${cur.gamesPlayed??'–'}  SV%:${sv}  GAA:${gaa}\n`+
-        `Career       GP:${car.gamesPlayed??'–'}  SV%:${csv}  GAA:${cgaa}`;
-    } else {
-      statsLine  =
-        `This Season  GP:${cur.gamesPlayed??'–'}  G:${cur.goals??'–'}  A:${cur.assists??'–'}  PTS:${cur.points??'–'}\n`+
-        `Career       GP:${car.gamesPlayed??'–'}  G:${car.goals??'–'}  A:${car.assists??'–'}  PTS:${car.points??'–'}`;
-    }
+    const skRow = (label, s) => {
+      if(!s||!Object.keys(s).length) return '';
+      return `${label.padEnd(16)} GP:${s.gamesPlayed??'–'}  G:${s.goals??'–'}  A:${s.assists??'–'}  PTS:${s.points??'–'}\n`;
+    };
+    const gkRow = (label, s) => {
+      if(!s||!Object.keys(s).length) return '';
+      const gaa=(s.goalsAgainstAvg??s.goalsAgainstAverage)?.toFixed(2)??'–';
+      return `${label.padEnd(16)} GP:${s.gamesPlayed??'–'}  W:${s.wins??'–'}  SV%:${fmtPct(s.savePctg)}  GAA:${gaa}\n`;
+    };
+    const row = isG ? gkRow : skRow;
 
-    // ── Assemble output ──────────────────────────────────────
-    const divider = '─'.repeat(30);
-    let out = `🗄️ ${fullName}  |  ${position}  |  ${teamAbbr}\n${divider}`;
-    if(bioLines.length) out += '\n' + bioLines.join('\n');
-    if(draftLine)       out += '\n' + draftLine;
-    out += `\n${divider}\n📊 Stats\n${statsLine}`;
+    let statsBlock = '';
+    statsBlock += row('This Season:',    regSz);
+    statsBlock += row('Playoffs:',       playSz);
+    statsBlock += row('Career (RS):',    regCar);
+    statsBlock += row('Career (Playoffs):',playCar);
+
+    // ── Assemble ─────────────────────────────────────────────
+    let out = `🏒 ${fullName}  |  ${position}  |  ${team}\n${div}`;
+    if(bio.length) out += '\n'+bio.join('\n');
+    if(draftLine)  out += '\n'+draftLine;
+    out += `\n${div}\n📊 Stats\n${statsBlock.trim()||'(no stats available)'}`;
 
     await resolveBot(k, out);
 
   }catch(err){
     await resolveBot(k,
-      `❌ HockeyDB error for "${query}":\n${err.message}\nTry last name only — e.g. @HockeyDB Giroux`);
+      `❌ Player lookup failed for "${query}":\n${err.message}\nTry: @NHL Barkov  or  @NHL Connor McDavid`);
   }
 }
 // Helper: extract string from either a plain string or a { default: "..." } object
