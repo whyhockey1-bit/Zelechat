@@ -2757,19 +2757,17 @@ async function cmdNHL(args){
         return s;
       };
 
-      let out = `📊 NHL STAT LEADERS\n${'─'.repeat(30)}`;
-      out += fmtSkaters(arrOf(skData,'goals'),   'GOALS',   'goals');
-      out += fmtSkaters(arrOf(skData,'assists'), 'ASSISTS', 'assists');
-      out += fmtSkaters(arrOf(skData,'points'),  'POINTS',  'points');
-      out += fmtGoalies(arrOf(gkData,'wins'),                 'GOALIE WINS',      'wins',                false);
-      out += fmtGoalies(arrOf(gkData,'savePctg')||arrOf(gkData,'savePct'), 'SAVE %', 'savePctg', 'pct');
-      out += fmtGoalies(arrOf(gkData,'goalsAgainstAverage')||arrOf(gkData,'goalsAgainstAvg'), 'GAA', 'goalsAgainstAverage', true);
-
-      if(out.trim() === `📊 NHL STAT LEADERS\n${'─'.repeat(30)}`.trim()){
-        await resolveBot(k,'❌ No stat leaders data returned. The season may be between periods.');
-      } else {
-        await resolveBot(k, out.trim());
+      // ── DIAGNOSTIC: show raw first player so we can see actual field names ──
+      const goalsArr = arrOf(skData,'goals');
+      let diagOut = '🔬 STAT LEADERS DIAGNOSTIC\n';
+      diagOut += `Season: ${season} | GoalsArr length: ${goalsArr.length}\n`;
+      diagOut += `skData keys: ${Object.keys(skData||{}).join(', ')}\n`;
+      if(goalsArr.length > 0){
+        const p0 = goalsArr[0];
+        diagOut += `First player keys: ${Object.keys(p0).join(', ')}\n`;
+        diagOut += `First player raw: ${JSON.stringify(p0).slice(0, 400)}`;
       }
+      await resolveBot(k, diagOut);
     }catch(e){
       await resolveBot(k,'❌ Could not fetch stat leaders. ('+e.message+')');
     }
