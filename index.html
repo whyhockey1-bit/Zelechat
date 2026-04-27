@@ -3300,14 +3300,39 @@ function toggleScoresPanel(){
   btn.classList.toggle('active', scoresOpen);
 
   if(scoresOpen){
-    clearInterval(scoresAutoTimer); // clear any stale timer before setting new one
-    fetchAndRenderScores(false);
-    scoresAutoTimer = setInterval(() => fetchAndRenderScores(false), 45000);
+    clearTimeout(scoresAutoTimer);
+    scoresAutoTimer = null;
+    fetchAndRenderScores(false).then(scheduleScoresRefresh);
   } else {
-    clearInterval(scoresAutoTimer);
+    clearTimeout(scoresAutoTimer);
     scoresAutoTimer = null;
     stopCountdownTick();
   }
+}
+
+// Adaptive polling: 12s when any game is live, 45s otherwise.
+// setTimeout chain ensures each fetch fully completes before the next is queued.
+function scheduleScoresRefresh(){
+  if(!scoresOpen) return;
+  const hasLive = (scoresData?.games || []).some(g => {
+    const s = g.gameState || '';
+    return s === 'LIVE' || s === 'CRIT' || s === 'IN_PROGRESS';
+  });
+  const interval = hasLive ? 12000 : 45000;
+  // Update footer with current rate
+  const tsEl = document.getElementById('scores-updated-ts');
+  const ts = tsEl ? tsEl.textContent : '';
+  const footer = document.getElementById('scores-footer');
+  if(footer){
+    const rateLabel = hasLive
+      ? '<span class="scores-live-rate">🔴 live · refreshing every 12s</span>'
+      : 'auto-refreshes every 45s';
+    footer.innerHTML = `Updated <span id="scores-updated-ts">${ts}</span> · ${rateLabel}`;
+  }
+  clearTimeout(scoresAutoTimer);
+  scoresAutoTimer = setTimeout(() => {
+    fetchAndRenderScores(false).then(scheduleScoresRefresh);
+  }, interval);
 }
 
 async function fetchAndRenderScores(showSpinner){
@@ -3323,6 +3348,7 @@ async function fetchAndRenderScores(showSpinner){
       now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     const footer = document.getElementById('scores-footer');
     footer.style.display = '';
+    // Footer rate label is updated by scheduleScoresRefresh after this resolves
   }catch(e){
     document.getElementById('scores-list').innerHTML =
       '<div class="scores-loading">⚠️ Could not load scores.<br>Check connection and try again.</div>';
@@ -3546,25 +3572,61 @@ function getSfxCtx(){
   if(!Ctor) return null;
   if(!_sfxCtx || _sfxCtx.state === 'closed'){
     _sfxCtx = new Ctor();
-    _sfxBuf = buildPostPing(_sfxCtx);
+    _sfxBuf = buildApex(_sfxCtx);   // Apex-style iOS notification
   }
   return _sfxCtx;
 }
 
-function buildPostPing(ctx){
+// ── Apex-style notification sound ────────────────────────────────────────
+// Modelled after iOS "Apex": two soft descending sine tones, a major third
+// apart (E6 → C6), clean envelopes, no impact noise or metallic partials.
+// The smooth raised-cosine envelope is what gives iOS tones their rounded,
+// non-harsh quality. Total duration ~480 ms.
+function buildApex(ctx){
   const sr  = ctx.sampleRate;
-  const dur = 0.9;                              // 900 ms total
-  const buf = ctx.createBuffer(1, Math.floor(sr * dur), sr);
+  const len = Math.floor(sr * 0.52);
+  const buf = ctx.createBuffer(1, len, sr);
   const d   = buf.getChannelData(0);
-  for(let i = 0; i < d.length; i++){
-    const t   = i / sr;
-    // Sharp impact noise (first 14 ms)
-    const imp = t < 0.014 ? (Math.random()*2-1) * Math.exp(-t*280) * 0.55 : 0;
-    // Three metallic partials with different decay rates
-    const p1  = Math.sin(2*Math.PI* 780*t) * 0.42 * Math.exp(-t* 7);
-    const p2  = Math.sin(2*Math.PI*1560*t) * 0.26 * Math.exp(-t*12);
-    const p3  = Math.sin(2*Math.PI*2420*t) * 0.14 * Math.exp(-t*20);
-    d[i] = (imp + p1 + p2 + p3) * 0.65;
+
+  // Two notes: higher first (Apex descends), short gap between them
+  const notes = [
+    { freq: 1319, tStart: 0.00, tEnd: 0.20 },   // E6 — first tone
+    { freq: 1047, tStart: 0.23, tEnd: 0.46 },   // C6 — second tone (major 3rd below)
+  ];
+
+  // Raised-cosine envelope: smooth attack AND smooth decay — no clicks
+  function rcEnv(t, tStart, tEnd){
+    if(t < tStart || t >= tEnd) return 0;
+    const nt  = (t - tStart) / (tEnd - tStart); // 0..1 within the note
+    const atk = 0.10;  // attack occupies first 10% of the note
+    const rel = 0.35;  // release starts at 65% of the note
+    let e;
+    if(nt < atk){
+      // Smooth attack: half cosine 0→1
+      e = 0.5 - 0.5 * Math.cos(Math.PI * (nt / atk));
+    } else if(nt < rel){
+      e = 1.0;
+    } else {
+      // Smooth release: half cosine 1→0
+      e = 0.5 + 0.5 * Math.cos(Math.PI * ((nt - rel) / (1 - rel)));
+    }
+    return Math.max(0, e);
+  }
+
+  for(let i = 0; i < len; i++){
+    const t = i / sr;
+    let sample = 0;
+    for(const n of notes){
+      const env = rcEnv(t, n.tStart, n.tEnd);
+      if(env === 0) continue;
+      // Pure sine + tiny 2nd harmonic for just a hint of warmth (like Apple's tones)
+      sample += (
+        Math.sin(2 * Math.PI * n.freq * t) * 0.88 +
+        Math.sin(2 * Math.PI * n.freq * 2 * t) * 0.07 +
+        Math.sin(2 * Math.PI * n.freq * 3 * t) * 0.03
+      ) * env;
+    }
+    d[i] = sample * 0.38;  // master level — comfortable, not loud
   }
   return buf;
 }
@@ -3577,9 +3639,15 @@ function playHockeySound(){
     if(ctx.state === 'suspended') ctx.resume();
     const src  = ctx.createBufferSource();
     src.buffer = _sfxBuf;
+    // Optional soft low-pass to remove any residual harshness
+    const lpf = ctx.createBiquadFilter();
+    lpf.type            = 'lowpass';
+    lpf.frequency.value = 4000;
+    lpf.Q.value         = 0.5;
     const gain = ctx.createGain();
-    gain.gain.value = 0.55;
-    src.connect(gain);
+    gain.gain.value = 0.70;
+    src.connect(lpf);
+    lpf.connect(gain);
     gain.connect(ctx.destination);
     src.start(0);
   }catch(e){ /* audio not available */ }
@@ -3818,7 +3886,7 @@ function switchRoom(){
   if(_typingRef) { _typingRef.off(); _typingRef = null; }
   if(window._presenceInterval)  { clearInterval(window._presenceInterval);  window._presenceInterval  = null; }
   if(window._resetCheckInterval){ clearInterval(window._resetCheckInterval); window._resetCheckInterval = null; }
-  if(scoresAutoTimer)  { clearInterval(scoresAutoTimer); scoresAutoTimer = null; }
+  if(scoresAutoTimer)  { clearTimeout(scoresAutoTimer); scoresAutoTimer = null; }
   if(countdownTick)    { clearInterval(countdownTick);   countdownTick   = null; }
 
   // Remove current user from old room's presence + typing
@@ -3916,7 +3984,7 @@ document.addEventListener('click', e => {
     document.getElementById('scores-btn')?.classList.remove('active');
     if(scoresOpen){
       scoresOpen = false;
-      clearInterval(scoresAutoTimer); scoresAutoTimer = null;
+      clearTimeout(scoresAutoTimer); scoresAutoTimer = null;
       stopCountdownTick();
       for(const {hideTimer} of revealedGames.values()) clearTimeout(hideTimer);
       revealedGames.clear();
