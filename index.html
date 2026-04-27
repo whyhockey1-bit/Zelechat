@@ -3577,56 +3577,40 @@ function getSfxCtx(){
   return _sfxCtx;
 }
 
-// ── Apex-style notification sound ────────────────────────────────────────
-// Modelled after iOS "Apex": two soft descending sine tones, a major third
-// apart (E6 → C6), clean envelopes, no impact noise or metallic partials.
-// The smooth raised-cosine envelope is what gives iOS tones their rounded,
-// non-harsh quality. Total duration ~480 ms.
+// ── Quirks/Slow-Rise style notification ──────────────────────────────────
+// The bell-y quality came from: (1) sustained envelopes — bells sustain,
+// iOS tones do NOT, and (2) high frequencies — 1000 Hz+ rings; 500-800 Hz
+// is warm and soft.  Fix: pure exponential decay after a tiny 5ms ramp.
+// No plateau, no sustain — it fades immediately, like a soft tap, not a bell.
+// Three ascending notes at warm mid-range frequencies (D5→F5→A5, 95ms apart).
 function buildApex(ctx){
   const sr  = ctx.sampleRate;
-  const len = Math.floor(sr * 0.52);
+  const len = Math.floor(sr * 0.38);
   const buf = ctx.createBuffer(1, len, sr);
   const d   = buf.getChannelData(0);
 
-  // Two notes: higher first (Apex descends), short gap between them
   const notes = [
-    { freq: 1319, tStart: 0.00, tEnd: 0.20 },   // E6 — first tone
-    { freq: 1047, tStart: 0.23, tEnd: 0.46 },   // C6 — second tone (major 3rd below)
+    { freq: 587, start: 0.000, amp: 0.28 },   // D5
+    { freq: 698, start: 0.095, amp: 0.31 },   // F5
+    { freq: 880, start: 0.190, amp: 0.34 },   // A5
   ];
 
-  // Raised-cosine envelope: smooth attack AND smooth decay — no clicks
-  function rcEnv(t, tStart, tEnd){
-    if(t < tStart || t >= tEnd) return 0;
-    const nt  = (t - tStart) / (tEnd - tStart); // 0..1 within the note
-    const atk = 0.10;  // attack occupies first 10% of the note
-    const rel = 0.35;  // release starts at 65% of the note
-    let e;
-    if(nt < atk){
-      // Smooth attack: half cosine 0→1
-      e = 0.5 - 0.5 * Math.cos(Math.PI * (nt / atk));
-    } else if(nt < rel){
-      e = 1.0;
-    } else {
-      // Smooth release: half cosine 1→0
-      e = 0.5 + 0.5 * Math.cos(Math.PI * ((nt - rel) / (1 - rel)));
-    }
-    return Math.max(0, e);
-  }
+  // DECAY = 14 → fades to near-silence in ~70ms. No ringing.
+  const DECAY = 14;
 
   for(let i = 0; i < len; i++){
     const t = i / sr;
-    let sample = 0;
+    let s = 0;
     for(const n of notes){
-      const env = rcEnv(t, n.tStart, n.tEnd);
-      if(env === 0) continue;
-      // Pure sine + tiny 2nd harmonic for just a hint of warmth (like Apple's tones)
-      sample += (
-        Math.sin(2 * Math.PI * n.freq * t) * 0.88 +
-        Math.sin(2 * Math.PI * n.freq * 2 * t) * 0.07 +
-        Math.sin(2 * Math.PI * n.freq * 3 * t) * 0.03
-      ) * env;
+      const nt = t - n.start;
+      if(nt < 0) continue;
+      // 5ms linear ramp then pure exponential decay — no plateau, no bell
+      const env = nt < 0.005
+        ? nt / 0.005
+        : Math.exp(-(nt - 0.005) * DECAY);
+      s += Math.sin(2 * Math.PI * n.freq * t) * env * n.amp;
     }
-    d[i] = sample * 0.38;  // master level — comfortable, not loud
+    d[i] = s * 0.45;
   }
   return buf;
 }
