@@ -1,2 +1,0 @@
-# Zelechat
-Zelechat by Whyhockey
